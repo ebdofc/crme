@@ -1,0 +1,30 @@
+name: Verificar build CRME
+
+on:
+  push:
+    branches:
+      - feature/documentos-pdf-seguro
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Instalar dependências
+        run: npm ci
+      - name: Compilar Vite
+        run: npm run build
+      - name: Verificar página Documentos
+        run: test -f dist/documentos.html

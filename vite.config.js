@@ -21,6 +21,7 @@ export default defineConfig({
         index: resolve(import.meta.dirname, 'index.html'),
         dashboard: resolve(import.meta.dirname, 'dashboard.html'),
         noticias: resolve(import.meta.dirname, 'noticias.html'),
+        documentos: resolve(import.meta.dirname, 'documentos.html'),
         consultar: resolve(import.meta.dirname, 'consultar.html'),
         'controle-patentes': resolve(import.meta.dirname, 'controle-patentes.html'),
         alistamento: resolve(import.meta.dirname, 'alistamento.html'),
