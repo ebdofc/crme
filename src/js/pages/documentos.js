@@ -97,6 +97,9 @@ async function publish(event) {
   const unit = form.elements.unidade.value;
   if (!organ || !state.militarId) { message("Órgão ou identidade militar indisponível.", true); return; }
   // Segmentos controlados pelo catálogo; o nome original não compõe o caminho.
+  if (!state.catalog.some(o => o.codigo === organ && (!unit || (o.unidades || []).some(u => u.codigo === unit)))) {
+    message("Órgão ou unidade inválidos.", true); return;
+  }
   const path = `${state.militarId}/${organ}/${unit || "_"}/${uuid()}.pdf`;
   button.disabled = true;
   message("Enviando arquivo...");
@@ -147,6 +150,7 @@ async function view() {
       throw new Error(result.erro || `Falha na visualização (HTTP ${response.status}).`);
     }
     const blob = await response.blob();
+    if (blob.type && blob.type !== "application/pdf") throw new Error("Resposta não é um PDF.");
     if (state.selected?.id !== id) return;
     state.pdfUrl = URL.createObjectURL(new Blob([blob], { type: "application/pdf" }));
     $("pdf-frame").src = state.pdfUrl;
@@ -172,7 +176,8 @@ $("edit-form").addEventListener("submit", async e => {
   if (!doc) return;
   const f = e.currentTarget.elements;
   try {
-    await rpc("documentos_editar", { p_documento_id: doc.id, p_titulo: f.titulo.value.trim(), p_descricao: f.descricao.value.trim(), p_categoria: f.categoria.value.trim(), p_orgao: doc.orgao, p_unidade: doc.unidade, p_visibilidade: f.visibilidade.value });
+    const updated = await rpc("documentos_editar", { p_documento_id: doc.id, p_titulo: f.titulo.value.trim(), p_descricao: f.descricao.value.trim(), p_categoria: f.categoria.value.trim(), p_orgao: doc.orgao, p_unidade: doc.unidade, p_visibilidade: f.visibilidade.value });
+    if (updated !== true) throw new Error("A edição não foi confirmada.");
     message("Documento atualizado."); await load(); await openDocument(doc.id);
   } catch (error) { fail(error); }
 });
@@ -181,7 +186,8 @@ $("permission-form").addEventListener("submit", async e => {
   const doc = state.selected; if (!doc) return;
   const f = e.currentTarget.elements;
   try {
-    await rpc("documentos_adicionar_permissao", { p_documento_id: doc.id, p_tipo: f.tipo.value, p_codigo: f.codigo.value.trim() });
+    const added = await rpc("documentos_adicionar_permissao", { p_documento_id: doc.id, p_tipo: f.tipo.value, p_codigo: f.codigo.value.trim() });
+    if (added !== true) throw new Error("A permissão não foi adicionada.");
     f.codigo.value = ""; message("Permissão adicionada."); await loadPermissions(doc.id);
   } catch (error) { fail(error); }
 });
@@ -189,7 +195,8 @@ $("permissions-list").addEventListener("click", async e => {
   const button = e.target.closest("[data-remove-type]"); const doc = state.selected;
   if (!button || !doc || !confirm("Remover esta permissão?")) return;
   try {
-    await rpc("documentos_remover_permissao", { p_documento_id: doc.id, p_tipo: button.dataset.removeType, p_codigo: button.dataset.removeCode });
+    const removed = await rpc("documentos_remover_permissao", { p_documento_id: doc.id, p_tipo: button.dataset.removeType, p_codigo: button.dataset.removeCode });
+    if (removed !== true) throw new Error("A permissão não foi removida.");
     message("Permissão removida."); await loadPermissions(doc.id);
   } catch (error) { fail(error); }
 });
@@ -200,7 +207,6 @@ window.addEventListener("beforeunload", closeViewer);
     if (!session) return;
     state.militarId = await rpc("crme_militar_id");
     await loadCatalog();
-    const admin = await rpc("documentos_admin_global");
     // A autorização real de publicação é validada no banco e no Storage.
     $("new-document").hidden = !state.militarId;
     await load();
