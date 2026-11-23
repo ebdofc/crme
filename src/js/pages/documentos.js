@@ -103,7 +103,8 @@ function getEditorHtml() {
   return html;
 }
 function targetsFor(org) {
-  const options = [{ value: "", label: "Órgão inteiro (sem unidade)" }];
+  const options = state.allowedTargets.has((org?.codigo || "") + "/")
+    ? [{ value: "", label: "Órgão inteiro (sem unidade)" }] : [];
   for (const unit of org?.unidades || []) {
     options.push({ value: unit.codigo, label: unit.nome + " (" + unit.codigo + ")" });
     for (const child of unit.subunidades || []) {
@@ -116,17 +117,45 @@ async function loadCatalog() {
   const response = await fetch("/orgaos.json", { cache: "no-store" });
   if (!response.ok) throw new Error("Não foi possível carregar o catálogo de órgãos.");
   const data = await response.json();
-  state.catalog = (data.categorias || []).flatMap(group => group.orgaos || []);
+  const all = (data.categorias || []).flatMap(group => group.orgaos || []);
+  // Exibir apenas órgãos/unidades para os quais o banco confirmou permissão.
+  const allowed = await Promise.all(all.map(async org => {
+    const targets = targetsFor(org);
+    const checks = await Promise.all(targets.map(async target => {
+      try {
+        const ok = await rpc("documentos_pode_criar", {
+          p_orgao: org.codigo, p_unidade: target.value || null
+        });
+        if (ok) state.allowedTargets.add(org.codigo + "/" + target.value);
+        return ok === true;
+      } catch { return false; }
+    }));
+    if (!checks.some(Boolean)) return null;
+    return { ...org, unidades: (org.unidades || []).map(unit => ({
+      ...unit,
+      subunidades: (unit.subunidades || []).filter(child =>
+        state.allowedTargets.has(org.codigo + "/" + child.codigo))
+    })).filter(unit =>
+      state.allowedTargets.has(org.codigo + "/" + unit.codigo) ||
+      (unit.subunidades || []).length > 0
+    ) };
+  }));
+  state.catalog = allowed.filter(Boolean);
   $("publish-orgao").innerHTML = '<option value="">Selecione</option>' +
-    state.catalog.map(o => '<option value="' + esc(o.codigo) + '">' + esc(o.nome) + ' (' + esc(o.codigo) + ')</option>').join("");
+    state.catalog.map(o => '<option value="' + esc(o.codigo) + '">' +
+      esc(o.nome) + ' (' + esc(o.codigo) + ')</option>').join("");
   updateUnits();
 }
+
 function updateUnits() {
   const organ = state.catalog.find(o => o.codigo === $("publish-orgao").value);
   const select = $("publish-unidade");
   select.innerHTML = targetsFor(organ).map(u =>
     '<option value="' + esc(u.value) + '">' + esc(u.label) + '</option>'
   ).join("");
+  if (!select.options.length) {
+    select.innerHTML = '<option value="">Nenhuma unidade autorizada</option>';
+  }
   if (!state.editing) checkTarget();
 }
 async function checkTarget() {
@@ -265,6 +294,14 @@ async function save(event) {
   const f = event.currentTarget.elements;
   button.disabled = true;
   try {
+    if (!state.editing) {
+      const target = f.orgao.value + "/" + (f.unidade.value || "");
+      if (!state.allowedTargets.has(target)) throw new Error("Você não possui autorização para publicar nesta seção.");
+      const confirmed = await rpc("documentos_pode_criar", {
+        p_orgao: f.orgao.value, p_unidade: f.unidade.value || null
+      });
+      if (confirmed !== true) throw new Error("Permissão de publicação negada pelo servidor.");
+    }
     const html = getEditorHtml();
     const fields = {
       p_titulo: f.titulo.value.trim(),
@@ -377,19 +414,9 @@ $("permissions-list").addEventListener("click", async e => {
     if (!militaryId) throw new Error("Registro militar não encontrado.");
     ensureEditor();
     await loadCatalog();
-    // A exibição do botão não substitui a validação de autorização feita no banco.
-    const checks = await Promise.all(state.catalog.flatMap(org =>
-      targetsFor(org).map(async unit => {
-        try {
-          const ok = await rpc("documentos_pode_criar", {
-            p_orgao: org.codigo, p_unidade: unit.value || null
-          });
-          if (ok) state.allowedTargets.add(org.codigo + "/" + unit.value);
-          return Boolean(ok);
-        } catch { return false; }
-      })
-    ));
-    $("new-document").hidden = !checks.some(Boolean);
+    // A interface usa as permissões confirmadas pelo banco; o banco também
+    // deve validar novamente cada operação de publicação e edição.
+    $("new-document").hidden = state.catalog.length === 0;
     await load();
   } catch (error) { fail(error); $("doc-list").textContent = "Não foi possível carregar a biblioteca."; }
 })();
