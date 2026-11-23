@@ -1,24 +1,160 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CRME | Documentos</title>
-<link rel="stylesheet" href="/src/css/pages/dashboard.css">
-<link rel="stylesheet" href="/src/css/pages/documentos.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CRME | Documentos</title>
+    <link rel="stylesheet" href="/src/css/pages/dashboard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
+    <link rel="stylesheet" href="/src/css/pages/documentos.css">
 </head>
 <body>
-<aside class="sidebar" id="sidebar"><div class="sidebar-header"><span>CRME</span><button id="menu-toggle" aria-label="Recolher menu">☰</button></div>
-<nav><a href="dashboard.html">Início</a><a href="noticias.html">Notícias</a><a href="documentos.html" class="active">Documentos</a><a href="consultar.html">Consultar Militares</a><a href="controle-patentes.html">Controle de Patentes</a><a href="alistamento.html">Alistamento</a><a href="acoes.html">Ações</a><a href="aulas.html">Aulas</a><a href="orgaos.html">Órgãos</a><a href="ciclos.html">Ciclos de Promoção</a></nav></aside>
-<main class="main-content"><header class="top-header"><div class="user-info"><strong id="user-name">Carregando...</strong><span id="user-rank">Patente</span></div><button id="logout-button">Sair</button></header>
-<section class="dashboard-section documentos-page"><div class="doc-heading"><div><h2>Documentos</h2><p>Biblioteca institucional de documentos do Exército.</p></div><button id="new-document" type="button" hidden>Publicar documento</button></div>
-<p id="doc-message" role="status" aria-live="polite"></p>
-<div class="doc-filters"><label>Pesquisar<input id="doc-search" type="search" placeholder="Título, descrição ou órgão"></label><label>Categoria<select id="doc-category"><option value="">Todas</option></select></label><label>Visibilidade<select id="doc-visibility"><option value="">Todas</option><option value="geral">Geral</option><option value="restrito">Restrita</option></select></label><button id="doc-refresh" type="button">Atualizar</button></div>
-<div id="doc-list" class="doc-list"><p>Carregando documentos...</p></div>
-</section>
-<section id="publish-panel" class="dashboard-section" hidden><h2>Publicar documento</h2><p>Arquivos PDF de até 10 MB. A publicação começa como restrita.</p><form id="publish-form" class="doc-form"><label>Título<input name="titulo" maxlength="180" required></label><label>Categoria<input name="categoria" maxlength="100" required placeholder="Ex.: Regulamento"></label><label>Órgão<select name="orgao" id="publish-orgao" required><option value="">Selecione</option></select></label><label>Unidade<select name="unidade" id="publish-unidade"><option value="">Sem unidade</option></select></label><label class="wide">Descrição<textarea name="descricao" rows="3"></textarea></label><label class="wide">Arquivo PDF<input type="file" name="arquivo" accept=".pdf,application/pdf" required></label><div class="doc-actions wide"><button type="submit" id="publish-submit">Enviar e publicar</button><button type="button" id="publish-cancel" class="secondary">Cancelar</button></div></form></section>
-<section id="detail-panel" class="dashboard-section" hidden><h2 id="detail-title">Documento</h2><p id="detail-meta"></p><p id="detail-description"></p><div class="doc-actions"><button id="view-document" type="button">Visualizar PDF</button><button id="close-detail" type="button" class="secondary">Fechar</button></div>
-<div id="manage-panel" hidden><h3>Gerenciar documento</h3><form id="edit-form" class="doc-form"><label>Título<input name="titulo" required></label><label>Categoria<input name="categoria" required></label><label>Órgão<input name="orgao" readonly></label><label>Unidade<input name="unidade" readonly></label><label>Visibilidade<select name="visibilidade"><option value="restrito">Restrita</option><option value="geral">Geral</option></select></label><label class="wide">Descrição<textarea name="descricao" rows="3"></textarea></label><div class="wide"><button type="submit">Salvar alterações</button></div></form><h3>Permissões do documento</h3><div id="permissions-list"></div><form id="permission-form" class="doc-form"><label>Tipo<select name="tipo"><option value="orgao">Órgão</option><option value="funcao">Função</option></select></label><label>Código<input name="codigo" required placeholder="Código institucional"></label><div class="wide"><button type="submit">Adicionar permissão</button></div></form></div></section>
-<section id="viewer-panel" class="dashboard-section" hidden><div class="doc-actions"><h2>Visualizador de PDF</h2><button type="button" id="close-viewer" class="secondary">Fechar visualizador</button></div><p>Documento institucional. A visualização está sujeita à autorização e auditoria.</p><iframe id="pdf-frame" title="Documento PDF" referrerpolicy="no-referrer"></iframe></section>
-<footer>EXÉRCITO BRASILEIRO · DGP · DCR</footer></main>
-<script type="module" src="/src/js/pages/layout.js"></script><script type="module" src="/src/js/pages/documentos.js"></script>
-</body></html>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>CRME</span>
+            <button id="menu-toggle" aria-label="Recolher menu">☰</button>
+        </div>
+        <nav>
+            <a href="dashboard.html">Início</a>
+            <a href="noticias.html">Notícias</a>
+            <a href="documentos.html" class="active">Documentos</a>
+            <a href="consultar.html">Consultar Militares</a>
+            <a href="controle-patentes.html">Controle de Patentes</a>
+            <a href="alistamento.html">Alistamento</a>
+            <a href="acoes.html">Ações</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="orgaos.html">Órgãos</a>
+            <a href="ciclos.html">Ciclos de Promoção</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="user-info">
+                <strong id="user-name">Carregando...</strong>
+                <span id="user-rank">Patente</span>
+            </div>
+            <button id="logout-button">Sair</button>
+        </header>
+
+        <section id="library-panel" class="dashboard-section documentos-page">
+            <div class="doc-heading">
+                <div>
+                    <h2>Documentos</h2>
+                    <p>Biblioteca de documentos institucionais do Exército Brasileiro.</p>
+                </div>
+                <button id="new-document" type="button" hidden>Publicar documento</button>
+            </div>
+
+            <p id="doc-message" role="status" aria-live="polite" hidden></p>
+
+            <div class="doc-filters">
+                <label for="doc-search">Pesquisar
+                    <input id="doc-search" type="search" placeholder="Título, descrição ou órgão">
+                </label>
+                <label for="doc-category">Categoria
+                    <select id="doc-category"><option value="">Todas</option></select>
+                </label>
+                <label for="doc-visibility">Visibilidade
+                    <select id="doc-visibility">
+                        <option value="">Todas</option>
+                        <option value="geral">Geral</option>
+                        <option value="restrito">Restrita</option>
+                    </select>
+                </label>
+                <button id="doc-refresh" type="button">Atualizar</button>
+            </div>
+
+            <div id="doc-list" class="doc-list" aria-live="polite">
+                <p>Carregando documentos...</p>
+            </div>
+        </section>
+
+        <section id="publish-panel" class="dashboard-section doc-editor-panel" hidden>
+            <div class="doc-panel-heading">
+                <h2 id="publish-heading">Publicar documento</h2>
+                <button id="publish-cancel" type="button" class="secondary">Voltar à biblioteca</button>
+            </div>
+            <p>Redija o documento diretamente no CRME. Não é necessário enviar arquivos PDF.</p>
+
+            <form id="publish-form" class="doc-form">
+                <label for="publish-title">Título
+                    <input id="publish-title" name="titulo" maxlength="180" required>
+                </label>
+                <label for="publish-category">Categoria
+                    <input id="publish-category" name="categoria" maxlength="100" required placeholder="Ex.: Regulamento">
+                </label>
+                <label for="publish-orgao">Órgão
+                    <select id="publish-orgao" name="orgao" required>
+                        <option value="">Selecione</option>
+                    </select>
+                </label>
+                <label for="publish-unidade">Unidade ou seção
+                    <select id="publish-unidade" name="unidade">
+                        <option value="">Sem unidade</option>
+                    </select>
+                </label>
+                <label for="publish-visibility">Visibilidade
+                    <select id="publish-visibility" name="visibilidade">
+                        <option value="restrito">Restrita — destinatários definidos</option>
+                        <option value="geral">Geral — militares autenticados</option>
+                    </select>
+                </label>
+                <label for="publish-description" class="wide">Descrição
+                    <textarea id="publish-description" name="descricao" rows="3" placeholder="Resumo do documento"></textarea>
+                </label>
+                <div class="wide doc-richtext-group">
+                    <label for="doc-editor">Conteúdo do documento</label>
+                    <div id="doc-editor" aria-label="Editor de conteúdo do documento"></div>
+                </div>
+                <div class="doc-actions wide">
+                    <button id="publish-submit" type="submit">Publicar documento</button>
+                    <button id="publish-cancel-bottom" type="button" class="secondary">Cancelar</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="detail-panel" class="dashboard-section doc-detail-panel" hidden>
+            <div class="doc-panel-heading">
+                <h2 id="detail-title">Documento</h2>
+                <button id="close-detail" type="button" class="secondary">Voltar à biblioteca</button>
+            </div>
+            <p id="detail-meta" class="doc-meta"></p>
+            <p id="detail-description"></p>
+            <article id="document-content" class="doc-content ql-editor" aria-label="Conteúdo do documento"></article>
+
+            <div id="manage-panel" hidden>
+                <h3>Gerenciar documento</h3>
+                <div class="doc-actions">
+                    <button id="edit-document" type="button">Editar documento</button>
+                    <button id="delete-document" type="button" class="danger">Excluir documento</button>
+                </div>
+
+                <h3>Destinatários autorizados</h3>
+                <p>As permissões específicas são utilizadas para documentos de visibilidade restrita.</p>
+                <div id="permissions-list" aria-live="polite"></div>
+                <form id="permission-form" class="doc-form">
+                    <label for="permission-type">Tipo de destinatário
+                        <select id="permission-type" name="tipo">
+                            <option value="estrutura">Estrutura institucional</option>
+                            <option value="funcao">Função militar</option>
+                        </select>
+                    </label>
+                    <label for="permission-code">Código
+                        <input id="permission-code" name="codigo" required placeholder="Ex.: DEC/DEB/CIM">
+                    </label>
+                    <div class="doc-actions wide">
+                        <button id="permission-submit" type="submit">Adicionar destinatário</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <footer>EXÉRCITO BRASILEIRO · DGP · DCR</footer>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script type="module" src="/src/js/pages/layout.js"></script>
+    <script type="module" src="/src/js/pages/documentos.js"></script>
+</body>
+</html>
