@@ -218,6 +218,27 @@ function updateAuthorOptions(selected = "pessoal") {
 async function loadIdentities() {
   const identities = await rpc("documentos_identificacoes_disponiveis");
   state.identities = Array.isArray(identities) ? identities : [];
+  // A ordem institucional segue o catálogo de órgãos, não a ordem alfabética da RPC.
+  const response = await fetch("/orgaos.json", { cache: "no-store" });
+  if (!response.ok) throw new Error("Não foi possível ordenar as identificações institucionais.");
+  const catalog = await response.json();
+  const order = new Map();
+  for (const org of (catalog.categorias || []).flatMap(group => group.orgaos || [])) {
+    if (!order.has(org.codigo)) order.set(org.codigo, order.size);
+    for (const unit of org.unidades || []) {
+      const unitCode = org.codigo + "/" + unit.codigo;
+      if (!order.has(unitCode)) order.set(unitCode, order.size);
+      for (const child of unit.subunidades || []) {
+        const childCode = org.codigo + "/" + child.codigo;
+        if (!order.has(childCode)) order.set(childCode, order.size);
+      }
+    }
+  }
+  state.identities.sort((a, b) =>
+    (order.get(a.codigo) ?? Number.MAX_SAFE_INTEGER) -
+    (order.get(b.codigo) ?? Number.MAX_SAFE_INTEGER) ||
+    a.nome.localeCompare(b.nome, "pt-BR")
+  );
   for (const identity of state.identities) state.institutionNames.set(identity.codigo, identity.nome);
   updateAuthorOptions();
 }
