@@ -4,6 +4,12 @@
   display: flex; justify-content: space-between; align-items: flex-start;
   flex-wrap: wrap; gap: 16px; margin-bottom: 20px;
 }
+.documentos-page .doc-heading h2, .doc-panel-heading h2 {
+  color: #343b31; font-size: 18px; font-weight: 600; margin: 0 0 8px;
+}
+.documentos-page .doc-heading p, #publish-panel > p, #manage-panel > p {
+  color: #6d726a; font-size: 14px; line-height: 1.6; margin: 0 0 16px;
+}
 .documentos-page button, #publish-panel button, #detail-panel button {
   min-height: 36px; padding: 8px 13px; border: 1px solid #59664e;
   border-radius: 0; background: #46543d; color: #fff;
@@ -177,8 +183,6 @@
 /* Página principal: os mesmos cartões, abas e painéis de Notícias. */
 #documents-section { min-width: 0; }
 #documents-section .news-header { margin-bottom: 24px; }
-#documents-section .news-header h2 { color: #343b31; font-size: 18px; font-weight: 600; margin: 0 0 12px; padding-bottom: 12px; border-bottom: 1px solid #d5d8d2; }
-#documents-section .news-header p { color: #292d27; font-size: 14px; line-height: 1.6; margin: 0; }
 #documents-section .news-tabs { margin-bottom: 20px; }
 #documents-section .news-tab,
 #documents-section .news-tab:hover,
