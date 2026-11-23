@@ -102,6 +102,12 @@
                     </select>
                 </label>
                 <fieldset id="rank-targets" class="doc-rank-targets" hidden><legend>Destinatários por patente</legend><label for="rank-mode">Tipo de seleção<select id="rank-mode"><option value="todos">Todos os oficiais</option><option value="grupo">Categoria de oficial</option><option value="patente">Patentes específicas</option></select></label><div id="rank-choices" class="doc-rank-choices"></div></fieldset>
+                <label for="publish-author">Publicado por
+                    <select id="publish-author" name="publicado_por" required>
+                        <option value="pessoal">Identificação pessoal</option>
+                    </select>
+                </label>
+                <p id="publish-author-help" class="doc-author-help">A autoria real permanece registrada no CRME.</p>
                 <label for="publish-description" class="wide">Descrição
                     <textarea id="publish-description" name="descricao" rows="3" placeholder="Resumo do documento"></textarea>
                 </label>

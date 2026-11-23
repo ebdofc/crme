@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 const state = {
   documents: [], selected: null, catalog: [], editor: null,
   editing: null, allowedTargets: new Set(), currentRequest: 0,
-  militarId: null, manageableIds: new Set(), activeTab: "library-panel", central: false
+  militarId: null, manageableIds: new Set(), activeTab: "library-panel", central: false, identities: [], militaryNames: new Map(), institutionNames: new Map()
 };
 const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -194,6 +194,59 @@ async function checkTarget() {
     }
   } catch (error) { fail(error); }
 }
+function authorLabel(doc) {
+  if (doc.publicado_por_tipo === "institucional" && doc.publicado_por_codigo) {
+    return state.institutionNames.get(doc.publicado_por_codigo) || doc.publicado_por_codigo;
+  }
+  const military = state.militaryNames.get(doc.criado_por);
+  if (military) return [military.patente_atual, military.nome].filter(Boolean).join(" ");
+  return "Militar responsável";
+}
+function updateAuthorOptions(selected = "pessoal") {
+  const select = $("publish-author");
+  select.replaceChildren();
+  select.add(new Option("Patente e nome do militar", "pessoal"));
+  for (const identity of state.identities) {
+    select.add(new Option(identity.nome, identity.codigo));
+  }
+  if ([...select.options].some(option => option.value === selected)) select.value = selected;
+  else select.value = "pessoal";
+  $("publish-author-help").textContent = state.editing
+    ? "A identificação desta publicação não pode ser alterada na edição."
+    : "A identidade escolhida será exibida publicamente. O militar responsável permanece registrado.";
+}
+async function loadIdentities() {
+  const identities = await rpc("documentos_identificacoes_disponiveis");
+  state.identities = Array.isArray(identities) ? identities : [];
+  for (const identity of state.identities) state.institutionNames.set(identity.codigo, identity.nome);
+  updateAuthorOptions();
+}
+async function loadMilitaryNames(documents) {
+  const ids = [...new Set(documents.map(doc => doc.criado_por).filter(Boolean))];
+  if (!ids.length) return;
+  const { data, error } = await supabase.from("militares")
+    .select("id,nome,patente_atual").in("id", ids);
+  if (!error) for (const military of data || []) state.militaryNames.set(military.id, military);
+}
+async function loadInstitutionNames() {
+  const response = await fetch("/orgaos.json", { cache: "no-store" });
+  if (!response.ok) return;
+  const catalog = await response.json();
+  for (const org of (catalog.categorias || []).flatMap(category => category.orgaos || [])) {
+    state.institutionNames.set(org.codigo, org.nome);
+    for (const unit of org.unidades || []) {
+      state.institutionNames.set(org.codigo + "/" + unit.codigo, unit.nome);
+      for (const child of unit.subunidades || [])
+        state.institutionNames.set(org.codigo + "/" + child.codigo, child.nome);
+    }
+  }
+  state.institutionNames.set("ACE/P", "Presidência do Alto-Comando do Exército");
+  state.institutionNames.set("ACE/ACE", "Conselho do Alto-Comando do Exército");
+  state.institutionNames.set("DEC/D", "Diretoria do Departamento de Educação e Ciência");
+  state.institutionNames.set("DTC/D", "Diretoria do Departamento de Tecnologia e Comunicação");
+  state.institutionNames.set("DGP/DG", "Direção-Geral do Departamento-Geral do Pessoal");
+  state.institutionNames.set("EME/Ch", "Chefia do Estado-Maior do Exército");
+}
 function documentCard(doc) {
   const card = document.createElement("button");
   card.type = "button";
@@ -216,7 +269,7 @@ function documentCard(doc) {
   footer.className = "news-card-footer";
   const origin = document.createElement("span");
   origin.className = "news-card-author";
-  origin.textContent = "Publicado por " + doc.orgao + (doc.unidade ? " / " + doc.unidade : "") +
+  origin.textContent = "Publicado por " + authorLabel(doc) +
     " · " + (doc.visibilidade === "geral" ? "Oficial" : doc.visibilidade === "patentes" ? "Por patente" : "Setorial");
   const date = document.createElement("span");
   date.className = "news-card-date";
@@ -243,10 +296,11 @@ function render() {
 }
 async function load() {
   const { data, error } = await supabase.from("documentos")
-    .select("id,titulo,descricao,conteudo,categoria,orgao,unidade,visibilidade,criado_por,criado_em,atualizado_em")
+    .select("id,titulo,descricao,conteudo,categoria,orgao,unidade,visibilidade,criado_por,criado_em,atualizado_em,publicado_por_tipo,publicado_por_codigo")
     .order("criado_em", { ascending: true }).limit(300);
   if (error) throw error;
   state.documents = data || [];
+  await loadMilitaryNames(state.documents);
   const rights = await Promise.all(state.documents.map(async d => {
     try {
       return await rpc("documentos_pode_gerenciar", { p_documento_id: d.id }) === true;
@@ -269,7 +323,8 @@ async function openDocument(id) {
     if (request !== state.currentRequest) return;
     state.selected = doc;
     $("detail-title").textContent = doc.titulo;
-    $("detail-meta").textContent = [doc.categoria, doc.orgao, doc.unidade,
+    await loadMilitaryNames([doc]);
+    $("detail-meta").textContent = ["Publicado por " + authorLabel(doc), doc.categoria,
       doc.visibilidade === "geral" ? "Oficial" : doc.visibilidade === "patentes" ? "Por patente" : "Setorial", formatDate(doc.criado_em)]
       .filter(Boolean).join(" · ");
     $("detail-description").textContent = doc.descricao || "";
@@ -299,6 +354,8 @@ async function loadPermissions(id) {
 function resetEditor() {
   state.editing = null;
   $("publish-form").reset();
+  $("publish-author").disabled = false;
+  updateAuthorOptions();
   renderRankChoices();
   updateVisibility();
   $("publish-heading").textContent = "Publicar documento";
@@ -332,6 +389,8 @@ function startEdit() {
     for (const input of document.querySelectorAll("#rank-choices input")) input.checked = (doc.patente_alvos || []).includes(input.value);
   }
   updateVisibility();
+  updateAuthorOptions(doc.publicado_por_tipo === "institucional" ? doc.publicado_por_codigo : "pessoal");
+  $("publish-author").disabled = true;
   f.orgao.disabled = true;
   f.unidade.disabled = true;
   f.visibilidade.disabled = true;
@@ -389,11 +448,15 @@ async function save(event) {
       const visibility = f.visibilidade.value;
       const targets = [...document.querySelectorAll("#rank-choices input:checked")].map(input => input.value);
       if (visibility === "patentes" && $("rank-mode").value !== "todos" && !targets.length) throw new Error("Selecione os destinatários por patente.");
-      const id = await rpc("documentos_publicar_v2", {
+      const identity = $("publish-author").value;
+      if (identity !== "pessoal" && !state.identities.some(item => item.codigo === identity)) throw new Error("Identificação institucional não autorizada.");
+      const id = await rpc("documentos_publicar_v3", {
         ...fields, p_orgao: organ, p_unidade: unit,
         p_visibilidade: visibility,
         p_patente_modo: visibility === "patentes" ? $("rank-mode").value : null,
-        p_patente_alvos: visibility === "patentes" ? ($("rank-mode").value === "todos" ? [] : targets) : []
+        p_patente_alvos: visibility === "patentes" ? ($("rank-mode").value === "todos" ? [] : targets) : [],
+        p_publicado_por_tipo: identity === "pessoal" ? "pessoal" : "institucional",
+        p_publicado_por_codigo: identity === "pessoal" ? null : identity
       });
       if (!id) throw new Error("A publicação não retornou o identificador.");
       resetEditor();
@@ -511,6 +574,8 @@ $("permissions-list").addEventListener("click", async e => {
     state.central = await rpc("documentos_autoridade_central");
     ensureEditor();
     await loadCatalog();
+    await loadInstitutionNames();
+    await loadIdentities();
     updateVisibility();
     // A interface usa as permissões confirmadas pelo banco; o banco também
     // deve validar novamente cada operação de publicação e edição.
