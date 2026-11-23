@@ -366,7 +366,7 @@ async function consultarMilitar(discordId, resultado, botaoPesquisar) {
         const { data: militar, error } = await supabase
             .from("militares")
             .select(
-                "id, nome, discord_id, patente, status, ingresso, advertencias, passagem_atual"
+                "id, nome, discord_id, patente, status, ingresso, advertencias"
             )
             .eq("discord_id", discordId)
             .maybeSingle();
@@ -478,13 +478,6 @@ function exibirMilitar(militar, resultado) {
         criarCampoDados(
             "Data de ingresso",
             formatarData(militar.ingresso)
-        )
-    );
-
-    grade.appendChild(
-        criarCampoDados(
-            "Passagem atual",
-            militar.passagem_atual ?? 1
         )
     );
 
