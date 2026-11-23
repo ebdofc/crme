@@ -66,7 +66,7 @@
 }
 #detail-description { color: #555d50; font-size: 14px; line-height: 1.7; white-space: pre-wrap; }
 .doc-form {
-  display: grid; grid-template-columns: repeat(2,minmax(0,1fr));
+  display: grid; grid-template-columns: minmax(0,1fr);
   gap: 14px; margin: 18px 0 24px;
 }
 .doc-form .wide { grid-column: 1 / -1; }
@@ -142,3 +142,40 @@
   .doc-richtext-group .ql-toolbar.ql-snow { padding: 6px; }
   #doc-editor .ql-editor { min-height: 240px; padding: 12px; }
 }
+
+/* Botões do Quill não são botões de ação do CRME. */
+#publish-panel .ql-toolbar.ql-snow button,
+#publish-panel .ql-toolbar.ql-snow button:hover,
+#publish-panel .ql-toolbar.ql-snow button:focus {
+  display: inline-block;
+  width: 28px;
+  height: 24px;
+  min-height: 0;
+  padding: 3px 5px;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #444;
+  font-size: inherit;
+  line-height: normal;
+  box-shadow: none;
+}
+#publish-panel .ql-toolbar.ql-snow button:hover,
+#publish-panel .ql-toolbar.ql-snow button.ql-active {
+  background: #e3e8de;
+}
+#publish-panel .ql-toolbar.ql-snow button svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+#publish-panel .ql-toolbar.ql-snow button:disabled { opacity: .5; }
+#publish-panel .ql-toolbar.ql-snow .ql-picker { color: #555d50; }
+#publish-panel .ql-toolbar.ql-snow .ql-picker-options { background: #fff; }
+#publish-panel .ql-toolbar.ql-snow .ql-stroke { stroke: #555d50; }
+#publish-panel .ql-toolbar.ql-snow .ql-fill { fill: #555d50; }
+#publish-panel .ql-toolbar.ql-snow button:hover .ql-stroke,
+#publish-panel .ql-toolbar.ql-snow button.ql-active .ql-stroke { stroke: #46543d; }
+#publish-panel .ql-toolbar.ql-snow button:hover .ql-fill,
+#publish-panel .ql-toolbar.ql-snow button.ql-active .ql-fill { fill: #46543d; }
