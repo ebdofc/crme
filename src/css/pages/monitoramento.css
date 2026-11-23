@@ -1,0 +1,332 @@
+
+/* ========================================
+   CONTROLE DE VISIBILIDADE
+======================================== */
+
+[hidden] {
+    display: none !important;
+}
+
+/* ========================================
+   CABEÇALHO DA PÁGINA
+======================================== */
+
+.monitoring-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+/* ========================================
+   RESUMO DO MONITORAMENTO
+======================================== */
+
+.monitoring-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.monitoring-summary-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #d5d8d2;
+}
+
+.monitoring-summary-card span {
+    color: #626b5d;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.monitoring-summary-card strong {
+    color: #343b31;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* ========================================
+   SEÇÃO DE USUÁRIOS ONLINE
+======================================== */
+
+.monitoring-users-section {
+    padding: 20px;
+    margin-bottom: 24px;
+    background: #ffffff;
+    border: 1px solid #d5d8d2;
+}
+
+.monitoring-users-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 14px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #d5d8d2;
+}
+
+.monitoring-users-header h2 {
+    margin: 0 0 8px;
+    color: #343b31;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.monitoring-users-header .section-description {
+    margin: 0;
+    color: #626b5d;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* ========================================
+   ESTADO DA CONEXÃO
+======================================== */
+
+#monitoring-connection-status {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 7px;
+    padding: 6px 10px;
+    color: #626b5d;
+    background: #f7f8f5;
+    border: 1px solid #d5d8d2;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+#monitoring-connection-status.connected {
+    color: #41653c;
+    background: #f1f6ef;
+    border-color: #b9cfb4;
+}
+
+#monitoring-connection-status.disconnected {
+    color: #9a4d42;
+    background: #fbf2f0;
+    border-color: #e2c3bd;
+}
+
+/* ========================================
+   PESQUISA
+======================================== */
+
+.monitoring-search {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 20px;
+}
+
+.monitoring-search label {
+    color: #343b31;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.monitoring-search input {
+    width: 100%;
+    min-height: 40px;
+    padding: 9px 10px;
+    color: #343b31;
+    background: #ffffff;
+    border: 1px solid #c9cec4;
+    border-radius: 0;
+    outline: none;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.monitoring-search input:focus {
+    border-color: #68765d;
+}
+
+.monitoring-search input::placeholder {
+    color: #92998e;
+}
+
+/* ========================================
+   LISTA DE USUÁRIOS
+======================================== */
+
+.monitoring-users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.monitoring-user {
+    padding: 16px;
+    background: #f7f8f5;
+    border: 1px solid #d5d8d2;
+}
+
+.monitoring-user-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.monitoring-user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.monitoring-user-name {
+    margin: 0;
+    color: #343b31;
+    font-size: 15px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.monitoring-user-discord {
+    color: #626b5d;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+/* ========================================
+   INDICADOR ONLINE
+======================================== */
+
+.monitoring-user-status {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 6px;
+    color: #41653c;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.monitoring-user-status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    background: #5c8753;
+    border-radius: 50%;
+}
+
+/* ========================================
+   PÁGINAS ABERTAS
+======================================== */
+
+.monitoring-user-pages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.monitoring-page {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    color: #485442;
+    background: #ffffff;
+    border: 1px solid #d5d8d2;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.monitoring-page.active {
+    color: #41653c;
+    background: #edf4ea;
+    border-color: #b9cfb4;
+}
+
+.monitoring-page.active::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: #5c8753;
+    border-radius: 50%;
+}
+
+/* ========================================
+   MENSAGENS E ESTADOS VAZIOS
+======================================== */
+
+.monitoring-empty {
+    padding: 30px 20px;
+    color: #626b5d;
+    background: #f7f8f5;
+    border: 1px solid #d5d8d2;
+    font-size: 14px;
+    text-align: center;
+}
+
+#online-users-list > p {
+    margin: 0;
+    padding: 20px;
+    color: #626b5d;
+    font-size: 14px;
+    text-align: center;
+}
+
+#monitoring-access-message {
+    color: #626b5d;
+    font-size: 14px;
+}
+
+#monitoring-access-message p {
+    margin: 0;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 768px) {
+
+    .monitoring-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .monitoring-summary {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .monitoring-summary-card {
+        padding: 16px;
+    }
+
+    .monitoring-users-section {
+        padding: 16px;
+    }
+
+    .monitoring-users-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .monitoring-user {
+        padding: 14px;
+    }
+
+    .monitoring-user-header {
+        gap: 10px;
+    }
+
+    .monitoring-user-pages {
+        gap: 6px;
+    }
+
+}

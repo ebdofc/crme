@@ -1,0 +1,436 @@
+
+{
+  "categorias": [
+    {
+      "nome": "Poder Administrativo",
+      "orgaos": [
+        {
+          "codigo": "P",
+          "nome": "Presidência",
+          "funcoes": [
+            {
+              "nome": "Presidente",
+              "codigo": "Presidente"
+            },
+            {
+              "nome": "Vice-Presidente",
+              "codigo": "Vice-Presidente"
+            }
+          ]
+        },
+        {
+          "codigo": "M",
+          "nome": "Ministério",
+          "funcoes": [
+            {
+              "nome": "Ministro da Defesa",
+              "codigo": "Ministro da Defesa"
+            },
+            {
+              "nome": "Ministro",
+              "codigo": "Ministro"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "nome": "Órgão de Direção Geral",
+      "orgaos": [
+        {
+          "codigo": "CE",
+          "nome": "Comando do Exército",
+          "funcoes": [
+            {
+              "nome": "Comandante do Exército",
+              "codigo": "Comandante do Exército"
+            }
+          ]
+        },
+        {
+          "codigo": "ACE",
+          "nome": "Alto-Comando do Exército",
+          "unidades": [
+            {
+              "codigo": "P",
+              "nome": "Presidência do Alto-Comando",
+              "funcoes": [
+                {
+                  "nome": "Presidente",
+                  "codigo": "ACE/P"
+                },
+                {
+                  "nome": "Vice-Presidente",
+                  "codigo": "ACE/VP"
+                }
+              ]
+            },
+            {
+              "codigo": "ACE",
+              "nome": "Conselho do Alto-Comando",
+              "funcoes": [
+                {
+                  "nome": "Conselheiro",
+                  "codigo": "ACE"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "codigo": "EME",
+          "nome": "Estado-Maior do Exército",
+          "unidades": [
+            {
+              "codigo": "Ch",
+              "nome": "Chefia do Estado-Maior",
+              "funcoes": [
+                {
+                  "nome": "Chefe",
+                  "codigo": "EME/Ch"
+                },
+                {
+                  "nome": "Subchefe",
+                  "codigo": "EME/Sch"
+                }
+              ]
+            },
+            {
+              "codigo": "EME",
+              "nome": "Auxiliares do Estado-Maior",
+              "funcoes": [
+                {
+                  "nome": "Auxiliar",
+                  "codigo": "EME"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "nome": "Órgão de Assistência",
+      "orgaos": [
+        {
+          "codigo": "JME",
+          "nome": "Justiça Militar do Exército",
+          "funcoes": [
+            {
+              "nome": "Juiz-Auditor",
+              "codigo": "JME/J"
+            },
+            {
+              "nome": "Promotor",
+              "codigo": "JME/Pr"
+            },
+            {
+              "nome": "Defensor",
+              "codigo": "JME/Def"
+            },
+            {
+              "nome": "Secretário",
+              "codigo": "JME/Sec"
+            }
+          ]
+        },
+        {
+          "codigo": "CIE",
+          "nome": "Centro de Inteligência do Exército",
+          "funcoes": [
+            {
+              "nome": "Comandante",
+              "codigo": "CIE/Cmd"
+            },
+            {
+              "nome": "Subcomandante",
+              "codigo": "CIE/Scm"
+            },
+            {
+              "nome": "Agente",
+              "codigo": "CIE"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "nome": "Órgão de Operação Interna",
+      "orgaos": [
+        {
+          "codigo": "DGP",
+          "nome": "Departamento-Geral do Pessoal",
+          "unidades": [
+            {
+              "codigo": "DG",
+              "nome": "Direção-Geral",
+              "funcoes": [
+                {
+                  "nome": "Diretor-Geral",
+                  "codigo": "DGP/Dir"
+                },
+                {
+                  "nome": "Vice-Diretor-Geral",
+                  "codigo": "DGP/VDir"
+                }
+              ]
+            },
+            {
+              "codigo": "SGE",
+              "nome": "Secretaria-Geral do Exército",
+              "funcoes": [
+                {
+                  "nome": "Secretário-Geral do Exército",
+                  "codigo": "DGP/SGE/Sec"
+                }
+              ]
+            },
+            {
+              "codigo": "DCR",
+              "nome": "Diretoria de Controle e Registro",
+              "funcoes": [
+                {
+                  "nome": "Diretor",
+                  "codigo": "DGP/DCR/Dir"
+                },
+                {
+                  "nome": "Controlador",
+                  "codigo": "DGP/DCR/Cont"
+                },
+                {
+                  "nome": "Auxiliar",
+                  "codigo": "DGP/DCR/Aux"
+                }
+              ]
+            },
+            {
+              "codigo": "DAP",
+              "nome": "Diretoria de Avaliação de Pessoal",
+              "funcoes": [
+                {
+                  "nome": "Diretor",
+                  "codigo": "DGP/DAP/Dir"
+                },
+                {
+                  "nome": "Auxiliar",
+                  "codigo": "DGP/DAP/Aux"
+                }
+              ]
+            },
+            {
+              "codigo": "DFP",
+              "nome": "Diretoria de Finanças e Pagamentos",
+              "funcoes": [
+                {
+                  "nome": "Diretor",
+                  "codigo": "DGP/DFP/Dir"
+                },
+                {
+                  "nome": "Auxiliar",
+                  "codigo": "DGP/DFP/Aux"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "codigo": "DEC",
+          "nome": "Departamento de Educação e Ciência",
+          "unidades": [
+            {
+              "codigo": "D",
+              "nome": "Direção",
+              "funcoes": [
+                {
+                  "nome": "Diretor",
+                  "codigo": "DEC/Dir"
+                },
+                {
+                  "nome": "Vice-Diretor",
+                  "codigo": "DEC/VDir"
+                }
+              ]
+            },{
+              "codigo": "DEA",
+              "nome": "Diretoria de Ensino Avançado",
+              "funcoes": [
+                {
+                  "nome": "Diretor",
+                  "codigo": "DEC/DEA/Dir"
+                },
+                {
+                  "nome": "Vice-Diretor",
+                  "codigo": "DEC/DEA/VDir"
+                },
+                {
+                  "nome": "Coordenador",
+                  "codigo": "DEC/DEA/Coord"
+                }
+              ],
+              "subunidades": [
+                {
+                  "codigo": "EPCE",
+                  "nome": "Escola de Preparação de Cadetes do Exército",
+                  "funcoes": [
+                    {
+                      "nome": "Instrutor",
+                      "codigo": "DEC/EPCE/Ins"
+                    }
+                  ]
+                },
+                {
+                  "codigo": "AMFO",
+                  "nome": "Academia Militar de Formação de Oficiais",
+                  "funcoes": [
+                    {
+                      "nome": "Instrutor",
+                      "codigo": "DEC/AMFO/Ins"
+                    }
+                  ]
+                },
+                {
+                  "codigo": "AMFS",
+                  "nome": "Academia Militar de Formação de Superiores",
+                  "funcoes": [
+                    {
+                      "nome": "Instrutor",
+                      "codigo": "DEC/AMFS/Ins"
+                    }
+                  ]
+                }
+              ]
+            },{
+              "codigo": "DEB",
+              "nome": "Diretoria de Ensino Básico",
+              "funcoes": [
+                {
+                  "nome": "Diretor",
+                  "codigo": "DEC/DEB/Dir"
+                },
+                {
+                  "nome": "Vice-Diretor",
+                  "codigo": "DEC/DEB/VDir"
+                },
+                {
+                  "nome": "Coordenador",
+                  "codigo": "DEC/DEB/Coord"
+                }
+              ],
+              "subunidades": [
+                {
+                  "codigo": "CIM",
+                  "nome": "Centro de Instrução Militar",
+                  "funcoes": [
+                    {
+                      "nome": "Instrutor",
+                      "codigo": "DEC/CIM/Ins"
+                    }
+                  ]
+                },
+                {
+                  "codigo": "CAM",
+                  "nome": "Centro de Aperfeiçoamento Militar",
+                  "funcoes": [
+                    {
+                      "nome": "Instrutor",
+                      "codigo": "DEC/CAM/Ins"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "codigo": "DTC",
+          "nome": "Departamento de Tecnologia e Comunicação",
+          "unidades": [
+            {
+              "codigo": "D",
+              "nome": "Direção",
+              "funcoes": [
+                {
+                  "nome": "Diretor",
+                  "codigo": "DTC/Dir"
+                },
+                {
+                  "nome": "Vice-Diretor",
+                  "codigo": "DTC/VDir"
+                }
+              ]
+            },
+            {
+              "codigo": "DSA",
+              "nome": "Diretoria de Sistemas e Automação",
+              "funcoes": [
+                {
+                  "nome": "Diretor",
+                  "codigo": "DTC/DSA/Dir"
+                },
+                {
+                  "nome": "Auxiliar",
+                  "codigo": "DTC/DSA/Aux"
+                }
+              ]
+            },
+            {
+              "codigo": "DRI",
+              "nome": "Diretoria de Redes e Infraestrutura",
+              "funcoes": [
+                {
+                  "nome": "Diretor",
+                  "codigo": "DTC/DRI/Dir"
+                },
+                {
+                  "nome": "Auxiliar",
+                  "codigo": "DTC/DRI/Aux"
+                }
+              ]
+            },
+            {
+              "codigo": "DCI",
+              "nome": "Diretoria de Comunicação e Informação",
+              "funcoes": [
+                {
+                  "nome": "Diretor",
+                  "codigo": "DTC/DCI/Dir"
+                },
+                {
+                  "nome": "Auxiliar",
+                  "codigo": "DTC/DCI/Aux"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "nome": "Órgão de Assistência Digital",
+      "orgaos": [
+        {
+          "codigo": "PE",
+          "nome": "Polícia do Exército",
+          "funcoes": [
+            {
+              "nome": "Comandante",
+              "codigo": "PE/Cmd"
+            },
+            {
+              "nome": "Subcomandante",
+              "codigo": "PE/Sub"
+            },
+            {
+              "nome": "Chefe",
+              "codigo": "PE/Ch"
+            },
+            {
+              "nome": "Agente",
+              "codigo": "PE"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

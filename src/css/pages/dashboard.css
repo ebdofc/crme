@@ -1,0 +1,611 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #FFFFFF;
+    color: #222222;
+}
+
+/* ========================================
+   MENU LATERAL
+======================================== */
+
+.sidebar {
+    width: 230px;
+    height: 100vh;
+    height: 100dvh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    background: #465536;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.25s ease;
+}
+
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    min-height: 65px;
+}
+
+.sidebar button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.sidebar nav a {
+    padding: 14px 20px;
+    color: white;
+    text-decoration: none;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+    background: #354329;
+}
+
+/* ========================================
+   CONTEÚDO PRINCIPAL
+======================================== */
+
+.main-content {
+    margin-left: 230px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    transition: margin-left 0.25s ease;
+}
+
+.top-header {
+    padding: 20px 30px;
+    border-bottom: 1px solid #DDDDDD;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    gap: 5px;
+    margin-right: auto;
+    min-width: 0;
+}
+
+.user-info strong {
+    overflow-wrap: anywhere;
+}
+
+.user-info span {
+    color: #666666;
+    font-size: 14px;
+}
+
+/* ========================================
+   PESQUISA
+======================================== */
+
+.search-section {
+    display: flex;
+    gap: 8px;
+    padding: 20px 30px;
+}
+
+.search-section input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid #CCCCCC;
+}
+
+.search-section button {
+    padding: 12px 20px;
+    background: #465536;
+    color: white;
+    border: 1px solid #354329;
+    cursor: pointer;
+}
+
+/* ========================================
+   SEÇÕES
+======================================== */
+
+.dashboard-section {
+    padding: 10px 30px 20px;
+    min-width: 0;
+}
+
+.dashboard-section h2 {
+    font-size: 19px;
+    font-weight: normal;
+    border-bottom: 1px solid #DDDDDD;
+    padding-bottom: 10px;
+}
+
+/* ========================================
+   NOTÍCIAS E COMUNICADOS
+======================================== */
+
+#latest-news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.news-item {
+    padding: 15px;
+    border: 1px solid #DDDDDD;
+}
+
+.news-item h3 {
+    margin-top: 0;
+}
+
+.news-item p {
+    color: #555555;
+}
+
+.news-item span {
+    font-size: 12px;
+    color: #777777;
+}
+
+#latest-news-list .news-item {
+    padding: 0;
+    background: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    transition: background-color 0.15s ease;
+}
+
+#latest-news-list .news-item:hover {
+    background: #F3F4F1;
+    border-color: #465536;
+}
+
+.news-item-link {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 18px;
+    text-decoration: none;
+    color: #222222;
+}
+
+.news-item-link:focus-visible {
+    outline: 2px solid #465536;
+    outline-offset: -2px;
+}
+
+#latest-news-list .news-item h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.5;
+    color: #465536;
+    overflow-wrap: anywhere;
+}
+
+.news-item-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#latest-news-list .news-item-category {
+    display: inline-block;
+    padding: 4px 8px;
+    background: #F0F2ED;
+    color: #465536;
+    border: 1px solid #D7DDD0;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+#latest-news-list .news-item-date {
+    font-size: 12px;
+    color: #666666;
+}
+
+#latest-news-list .news-item-author {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #666666;
+    overflow-wrap: anywhere;
+}
+
+#latest-news-list > p,
+#no-latest-news {
+    padding: 15px;
+    margin: 0;
+    border: 1px solid #DDDDDD;
+    background: #F8F9F7;
+    color: #666666;
+    font-size: 14px;
+}
+
+#no-latest-news[hidden] {
+    display: none;
+}
+
+.view-all-news {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 9px 14px;
+    border: 1px solid #465536;
+    background: #FFFFFF;
+    color: #465536;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.view-all-news:hover {
+    background: #F3F4F1;
+}
+
+/* ========================================
+   ATALHOS
+======================================== */
+
+.shortcuts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.shortcuts a {
+    padding: 18px;
+    border: 1px solid #CCCCCC;
+    color: #465536;
+    text-decoration: none;
+}
+
+.shortcuts a:hover {
+    background: #F3F4F1;
+}
+
+/* ========================================
+   RODAPÉ
+======================================== */
+
+footer {
+    margin-top: auto;
+    padding: 20px;
+    text-align: center;
+    font-size: 11px;
+    color: #666666;
+    border-top: 1px solid #DDDDDD;
+}
+
+/* ========================================
+   MENU RECOLHIDO - COMPUTADOR
+======================================== */
+
+.sidebar.collapsed {
+    width: 65px;
+}
+
+.sidebar.collapsed .sidebar-header {
+    padding: 20px 10px;
+    justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-header span {
+    display: none;
+}
+
+.sidebar.collapsed nav a {
+    font-size: 0;
+    padding: 14px 0;
+    text-align: center;
+}
+
+.main-content.expanded {
+    margin-left: 65px;
+}
+
+/* ========================================
+   BOTÃO DE SAIR
+======================================== */
+
+#logout-button {
+    background: white;
+    color: #465536;
+    border: 1px solid #465536;
+    padding: 8px 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* ========================================
+   FORMULÁRIO DE ALISTAMENTO
+======================================== */
+
+#enlistment-form {
+    max-width: 600px;
+    margin-top: 24px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    margin-bottom: 7px;
+    font-weight: bold;
+    color: #333;
+}
+
+.form-group input {
+    width: 100%;
+    min-width: 0;
+    padding: 11px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    font-size: 14px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #526344;
+}
+
+#enlistment-form button {
+    padding: 11px 18px;
+    background-color: #405238;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#enlistment-form button:hover {
+    background-color: #303e2b;
+}
+
+/* ========================================
+   LISTA DE RECRUTAS E TABELAS
+======================================== */
+
+.table-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.table-container th,
+.table-container td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.table-container th {
+    background-color: #405238;
+    color: white;
+    font-weight: bold;
+}
+
+.table-container tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.table-container tbody tr:hover {
+    background-color: #e8ebe5;
+}
+
+/* ========================================
+   BOTÃO MOBILE E SOBREPOSIÇÃO
+======================================== */
+
+.mobile-menu-button {
+    display: none;
+}
+
+.sidebar-overlay {
+    display: none;
+}
+
+/* ========================================
+   RESPONSIVIDADE - CELULARES
+======================================== */
+
+@media (max-width: 700px) {
+
+    .sidebar,
+    .sidebar.collapsed {
+        width: min(280px, 85vw);
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: none;
+    }
+
+    .sidebar.mobile-open,
+    .sidebar.collapsed.mobile-open {
+        transform: translateX(0);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-header,
+    .sidebar.collapsed .sidebar-header {
+        padding: 20px;
+        justify-content: space-between;
+    }
+
+    .sidebar.collapsed .sidebar-header span {
+        display: inline;
+    }
+
+    .sidebar nav a,
+    .sidebar.collapsed nav a {
+        font-size: 14px;
+        padding: 14px 20px;
+        text-align: left;
+    }
+
+    .main-content,
+    .main-content.expanded {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .top-header {
+        padding: 12px 15px;
+        gap: 12px;
+    }
+
+    .mobile-menu-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border: none;
+        background: #465536;
+        color: white;
+        border-radius: 4px;
+        font-size: 21px;
+        cursor: pointer;
+    }
+
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: rgba(0, 0, 0, 0.45);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition:
+            opacity 0.25s ease,
+            visibility 0.25s ease;
+    }
+
+    .sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    body.menu-open {
+        overflow: hidden;
+    }
+
+    .user-info {
+        gap: 3px;
+    }
+
+    .user-info strong {
+        font-size: 13px;
+    }
+
+    .user-info span {
+        font-size: 12px;
+    }
+
+    #logout-button {
+        padding: 8px 10px;
+    }
+
+    .shortcuts {
+        grid-template-columns: 1fr;
+    }
+
+    .search-section {
+        padding: 15px;
+        flex-wrap: wrap;
+    }
+
+    .search-section input {
+        flex-basis: 100%;
+    }
+
+    .search-section button {
+        width: 100%;
+    }
+
+    .dashboard-section {
+        padding: 10px 15px 20px;
+    }
+
+    .dashboard-section h2 {
+        font-size: 18px;
+    }
+
+    .news-item-link {
+        padding: 14px;
+        gap: 8px;
+    }
+
+    #latest-news-list .news-item h3 {
+        font-size: 15px;
+    }
+
+    .news-item-info {
+        gap: 6px;
+    }
+
+    #latest-news-list .news-item-category,
+    #latest-news-list .news-item-date,
+    #latest-news-list .news-item-author {
+        font-size: 11px;
+    }
+
+    .view-all-news {
+        display: block;
+        text-align: center;
+    }
+
+    .table-container table {
+        min-width: 500px;
+    }
+
+    footer {
+        padding: 15px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar,
+    .main-content,
+    .sidebar-overlay,
+    #latest-news-list .news-item {
+        transition: none;
+    }
+}

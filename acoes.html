@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRME | Ações</title>
+
+    <link rel="stylesheet" href="/src/css/pages/dashboard.css">
+    <link rel="stylesheet" href="/src/css/pages/acoes.css">
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>CRME</span>
+            <button id="menu-toggle" aria-label="Recolher menu">☰</button>
+        </div>
+
+        <nav>
+            <a href="dashboard.html">Início</a>
+            <a href="noticias.html">Notícias</a>
+            <a href="#">Documentos</a>
+            <a href="consultar.html">Consultar Militares</a>
+            <a href="controle-patentes.html">Controle de Patentes</a>
+            <a href="alistamento.html">Alistamento</a>
+            <a href="acoes.html" class="active">Ações</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="orgaos.html">Órgãos</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="top-header">
+            <div class="user-info">
+                <strong id="user-name">Carregando...</strong>
+                <span id="user-rank">Carregando...</span>
+            </div>
+
+            <button id="logout-button">Sair</button>
+        </header>
+
+        <section class="dashboard-section">
+
+            <h2>Ações Administrativas</h2>
+
+            <p>
+                Realize promoções, rebaixamentos e advertências
+                dos militares, conforme as competências administrativas.
+            </p>
+
+            <div id="acoes-list">
+
+                <button type="button" class="acao-item" data-acao="promocao">
+                    Promoção
+                </button>
+
+                <button type="button" class="acao-item" data-acao="rebaixamento">
+                    Rebaixamento
+                </button>
+
+                <button type="button" class="acao-item" data-acao="advertencia">
+                    Advertência Escrita
+                </button>
+
+            </div>
+
+            <div id="acao-form"></div>
+
+        </section>
+
+        <footer>
+            EXÉRCITO BRASILEIRO · DGP · DCR
+        </footer>
+
+    </main>
+
+    <script type="module" src="/src/js/pages/layout.js"></script>
+    <script type="module" src="/src/js/pages/acoes.js"></script>
+
+</body>
+</html>

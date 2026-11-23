@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRME | Dashboard</title>
+    <link rel="stylesheet" href="/src/css/pages/dashboard.css">
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>CRME</span>
+            <button id="menu-toggle" aria-label="Recolher menu">☰</button>
+        </div>
+
+        <nav>
+            <a href="dashboard.html" class="active">Início</a>
+            <a href="noticias.html">Notícias</a>
+            <a href="#">Documentos</a>
+            <a href="consultar.html">Consultar Militares</a>
+            <a href="controle-patentes.html">Controle de Patentes</a>
+            <a href="alistamento.html">Alistamento</a>
+            <a href="acoes.html">Ações</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="orgaos.html">Órgãos</a>
+            <a href="ciclos.html">Ciclo de Promoções</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="top-header">
+            <div class="user-info">
+                <strong id="user-name">Carregando...</strong>
+                <span id="user-rank">Patente</span>
+            </div>
+            <button id="logout-button">Sair</button>
+        </header>
+
+        <section class="dashboard-section">
+            <h2>Notícias e Comunicados</h2>
+
+            <div class="news-list" id="latest-news-list">
+                <p>Carregando notícias...</p>
+            </div>
+
+            <p id="no-latest-news" hidden>
+                Nenhuma notícia publicada.
+            </p>
+
+            <a href="noticias.html" class="view-all-news">
+                Ver todas as notícias
+            </a>
+        </section>
+
+        <section class="dashboard-section">
+            <h2>Acesso rápido</h2>
+
+            <div class="shortcuts">
+                <a href="controle-patentes.html">Controle de Patentes</a>
+                <a href="consultar.html">Consultar Militares</a>
+                <a href="alistamento.html">Alistamento</a>
+                <a href="orgaos.html">Painel de Órgãos</a>
+            </div>
+        </section>
+
+        <footer>
+            EXÉRCITO BRASILEIRO · DGP · DCR
+        </footer>
+
+    </main>
+
+    <script type="module" src="/src/js/pages/layout.js"></script>
+    <script type="module" src="/src/js/pages/dashboard.js"></script>
+</body>
+</html>

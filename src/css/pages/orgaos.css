@@ -1,0 +1,561 @@
+/* ========================================
+   IDENTIFICAÇÃO FUNCIONAL
+======================================== */
+
+.military-identification,
+.available-organs,
+#organ-actions-section {
+    background: #fff;
+    border: 1px solid #d5d8d2;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.military-identification h2,
+.available-organs h2,
+#organ-actions-section h2 {
+    color: #343b31;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #d5d8d2;
+}
+
+.identification-data {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.identification-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.identification-label {
+    color: #73786f;
+    font-size: 13px;
+}
+
+.identification-item span:last-child {
+    color: #292d27;
+    font-size: 15px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* ========================================
+   VÍNCULOS INSTITUCIONAIS
+======================================== */
+
+.military-functions {
+    margin-top: 26px;
+}
+
+.military-functions h3 {
+    color: #343b31;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 12px;
+}
+
+#military-functions-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.function-item {
+    display: inline-flex;
+    align-items: center;
+    background: #eef0eb;
+    border: 1px solid #d5d8d2;
+    padding: 7px 11px;
+    color: #3c4935;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.function-empty {
+    color: #777;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* ========================================
+   LISTA DE ÓRGÃOS
+======================================== */
+
+.section-description {
+    color: #6d726a;
+    font-size: 14px;
+    margin: -8px 0 18px;
+}
+
+.organs-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.organ-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 64px;
+    padding: 14px 16px;
+    background: #f7f8f5;
+    border: 1px solid #d5d8d2;
+    color: #343b31;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    transition: none;
+}
+
+.organ-card:hover {
+    background: #eef0eb;
+    border-color: #89927f;
+}
+
+.organ-card-name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.organ-card-code {
+    color: #73786f;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#no-organs {
+    color: #777;
+    font-size: 14px;
+    padding: 16px 0;
+}
+
+/* ========================================
+   ÁREA DE AÇÕES DO ÓRGÃO
+======================================== */
+
+.organ-actions-header {
+    margin-bottom: 20px;
+}
+
+#back-to-organs {
+    background: none;
+    border: 1px solid #c9cec4;
+    color: #495343;
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 18px;
+}
+
+#back-to-organs:hover {
+    background: #eef0eb;
+}
+
+#selected-organ-name {
+    margin-bottom: 0;
+}
+
+#organ-actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.organ-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 14px;
+    background: #f7f8f5;
+    border: 1px solid #d5d8d2;
+}
+
+.organ-action-title {
+    color: #343b31;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.organ-action-description {
+    color: #73786f;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+/* ========================================
+   GERENCIAMENTO DE VÍNCULOS
+======================================== */
+
+.organ-management-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px;
+    margin-bottom: 22px;
+    background: #fff;
+    border: 1px solid #d5d8d2;
+}
+
+.organ-management-form h3,
+.organ-management-title {
+    color: #343b31;
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 4px;
+}
+
+.organ-management-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: #555d50;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.organ-management-form input,
+.organ-management-form select {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 9px 10px;
+    background: #fff;
+    border: 1px solid #c9cec4;
+    border-radius: 0;
+    color: #292d27;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.organ-management-form input:focus,
+.organ-management-form select:focus {
+    outline: 1px solid #68765d;
+    border-color: #68765d;
+}
+
+.organ-submit-button,
+.organ-remove-button {
+    min-height: 36px;
+    padding: 8px 13px;
+    border: 1px solid #59664e;
+    border-radius: 0;
+    background: #46543d;
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.organ-submit-button {
+    align-self: flex-start;
+}
+
+.organ-remove-button {
+    margin-top: 8px;
+    background: #fff;
+    color: #6b3c35;
+    border-color: #b99b95;
+}
+
+.organ-submit-button:hover {
+    background: #394632;
+}
+
+.organ-remove-button:hover {
+    background: #f4eeec;
+}
+
+.organ-submit-button:disabled,
+.organ-remove-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.organ-form-message {
+    color: #59664e;
+    font-size: 13px;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.organ-management-title {
+    padding-bottom: 10px;
+    border-bottom: 1px solid #d5d8d2;
+}
+
+.organ-management-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #d5d8d2;
+}
+
+.organ-management-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.organ-management-panel[hidden] {
+    display: none;
+}
+
+/* ========================================
+   INTEGRANTES INSTITUCIONAIS
+======================================== */
+
+.organ-integrantes-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #d5d8d2;
+}
+
+.organ-integrantes-content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.organ-integrantes-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.organ-integrantes-funcao {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #394334;
+}
+
+.organ-integrante {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 12px 14px;
+    background: #f7f8f5;
+    border: 1px solid #d5d8d2;
+    border-radius: 6px;
+}
+
+.organ-integrante-nome {
+    font-size: 14px;
+    font-weight: 600;
+    color: #252b23;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.organ-integrante-detalhes {
+    font-size: 13px;
+    color: #626b5d;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.organ-integrante-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.organ-integrante .organ-remove-button {
+    flex-shrink: 0;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 900px) {
+    .organs-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .identification-data {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .organs-list {
+        grid-template-columns: 1fr;
+    }
+
+    .military-identification,
+    .available-organs,
+    #organ-actions-section {
+        padding: 15px;
+    }
+
+    .organ-management-form {
+        padding: 14px;
+    }
+
+    .organ-submit-button,
+    .organ-integrante .organ-remove-button {
+        width: 100%;
+    }
+}
+
+
+
+/* ========================================
+   AÇÕES ADMINISTRATIVAS
+======================================== */
+
+.organ-admin-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Botões administrativos */
+
+.organ-admin-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+}
+
+.organ-admin-buttons .organ-admin-button {
+    flex: 1 1 220px;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Painel administrativo */
+
+.organ-admin-panel {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.organ-admin-panel[hidden] {
+    display: none;
+}
+
+.organ-admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Campos no padrão original do CRME */
+
+.organ-admin-form .organ-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    width: 100%;
+    min-width: 0;
+    color: #555d50;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.organ-admin-form input,
+.organ-admin-form textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 9px 10px;
+    background: #fff;
+    border: 1px solid #c9cec4;
+    border-radius: 0;
+    color: #292d27;
+    font-family: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+    box-shadow: none;
+    transition: none;
+}
+
+/* Foco padrão do CRME */
+
+.organ-admin-form input:focus,
+.organ-admin-form textarea:focus {
+    outline: 1px solid #68765d;
+    border-color: #68765d;
+    box-shadow: none;
+}
+
+/* Observação */
+
+.organ-admin-form textarea {
+    min-height: 110px;
+    resize: vertical;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+/* Botões do formulário */
+
+.organ-admin-form .organ-submit-button {
+    align-self: flex-start;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Resultado da verificação */
+
+.organ-admin-form .organ-action {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Elementos ocultos */
+
+.organ-admin-section [hidden] {
+    display: none !important;
+}
+
+/* Responsividade */
+
+@media (max-width: 600px) {
+    .organ-admin-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .organ-admin-buttons .organ-admin-button {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+
+    .organ-admin-form .organ-submit-button {
+        width: 100%;
+        align-self: stretch;
+    }
+}

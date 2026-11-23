@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRME | Controle de Patentes</title>
+
+    <link rel="stylesheet" href="/src/css/pages/dashboard.css">
+    <link rel="stylesheet" href="/src/css/pages/controle-patentes.css">
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>CRME</span>
+            <button id="menu-toggle" aria-label="Recolher menu">☰</button>
+        </div>
+
+        <nav>
+            <a href="dashboard.html">Início</a>
+            <a href="noticias.html">Notícias</a>
+            <a href="#">Documentos</a>
+            <a href="consultar.html">Consultar Militares</a>
+            <a href="controle-patentes.html" class="active">Controle de Patentes</a>
+            <a href="alistamento.html">Alistamento</a>
+            <a href="acoes.html">Ações</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="orgaos.html">Órgãos</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="top-header">
+            <div class="user-info">
+                <strong id="user-name">Carregando...</strong>
+                <span id="user-rank">Patente</span>
+            </div>
+
+            <button id="logout-button">Sair</button>
+        </header>
+
+        <section class="dashboard-section">
+            <h2>Controle de Patentes</h2>
+
+            <p>Selecione uma patente para consultar os militares correspondentes.</p>
+
+            <div id="patentes-list">
+                Carregando patentes...
+            </div>
+
+            <div id="militares-list"></div>
+        </section>
+
+        <footer>
+            EXÉRCITO BRASILEIRO · DGP · DCR
+        </footer>
+
+    </main>
+
+    <script type="module" src="/src/js/pages/layout.js"></script>
+    <script type="module" src="/src/js/pages/controle-patentes.js"></script>
+
+</body>
+</html>

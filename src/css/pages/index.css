@@ -1,0 +1,51 @@
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #FFFFFF;
+    color: #222222;
+}
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.system-name {
+    color: #465536;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.login-content {
+    max-width: 420px;
+    padding: 20px;
+}
+
+#discord-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 auto;
+    background: #465536;
+    color: white;
+    border: 1px solid #354329;
+    padding: 12px 24px;
+    cursor: pointer;
+}
+
+#discord-login:hover {
+    background: #354329;
+}
+
+footer {
+    position: absolute;
+    bottom: 20px;
+    font-size: 11px;
+    color: #666666;
+}

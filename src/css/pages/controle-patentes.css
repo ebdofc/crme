@@ -1,0 +1,48 @@
+
+/* Controle de Patentes */
+
+#patentes-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.patente-item {
+    padding: 16px;
+    border: 1px solid #d5d5d5;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    text-align: left;
+    font-size: 15px;
+}
+
+.patente-item:hover,
+.patente-item.active {
+    background: #e8ebdf;
+    border-color: #596747;
+}
+
+#militares-list {
+    margin-top: 25px;
+}
+
+#militares-list h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    #patentes-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.top-header {
+    gap: 20px;
+}
+
+.user-info {
+    margin-right: auto;
+}

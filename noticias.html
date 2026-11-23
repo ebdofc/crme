@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CRME | Notícias</title>
+
+    <link rel="stylesheet" href="/src/css/pages/dashboard.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
+    <link rel="stylesheet" href="/src/css/pages/noticias.css">
+</head>
+
+<body>
+
+    <!-- Menu lateral -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-header">
+            <span>CRME</span>
+            <button id="menu-toggle" aria-label="Recolher menu">☰</button>
+        </div>
+
+        <nav>
+            <a href="dashboard.html">Início</a>
+            <a href="noticias.html" class="active">Notícias</a>
+            <a href="#">Documentos</a>
+            <a href="consultar.html">Consultar Militares</a>
+            <a href="controle-patentes.html">Controle de Patentes</a>
+            <a href="alistamento.html">Alistamento</a>
+            <a href="acoes.html">Ações</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="orgaos.html">Órgãos</a>
+        </nav>
+
+    </aside>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+
+        <!-- Cabeçalho -->
+        <header class="top-header">
+
+            <div class="user-info">
+                <strong id="user-name">Carregando...</strong>
+                <span id="user-rank">Carregando...</span>
+            </div>
+
+            <button id="logout-button">Sair</button>
+
+        </header>
+
+        <section class="dashboard-section">
+
+            <!-- Cabeçalho da página -->
+            <div class="news-header">
+
+                <div>
+                    <h2>Notícias</h2>
+
+                    <p>
+                        Acompanhe as notícias e os comunicados
+                        oficiais do Exército Brasileiro.
+                    </p>
+                </div>
+
+                <button id="new-news-button" type="button" hidden>
+                    Nova notícia
+                </button>
+
+            </div>
+
+            <!-- Mensagens do sistema -->
+            <div id="news-feedback" role="status" hidden></div>
+
+            <!-- Abas de navegação -->
+            <div class="news-tabs">
+
+                <button
+                    type="button"
+                    class="news-tab active"
+                    data-tab="published-news">
+                    Notícias
+                </button>
+
+                <button
+                    type="button"
+                    class="news-tab"
+                    data-tab="my-news"
+                    id="my-news-tab"
+                    hidden>
+                    Minhas publicações
+                </button>
+
+                <button
+                    type="button"
+                    class="news-tab"
+                    data-tab="pending-news"
+                    id="pending-news-tab"
+                    hidden>
+                    Publicações pendentes
+
+                    <span id="pending-news-count" hidden>0</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="news-tab"
+                    data-tab="manage-news"
+                    id="manage-news-tab"
+                    hidden>
+                    Gerenciar publicações
+                </button>
+
+            </div>
+
+            <!-- Notícias publicadas -->
+            <section id="published-news" class="news-panel">
+
+                <div id="published-news-list" class="news-list">
+                    <p>Carregando notícias...</p>
+                </div>
+
+                <div id="no-published-news" class="news-empty" hidden>
+                    Nenhuma notícia publicada.
+                </div>
+
+            </section>
+
+            <!-- Minhas publicações -->
+            <section id="my-news" class="news-panel" hidden>
+
+                <h2>Minhas publicações</h2>
+
+                <p class="section-description">
+                    Acompanhe a situação das notícias elaboradas por você.
+                </p>
+
+                <div id="my-news-list" class="news-list"></div>
+
+                <div id="no-my-news" class="news-empty" hidden>
+                    Você ainda não elaborou nenhuma notícia.
+                </div>
+
+            </section>
+
+            <!-- Publicações pendentes -->
+            <section id="pending-news" class="news-panel" hidden>
+
+                <h2>Publicações pendentes</h2>
+
+                <p class="section-description">
+                    Analise as notícias encaminhadas para aprovação.
+                </p>
+
+                <div id="pending-news-list" class="news-list"></div>
+
+                <div id="no-pending-news" class="news-empty" hidden>
+                    Nenhuma notícia aguardando aprovação.
+                </div>
+
+            </section>
+
+            <!-- Gerenciamento de publicações -->
+            <section id="manage-news" class="news-panel" hidden>
+
+                <h2>Gerenciar publicações</h2>
+
+                <p class="section-description">
+                    Consulte e edite as notícias já publicadas.
+                </p>
+
+                <div id="manage-news-list" class="news-list"></div>
+
+                <div id="no-manage-news" class="news-empty" hidden>
+                    Nenhuma publicação disponível para gerenciamento.
+                </div>
+
+            </section>
+
+            <!-- Visualização individual da notícia -->
+            <section id="news-view-section" hidden>
+
+                <button id="back-to-news" type="button">
+                    Voltar
+                </button>
+
+                <article class="news-article">
+
+                    <span
+                        id="view-news-category"
+                        class="news-category">
+                    </span>
+
+                    <h1 id="view-news-title"></h1>
+
+                    <div class="news-metadata">
+
+                        <p id="view-news-author"></p>
+
+                        <p id="view-news-date"></p>
+
+                        <p id="view-news-updated" hidden></p>
+
+                        <span id="view-news-status" hidden></span>
+
+                    </div>
+
+                    <div
+                        id="view-news-content"
+                        class="news-content ql-editor">
+                    </div>
+
+                    <!-- Informações de reprovação -->
+                    <div id="view-news-rejection" hidden>
+
+                        <h3>Motivo da reprovação</h3>
+
+                        <p id="view-news-rejection-reason"></p>
+
+                    </div>
+
+                    <!-- Operações administrativas -->
+                    <div id="view-news-actions" class="news-actions" hidden>
+
+                        <button
+                            id="edit-news-button"
+                            type="button"
+                            hidden>
+                            Editar notícia
+                        </button>
+
+                        <button
+                            id="approve-news-button"
+                            type="button"
+                            hidden>
+                            Aprovar notícia
+                        </button>
+
+                        <button
+                            id="reject-news-button"
+                            type="button"
+                            hidden>
+                            Reprovar notícia
+                        </button>
+
+                    </div>
+
+                </article>
+
+            </section>
+
+            <!-- Criação e edição de notícias -->
+            <section id="news-editor-section" hidden>
+
+                <div class="news-editor-header">
+
+                    <button id="back-from-editor" type="button">
+                        Voltar
+                    </button>
+
+                    <h2 id="news-editor-title">Nova notícia</h2>
+
+                </div>
+
+                <form id="news-form">
+
+                    <div class="news-form-group">
+
+                        <label for="news-title">
+                            Título da notícia
+                        </label>
+
+                        <input
+                            type="text"
+                            id="news-title"
+                            placeholder="Digite o título da notícia"
+                            required>
+
+                    </div>
+
+                    <div class="news-form-group">
+
+                        <label for="news-category">
+                            Categoria
+                        </label>
+
+                        <input
+                            type="text"
+                            id="news-category"
+                            placeholder="Digite a categoria"
+                            required>
+
+                    </div>
+
+                    <div class="news-form-group">
+
+                        <label id="news-content-label">
+                            Conteúdo da notícia
+                        </label>
+
+                        <!-- Editor Quill -->
+                        <div id="news-editor"></div>
+
+                    </div>
+
+                    <div class="news-form-actions">
+
+                        <button
+                            id="cancel-news-button"
+                            type="button">
+                            Cancelar
+                        </button>
+
+                        <button
+                            id="submit-news-button"
+                            type="submit">
+                            Enviar para aprovação
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+        </section>
+
+        <!-- Rodapé -->
+        <footer>
+            EXÉRCITO BRASILEIRO · DGP · DCR
+        </footer>
+
+    </main>
+
+    <!-- Modal de reprovação -->
+    <dialog id="reject-news-modal" class="news-modal">
+
+        <div class="news-modal-content">
+
+            <h2>Reprovar notícia</h2>
+
+            <p>
+                Informe o motivo da reprovação.
+                Esta informação ficará disponível para o autor.
+            </p>
+
+            <form id="reject-news-form">
+
+                <div class="news-form-group">
+
+                    <label for="reject-news-reason">
+                        Motivo da reprovação
+                    </label>
+
+                    <textarea
+                        id="reject-news-reason"
+                        rows="5"
+                        placeholder="Informe o motivo..."
+                        required>
+                    </textarea>
+
+                </div>
+
+                <div class="news-form-actions">
+
+                    <button
+                        id="cancel-rejection-button"
+                        type="button">
+                        Cancelar
+                    </button>
+
+                    <button
+                        id="confirm-rejection-button"
+                        type="submit">
+                        Confirmar reprovação
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </dialog>
+
+    <!-- Modal de aprovação -->
+    <dialog id="approve-news-modal" class="news-modal">
+
+        <div class="news-modal-content">
+
+            <h2>Aprovar notícia</h2>
+
+            <p>
+                Ao confirmar, a notícia será publicada
+                no CRME.
+            </p>
+
+            <div class="news-form-actions">
+
+                <button
+                    id="cancel-approval-button"
+                    type="button">
+                    Cancelar
+                </button>
+
+                <button
+                    id="confirm-approval-button"
+                    type="button">
+                    Confirmar publicação
+                </button>
+
+            </div>
+
+        </div>
+
+    </dialog>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script type="module" src="/src/js/pages/layout.js"></script>
+    <script type="module" src="/src/js/pages/noticias.js"></script>
+
+</body>
+</html>

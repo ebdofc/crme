@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRME | Consultar Militares</title>
+
+    <link rel="stylesheet" href="/src/css/pages/dashboard.css">
+    <link rel="stylesheet" href="/src/css/pages/consultar.css">
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>CRME</span>
+            <button id="menu-toggle" aria-label="Recolher menu">☰</button>
+        </div>
+
+        <nav>
+            <a href="dashboard.html">Início</a>
+            <a href="noticias.html">Notícias</a>
+            <a href="#">Documentos</a>
+            <a href="consultar.html" class="active">Consultar Militares</a>
+            <a href="controle-patentes.html">Controle de Patentes</a>
+            <a href="alistamento.html">Alistamento</a>
+            <a href="acoes.html">Ações</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="orgaos.html">Órgãos</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="top-header">
+            <div class="user-info">
+                <strong id="user-name">Carregando...</strong>
+                <span id="user-rank">Carregando...</span>
+            </div>
+
+            <button id="logout-button">Sair</button>
+        </header>
+
+        <section class="dashboard-section">
+            <h2>Consultar Militares</h2>
+
+            <p>Pesquise um militar pelo nome ou ID do Discord.</p>
+
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="military-search"
+                    placeholder="Digite o nome ou ID do Discord..."
+                >
+
+                <button id="search-button">Pesquisar</button>
+            </div>
+
+            <div id="search-results"></div>
+
+            <div id="military-profile"></div>
+        </section>
+
+        <footer>
+            EXÉRCITO BRASILEIRO · DGP · DCR
+        </footer>
+
+    </main>
+
+    <script type="module" src="/src/js/pages/layout.js"></script>
+    <script type="module" src="/src/js/pages/consultar.js"></script>
+
+</body>
+</html>

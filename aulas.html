@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRME | Aulas</title>
+    <link rel="stylesheet" href="/src/css/pages/dashboard.css">
+    <link rel="stylesheet" href="/src/css/pages/aulas.css">
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>CRME</span>
+            <button id="menu-toggle" aria-label="Recolher menu">☰</button>
+        </div>
+        <nav>
+            <a href="dashboard.html">Início</a>
+            <a href="noticias.html">Notícias</a>
+            <a href="#">Documentos</a>
+            <a href="consultar.html">Consultar Militares</a>
+            <a href="controle-patentes.html">Controle de Patentes</a>
+            <a href="alistamento.html">Alistamento</a>
+            <a href="acoes.html">Ações</a>
+            <a href="aulas.html" class="active">Aulas</a>
+            <a href="orgaos.html">Órgãos</a>
+            <a href="ciclos.html">Ciclos de Promoção</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="user-info">
+                <strong id="user-name">Carregando...</strong>
+                <span id="user-rank">Carregando...</span>
+            </div>
+            <button id="logout-button">Sair</button>
+        </header>
+
+        <section class="dashboard-section">
+            <h2>Registro de Aulas</h2>
+            <p>Consulta e registro de instruções das Unidades de Ensino do DEC.</p>
+
+            <section class="military-identification">
+                <h2>Identificação funcional</h2>
+                <div class="identification-data">
+                    <div class="identification-item">
+                        <span class="identification-label">Nome do militar</span>
+                        <span id="military-name">Carregando...</span>
+                    </div>
+                    <div class="identification-item">
+                        <span class="identification-label">ID Discord</span>
+                        <span id="military-discord-id">Carregando...</span>
+                    </div>
+                    <div class="identification-item">
+                        <span class="identification-label">Patente</span>
+                        <span id="military-rank">Carregando...</span>
+                    </div>
+                </div>
+                <div class="military-functions">
+                    <h3>Vínculos institucionais</h3>
+                    <div id="military-functions-list"><p>Carregando vínculos...</p></div>
+                </div>
+            </section>
+
+            <section class="available-directorates" id="directorates-section">
+                <h2>Minhas diretorias</h2>
+                <p class="section-description">Selecione uma diretoria para acessar suas Unidades de Ensino.</p>
+                <div id="directorates-list" class="selection-list"></div>
+                <p id="no-directorates" class="empty-message" hidden>
+                    Você não possui autorização para acessar as diretorias de ensino.
+                </p>
+            </section>
+
+            <section class="available-units" id="units-section" hidden>
+                <div class="section-heading">
+                    <button id="back-to-directorates" class="back-button" type="button">Voltar às diretorias</button>
+                    <h2 id="selected-directorate-name"></h2>
+                </div>
+                <p class="section-description">Selecione uma Unidade de Ensino.</p>
+                <div id="units-list" class="selection-list"></div>
+            </section>
+
+            <section class="unit-classes" id="classes-section" hidden>
+                <div class="section-heading">
+                    <button id="back-to-units" class="back-button" type="button">Voltar às unidades</button>
+                    <h2 id="selected-unit-name"></h2>
+                </div>
+                <div class="classes-toolbar">
+                    <h3>Registro de aulas</h3>
+                    <div class="classes-toolbar-actions">
+                        <button id="validate-classes-button" class="secondary-button" type="button" hidden>Validar aulas</button>
+                        <button id="new-class-button" class="primary-button" type="button">Registrar aula</button>
+                    </div>
+                </div>
+
+                <form id="class-form" class="class-form" hidden>
+                    <h3>Nova aula</h3>
+                    <label>Curso
+                        <select id="class-course" required><option value="">Selecione um curso</option></select>
+                    </label>
+                    <p id="required-rank" class="form-hint"></p>
+                    <label>ID Discord do militar participante
+                        <input id="class-student-discord" type="text" inputmode="numeric" maxlength="20" autocomplete="off" placeholder="Informe o ID Discord" required>
+                    </label>
+                    <p id="student-verification" class="form-message" aria-live="polite"></p>
+                    <label>Resultado
+                        <select id="class-result" required>
+                            <option value="">Selecione o resultado</option>
+                            <option value="Aprovado">Aprovado</option>
+                            <option value="Reprovado">Reprovado</option>
+                        </select>
+                    </label>
+                    <label>Observação
+                        <textarea id="class-observation" rows="3" placeholder="Informações complementares" required></textarea>
+                    </label>
+                    <div class="form-actions">
+                        <button id="save-class-button" class="primary-button" type="submit">Registrar aula</button>
+                        <button id="cancel-class-button" class="secondary-button" type="button">Cancelar</button>
+                    </div>
+                    <p id="class-form-message" class="form-message" aria-live="polite"></p>
+                </form>
+
+                <div class="classes-toolbar" style="margin-top: 28px;">
+                    <h3>Últimas 50 aulas registradas</h3>
+                </div>
+                <p id="classes-message" class="empty-message" aria-live="polite"></p>
+                <div id="classes-list" class="classes-list"></div>
+            </section>
+        </section>
+        <footer>EXÉRCITO BRASILEIRO · DGP · DCR</footer>
+    </main>
+
+    <div id="validation-modal" class="validation-overlay" hidden>
+        <section class="validation-dialog" role="dialog" aria-modal="true" aria-labelledby="validation-title">
+            <div class="validation-heading">
+                <div>
+                    <h2 id="validation-title">Validar aulas — EPCE</h2>
+                    <p>Promoções pendentes por aprovação no CIC ou CPC.</p>
+                </div>
+                <button id="close-validation-button" class="secondary-button" type="button">Fechar</button>
+            </div>
+            <p id="validation-message" class="form-message" role="status" aria-live="polite"></p>
+            <div id="validation-list" class="classes-list"></div>
+        </section>
+    </div>
+
+    <script type="module" src="/src/js/pages/layout.js"></script>
+    <script type="module" src="/src/js/pages/aulas.js"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRME | Ciclo de Promoções</title>
+    <link rel="stylesheet" href="/src/css/pages/dashboard.css">
+    <link rel="stylesheet" href="/src/css/pages/ciclos.css">
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>CRME</span>
+            <button id="menu-toggle" type="button" aria-label="Recolher menu">☰</button>
+        </div>
+        <nav aria-label="Navegação principal">
+            <a href="dashboard.html">Início</a>
+            <a href="noticias.html">Notícias</a>
+            <a href="#">Documentos</a>
+            <a href="consultar.html">Consultar Militares</a>
+            <a href="controle-patentes.html">Controle de Patentes</a>
+            <a href="alistamento.html">Alistamento</a>
+            <a href="acoes.html">Ações</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="orgaos.html">Órgãos</a>
+            <a href="ciclos.html" class="active" aria-current="page">Ciclo de Promoções</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div class="user-info">
+                <strong id="user-name">Carregando...</strong>
+                <span id="user-rank">Carregando...</span>
+            </div>
+            <button id="logout-button" type="button">Sair</button>
+        </header>
+
+        <section class="dashboard-section cpo-page" aria-labelledby="cpo-page-title">
+            <div class="cpo-page-intro">
+                <h2 id="cpo-page-title">Ciclo de Promoções</h2>
+                <p>Acompanhe os Ciclos de Promoção de Oficiais do Exército Brasileiro.</p>
+            </div>
+
+            <!-- Aparece somente no modo de prévia; nunca confundir dados fictícios com oficiais. -->
+            <section id="cpo-preview-tools" class="cpo-preview-tools" hidden aria-label="Controles de demonstração">
+                <div>
+                    <strong>Prévia de interface — dados fictícios</strong>
+                    <p>As ações são simuladas neste navegador e não alteram o CRME.</p>
+                </div>
+                <label>Perfil
+                    <select id="cpo-preview-profile">
+                        <option value="completo">Visão completa (simulação)</option>
+                        <option value="real">Meu acesso real (Supabase)</option>
+                        <option value="militar">Militar</option>
+                        <option value="comandante">Comandante do Exército</option>
+                        <option value="auxiliar">Auxiliar da DAP</option>
+                        <option value="diretor">Diretor da DAP</option>
+                        <option value="conselheiro">Conselheiro do ACE</option>
+                        <option value="presidencia">Presidência do ACE</option>
+                        <option value="auditor">Auditoria administrativa</option>
+                    </select>
+                </label>
+                <label>Situação
+                    <select id="cpo-preview-stage">
+                        <option value="indicacoes">Indicações abertas</option>
+                        <option value="avaliacao">Em avaliação</option>
+                        <option value="deliberacao">Em deliberação</option>
+                        <option value="aguardando">Aguardando homologação</option>
+                        <option value="homologado">Homologado</option>
+                        <option value="encerrado">Encerrado</option>
+                        <option value="cancelado">Cancelado</option>
+                        <option value="nenhum">Sem ciclo</option>
+                    </select>
+                </label>
+            </section>
+
+            <div id="cpo-real-access" class="cpo-feedback" role="status" aria-live="polite" hidden></div>
+            <div id="cpo-feedback" class="cpo-feedback" role="status" aria-live="polite" hidden></div>
+            <div id="cpo-cycle-summary"></div>
+
+            <!-- A navegação e os painéis são gerados pelo script. -->
+            <nav id="cpo-main-tabs" class="cpo-main-tabs" aria-label="Áreas do CPO" hidden></nav>
+            <div id="cpo-main-panel" class="cpo-main-panel"></div>
+        </section>
+
+        <footer>EXÉRCITO BRASILEIRO · ALTO-COMANDO DO EXÉRCITO · CRME</footer>
+    </main>
+
+    <dialog id="cpo-confirm-dialog" class="cpo-dialog" aria-labelledby="cpo-confirm-title">
+        <form method="dialog" class="cpo-dialog-content" id="cpo-confirm-form">
+            <h3 id="cpo-confirm-title">Confirmar operação</h3>
+            <p id="cpo-confirm-description"></p>
+            <div class="cpo-dialog-actions">
+                <button type="button" class="cpo-btn cpo-btn-secondary" id="cpo-confirm-cancel">Cancelar</button>
+                <button type="submit" class="cpo-btn" id="cpo-confirm-submit">Confirmar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script type="module" src="/src/js/pages/layout.js"></script>
+    <script type="module" src="/src/js/pages/ciclos.js"></script>
+</body>
+</html>

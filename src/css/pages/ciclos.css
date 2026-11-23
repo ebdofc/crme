@@ -1,0 +1,1139 @@
+/* ========================================
+   CRME — CICLO DE PROMOÇÕES
+   Padrão visual das páginas Notícias e Órgãos
+   Complemento ao dashboard.css
+======================================== */
+
+.cpo-page {
+    --cpo-primary: #46543d;
+    --cpo-primary-hover: #394632;
+    --cpo-title: #343b31;
+    --cpo-text: #292d27;
+    --cpo-muted: #73786f;
+    --cpo-border: #d5d8d2;
+    --cpo-input-border: #c9cec4;
+    --cpo-surface: #f7f8f5;
+    --cpo-surface-hover: #eef0eb;
+    color: var(--cpo-text);
+    min-width: 0;
+}
+
+.cpo-page [hidden],
+.cpo-dialog[hidden] {
+    display: none !important;
+}
+
+/* ========================================
+   CABEÇALHO DA PÁGINA
+======================================== */
+
+.cpo-page-intro {
+    margin-bottom: 24px;
+}
+
+/* ========================================
+   PRÉVIA — IDENTIFICAÇÃO DE DADOS FICTÍCIOS
+======================================== */
+
+.cpo-preview-tools {
+    display: grid;
+    grid-template-columns: minmax(210px, 1fr) minmax(150px, 210px) minmax(150px, 210px);
+    align-items: end;
+    gap: 16px;
+    background: var(--cpo-surface);
+    border: 1px solid var(--cpo-border);
+    padding: 18px;
+    margin-bottom: 24px;
+}
+
+.cpo-preview-tools strong {
+    color: var(--cpo-title);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.cpo-preview-tools p {
+    color: var(--cpo-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 7px 0 0;
+}
+
+.cpo-preview-tools label,
+.cpo-field > label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: #555d50;
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 0;
+}
+
+/* ========================================
+   CONTROLES E FORMULÁRIOS
+======================================== */
+
+.cpo-page input:not([type="radio"]):not([type="checkbox"]),
+.cpo-page select,
+.cpo-page textarea {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 9px 10px;
+    background: #fff;
+    border: 1px solid var(--cpo-input-border);
+    border-radius: 0;
+    color: var(--cpo-text);
+    font-family: inherit;
+    font-size: 14px;
+    box-shadow: none;
+}
+
+.cpo-page textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.cpo-page input:not([type="radio"]):focus,
+.cpo-page select:focus,
+.cpo-page textarea:focus {
+    outline: 1px solid #68765d;
+    border-color: #68765d;
+}
+
+.cpo-page input::placeholder,
+.cpo-page textarea::placeholder {
+    color: #92978e;
+}
+
+.cpo-page input:disabled,
+.cpo-page select:disabled,
+.cpo-page textarea:disabled {
+    background: #f2f3f0;
+    color: var(--cpo-muted);
+    cursor: not-allowed;
+}
+
+.cpo-field {
+    margin-bottom: 20px;
+    min-width: 0;
+}
+
+.cpo-field > label {
+    margin-bottom: 7px;
+}
+
+.cpo-field .cpo-help,
+.cpo-help {
+    color: var(--cpo-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 7px 0 0;
+}
+
+.cpo-form-two {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 10px;
+}
+
+.cpo-choice {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 12px 0;
+    color: var(--cpo-text);
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.cpo-choice input {
+    accent-color: var(--cpo-primary);
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+/* ========================================
+   BOTÕES — MESMO PADRÃO DE NOTÍCIAS / ÓRGÃOS
+======================================== */
+
+.cpo-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 36px;
+    padding: 8px 13px;
+    background: var(--cpo-primary);
+    border: 1px solid #59664e;
+    border-radius: 0;
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.35;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.cpo-btn:hover:not(:disabled) {
+    background: var(--cpo-primary-hover);
+}
+
+.cpo-btn-secondary {
+    background: #fff;
+    border-color: var(--cpo-input-border);
+    color: #495343;
+}
+
+.cpo-btn-secondary:hover:not(:disabled) {
+    background: var(--cpo-surface-hover);
+}
+
+.cpo-btn-danger {
+    background: #fff;
+    border-color: #b99b95;
+    color: #6b3c35;
+}
+
+.cpo-btn-danger:hover:not(:disabled) {
+    background: #f4eeec;
+}
+
+.cpo-btn-small {
+    min-height: 32px;
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.cpo-btn-text {
+    padding: 6px 0;
+    background: transparent;
+    border: none;
+    color: var(--cpo-primary);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.cpo-btn:disabled,
+.cpo-btn-text:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cpo-btn:focus-visible,
+.cpo-btn-text:focus-visible,
+.cpo-tab:focus-visible,
+.cpo-category:focus-visible,
+.cpo-accordion summary:focus-visible {
+    outline: 2px solid #68765d;
+    outline-offset: 2px;
+}
+
+/* ========================================
+   MENSAGENS DO SISTEMA
+======================================== */
+
+.cpo-feedback {
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    background: #e8eee4;
+    border: 1px solid #b7c6ae;
+    color: var(--cpo-primary);
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.cpo-feedback.warning {
+    background: #f5f1e3;
+    border-color: #d8cba5;
+    color: #796735;
+}
+
+.cpo-feedback.error {
+    background: #f4eeec;
+    border-color: #d4b6b0;
+    color: #6b3c35;
+}
+
+/* ========================================
+   CABEÇALHO DO CICLO E LINHA DO TEMPO
+======================================== */
+
+.cpo-cycle-card {
+    padding: 20px;
+    margin-bottom: 24px;
+    background: #fff;
+    border: 1px solid var(--cpo-border);
+}
+
+.cpo-cycle-header,
+.cpo-row-between,
+.cpo-section-heading,
+.cpo-actions,
+.cpo-toolbar,
+.cpo-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.cpo-cycle-header strong {
+    display: block;
+    color: var(--cpo-title);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.cpo-mini-label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--cpo-muted);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.cpo-muted {
+    color: var(--cpo-muted);
+    font-size: 13px;
+}
+
+.cpo-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.cpo-summary-field {
+    min-width: 0;
+}
+
+.cpo-summary-field strong {
+    display: block;
+    color: var(--cpo-text);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.cpo-timeline {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 20px;
+    border-top: 1px solid var(--cpo-border);
+}
+
+.cpo-timeline-step {
+    min-width: 0;
+    text-align: center;
+}
+
+.cpo-step-dot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin: 0 auto 9px;
+    background: var(--cpo-surface);
+    border: 1px solid var(--cpo-border);
+    border-radius: 0;
+    color: var(--cpo-muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cpo-timeline-step.done .cpo-step-dot {
+    background: var(--cpo-primary);
+    border-color: var(--cpo-primary);
+    color: #fff;
+}
+
+.cpo-timeline-step.current .cpo-step-dot {
+    background: #e8eee4;
+    border-color: #89927f;
+    color: var(--cpo-primary);
+}
+
+.cpo-timeline-step span {
+    display: block;
+    color: #555d50;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cpo-timeline-step small {
+    display: block;
+    margin-top: 5px;
+    color: var(--cpo-muted);
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+/* ========================================
+   SITUAÇÕES — CORES USADAS NAS NOTÍCIAS
+======================================== */
+
+.cpo-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    background: var(--cpo-surface);
+    border: 1px solid var(--cpo-border);
+    border-radius: 0;
+    color: #555d50;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: normal;
+}
+
+.cpo-status.success {
+    background: #e8eee4;
+    border-color: #b7c6ae;
+    color: var(--cpo-primary);
+}
+
+.cpo-status.warning {
+    background: #f5f1e3;
+    border-color: #d8cba5;
+    color: #796735;
+}
+
+.cpo-status.danger {
+    background: #f4eeec;
+    border-color: #d4b6b0;
+    color: #6b3c35;
+}
+
+/* ========================================
+   ABAS PRINCIPAIS — PADRÃO DA PÁGINA NOTÍCIAS
+======================================== */
+
+.cpo-main-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--cpo-border);
+}
+
+.cpo-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    color: var(--cpo-muted);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cpo-tab:hover {
+    background: var(--cpo-surface-hover);
+    color: var(--cpo-title);
+}
+
+.cpo-tab.active {
+    border-bottom-color: var(--cpo-primary);
+    color: var(--cpo-primary);
+}
+
+/* ========================================
+   PAINEL DA ÁREA — PADRÃO DOS PAINÉIS DO CRME
+======================================== */
+
+.cpo-main-panel {
+    min-height: 180px;
+    padding: 20px;
+    margin-bottom: 24px;
+    background: #fff;
+    border: 1px solid var(--cpo-border);
+    min-width: 0;
+}
+
+.cpo-area-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 22px;
+}
+
+.cpo-area-heading h3,
+.cpo-detail-heading h3 {
+    margin: 0 0 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--cpo-border);
+    color: var(--cpo-title);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.cpo-area-heading p,
+.cpo-detail-heading p {
+    margin: 0;
+    color: #6d726a;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.cpo-area-heading > div {
+    min-width: 0;
+    flex: 1;
+}
+
+/* ========================================
+   INDICADORES DE ACOMPANHAMENTO
+======================================== */
+
+.cpo-indicators {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.cpo-indicator {
+    min-width: 0;
+    padding: 14px 16px;
+    background: var(--cpo-surface);
+    border: 1px solid var(--cpo-border);
+}
+
+.cpo-indicator span {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--cpo-muted);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.cpo-indicator strong {
+    color: var(--cpo-title);
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.cpo-indicator p {
+    color: var(--cpo-muted);
+    font-size: 12px;
+}
+
+/* ========================================
+   CATEGORIAS INTERNAS — MESMA LINGUAGEM DAS ABAS
+======================================== */
+
+.cpo-categories {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--cpo-border);
+    margin-bottom: 24px;
+    scrollbar-width: thin;
+}
+
+.cpo-category {
+    flex: 0 0 auto;
+    padding: 12px 14px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    color: var(--cpo-muted);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.cpo-category:hover {
+    background: var(--cpo-surface-hover);
+    color: var(--cpo-title);
+}
+
+.cpo-category.active {
+    border-bottom-color: var(--cpo-primary);
+    color: var(--cpo-primary);
+}
+
+/* ========================================
+   LISTAGENS E TABELAS
+======================================== */
+
+.cpo-section-heading {
+    margin-bottom: 14px;
+}
+
+.cpo-section-heading h4 {
+    margin: 0;
+    color: var(--cpo-title);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.cpo-section-heading span {
+    color: var(--cpo-muted);
+    font-size: 12px;
+}
+
+.cpo-search {
+    margin-bottom: 16px;
+}
+
+.cpo-search .cpo-mini-label {
+    margin-bottom: 7px;
+    color: #555d50;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.cpo-table-box {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--cpo-border);
+}
+
+.cpo-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    color: var(--cpo-text);
+    font-size: 13px;
+}
+
+.cpo-table th,
+.cpo-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.cpo-table th {
+    background: #405238;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.cpo-table tbody tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+.cpo-table tbody tr:hover {
+    background: #e8ebe5;
+}
+
+.cpo-table th:last-child,
+.cpo-table td.cpo-cell-action {
+    text-align: left;
+}
+
+.cpo-row-name {
+    display: block;
+    color: var(--cpo-title);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.cpo-row-meta {
+    display: block;
+    margin-top: 5px;
+    color: var(--cpo-muted);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.cpo-pagination {
+    margin-top: 14px;
+    color: var(--cpo-muted);
+    font-size: 12px;
+}
+
+.cpo-pagination-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ========================================
+   PAINÉIS, RESULTADOS E ESTADOS VAZIOS
+======================================== */
+
+.cpo-panel-card {
+    padding: 18px;
+    margin-bottom: 16px;
+    background: var(--cpo-surface);
+    border: 1px solid var(--cpo-border);
+}
+
+.cpo-panel-card h4 {
+    margin: 0 0 12px;
+    color: var(--cpo-title);
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.cpo-panel-card p {
+    margin: 0 0 14px;
+    color: #555d50;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.cpo-panel-card .cpo-row-between {
+    padding: 8px 0;
+    font-size: 13px;
+}
+
+.cpo-panel-card .cpo-row-between + .cpo-row-between {
+    padding-top: 14px;
+    border-top: 1px solid var(--cpo-border);
+}
+
+.cpo-panel-card .cpo-actions {
+    margin-top: 16px;
+}
+
+.cpo-empty {
+    padding: 24px 16px;
+    background: var(--cpo-surface);
+    border: 1px solid var(--cpo-border);
+    color: var(--cpo-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.cpo-empty h3 {
+    margin: 0 0 10px;
+    color: var(--cpo-title);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.cpo-empty p {
+    margin: 6px 0;
+}
+
+.cpo-results-list {
+    padding: 0;
+    margin: 8px 0 0;
+    list-style: none;
+}
+
+.cpo-results-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--cpo-border);
+    color: var(--cpo-text);
+    font-size: 14px;
+}
+
+.cpo-results-list li:last-child {
+    border-bottom: none;
+}
+
+.cpo-document {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid var(--cpo-border);
+    color: var(--cpo-text);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.cpo-document .cpo-mini-label {
+    color: var(--cpo-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.cpo-document h3 {
+    margin: 10px 0 18px;
+    color: var(--cpo-title);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.cpo-document > p {
+    margin: 12px 0;
+}
+
+/* ========================================
+   DETALHES E AVALIAÇÕES DA DAP
+======================================== */
+
+.cpo-detail-back {
+    margin-bottom: 18px;
+}
+
+.cpo-detail-heading {
+    margin-bottom: 24px;
+}
+
+.cpo-accordion {
+    margin-bottom: 12px;
+    background: #fff;
+    border: 1px solid var(--cpo-border);
+}
+
+.cpo-accordion summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    color: var(--cpo-title);
+    font-size: 14px;
+    font-weight: 600;
+    list-style: none;
+    cursor: pointer;
+}
+
+.cpo-accordion summary::-webkit-details-marker {
+    display: none;
+}
+
+.cpo-accordion summary::after {
+    content: '+';
+    color: var(--cpo-primary);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.cpo-accordion summary:hover {
+    background: var(--cpo-surface-hover);
+}
+
+.cpo-accordion[open] summary {
+    background: var(--cpo-surface);
+    border-bottom: 1px solid var(--cpo-border);
+}
+
+.cpo-accordion[open] summary::after {
+    content: '−';
+}
+
+.cpo-accordion-body {
+    padding: 20px;
+}
+
+.cpo-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.cpo-data-grid strong {
+    display: block;
+    color: var(--cpo-text);
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.cpo-text-box {
+    padding: 14px;
+    margin-top: 18px;
+    background: var(--cpo-surface);
+    border: 1px solid var(--cpo-border);
+    color: #555d50;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.cpo-text-box strong {
+    color: var(--cpo-title);
+    font-size: 14px;
+}
+
+.cpo-text-box p {
+    margin: 8px 0 0;
+}
+
+.cpo-score-table input[type="number"] {
+    width: 95px;
+    max-width: 100%;
+    min-height: 36px;
+}
+
+.cpo-score-total {
+    padding: 15px 0;
+    border-top: 1px solid var(--cpo-border);
+    color: var(--cpo-title);
+    font-size: 14px;
+    text-align: right;
+}
+
+.cpo-score-total strong {
+    margin-left: 14px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.cpo-actions {
+    margin-top: 18px;
+}
+
+.cpo-divider {
+    height: 0;
+    margin: 22px 0;
+    border: none;
+    border-top: 1px solid var(--cpo-border);
+}
+
+.cpo-inline-note {
+    margin: 12px 0;
+    color: var(--cpo-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* ========================================
+   MODAL DE CONFIRMAÇÃO
+======================================== */
+
+.cpo-dialog {
+    /* O modal fica fora de .cpo-page no HTML e não herda suas variáveis. */
+    --cpo-primary: #46543d;
+    --cpo-primary-hover: #394632;
+    --cpo-input-border: #c9cec4;
+    --cpo-surface-hover: #eef0eb;
+    width: min(480px, calc(100% - 32px));
+    max-width: 480px;
+    max-height: calc(100% - 32px);
+    padding: 0;
+    margin: auto;
+    background: #fff;
+    border: 1px solid #c9cec4;
+    border-radius: 0;
+    color: #292d27;
+    box-shadow: none;
+    overflow-y: auto;
+}
+
+.cpo-dialog::backdrop {
+    background: rgba(25, 31, 23, 0.55);
+}
+
+.cpo-dialog-content {
+    padding: 20px;
+}
+
+.cpo-dialog h3 {
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #d5d8d2;
+    color: #343b31;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.cpo-dialog p {
+    margin: 0 0 20px;
+    color: #6d726a;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+.cpo-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 18px;
+    border-top: 1px solid #d5d8d2;
+}
+
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
+
+@media (max-width: 900px) {
+    .cpo-preview-tools {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cpo-preview-tools > div {
+        grid-column: 1 / -1;
+    }
+
+    .cpo-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .cpo-page-intro {
+        margin-bottom: 20px;
+    }
+
+    .cpo-preview-tools {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 15px;
+    }
+
+    .cpo-preview-tools > div {
+        grid-column: auto;
+    }
+
+    .cpo-cycle-card,
+    .cpo-main-panel,
+    .cpo-document {
+        padding: 15px;
+    }
+
+    .cpo-main-tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 5px;
+        border-bottom: none;
+    }
+
+    .cpo-tab {
+        justify-content: center;
+        padding: 12px 8px;
+        background: var(--cpo-surface);
+        border: 1px solid var(--cpo-border);
+        text-align: center;
+    }
+
+    .cpo-tab.active {
+        background: #e8eee4;
+        border: 1px solid #89927f;
+        color: var(--cpo-primary);
+    }
+
+    .cpo-categories {
+        overflow-x: auto;
+        margin-bottom: 20px;
+    }
+
+    .cpo-category {
+        padding: 12px;
+    }
+
+    .cpo-area-heading {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .cpo-area-heading > .cpo-btn {
+        width: 100%;
+    }
+
+    .cpo-indicators {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cpo-timeline {
+        gap: 4px;
+    }
+
+    .cpo-timeline-step span,
+    .cpo-timeline-step small {
+        font-size: 10px;
+    }
+
+    .cpo-table {
+        min-width: 490px;
+    }
+
+    .cpo-table.cpo-public-table {
+        min-width: 0;
+    }
+
+    .cpo-accordion-body {
+        padding: 15px;
+    }
+
+    .cpo-data-grid {
+        gap: 15px;
+    }
+
+    .cpo-form-two {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .cpo-form-two .cpo-btn {
+        width: 100%;
+    }
+
+    .cpo-dialog-actions {
+        flex-direction: column;
+    }
+
+    .cpo-dialog-actions .cpo-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .cpo-summary-grid,
+    .cpo-indicators {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cpo-timeline-step span,
+    .cpo-timeline-step small {
+        font-size: 9px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cpo-page *,
+    .cpo-dialog * {
+        scroll-behavior: auto !important;
+        transition: none !important;
+    }
+}
+
+/* Não reservar um painel vazio quando não houver CPO aberto. */
+.cpo-main-panel:empty {
+    display: none;
+}
+
+/* ========================================
+   DAP — AVALIAÇÕES REAIS
+======================================== */
+.cpo-dap-detail .cpo-accordion { margin: 16px 0; }
+.cpo-dap-detail .cpo-accordion-body { min-width: 0; }
+.cpo-dap-detail .cpo-data-grid > div { min-width: 0; overflow-wrap: anywhere; }
+.cpo-dap-detail .cpo-data-grid strong { display: block; }
+.cpo-dap-detail .cpo-actions { margin: 16px 0 22px; }
+.cpo-dap-error { color: #902e27; background: #fff7f5; border: 1px solid #e5cbc6; padding: 12px; margin: 12px 0; font-size: 13px; }
+.cpo-dap-empty { text-align: center; color: #697066; padding: 24px !important; }
+.cpo-preserve { white-space: pre-wrap; overflow-wrap: anywhere; }
+.cpo-dap-detail .cpo-panel-card { margin-top: 20px; }
+@media(max-width:700px) {
+  .cpo-dap-detail .cpo-data-grid { grid-template-columns: 1fr; }
+  .cpo-dap-detail .cpo-actions { flex-wrap: wrap; }
+  .cpo-dap-detail .cpo-actions .cpo-btn { max-width: 100%; }
+}

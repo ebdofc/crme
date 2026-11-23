@@ -1,0 +1,312 @@
+/* ========================================
+   CRME — CONSULTAR MILITARES
+   Padrão visual de Notícias, Órgãos e CPO
+   Complemento ao dashboard.css
+   Conteúdo CSS: salvar como /src/css/pages/consultar.css
+======================================== */
+
+/* PESQUISA */
+.search-container {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    max-width: 650px;
+    margin-top: 20px;
+}
+
+.search-container input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 9px 10px;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #c9cec4;
+    border-radius: 0;
+    box-shadow: none;
+    color: #292d27;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.search-container input::placeholder { color: #92978e; }
+.search-container input:focus {
+    outline: 1px solid #68765d;
+    border-color: #68765d;
+}
+
+.search-container button {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 8px 13px;
+    background: #46543d;
+    border: 1px solid #59664e;
+    border-radius: 0;
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.search-container button:hover:not(:disabled) { background: #394632; }
+.search-container button:disabled { opacity: .6; cursor: not-allowed; }
+.search-container button:focus-visible,
+.search-result:focus-visible {
+    outline: 2px solid #68765d;
+    outline-offset: 2px;
+}
+
+/* RESULTADOS */
+#search-results {
+    width: 100%;
+    max-width: 650px;
+    margin-top: 20px;
+    color: #73786f;
+    font-size: 14px;
+}
+
+.search-result {
+    padding: 14px 16px;
+    background: #f7f8f5;
+    border: 1px solid #d5d8d2;
+    color: #292d27;
+    cursor: pointer;
+}
+
+.search-result + .search-result { border-top: 0; }
+.search-result:hover,
+.search-result.selected {
+    background: #eef0eb;
+    border-color: #89927f;
+}
+.search-result.selected { box-shadow: inset 3px 0 0 #46543d; }
+.search-result strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #343b31;
+    font-size: 14px;
+    font-weight: 600;
+}
+.search-result span { color: #73786f; font-size: 12px; }
+
+/* FICHA INDIVIDUAL */
+#military-profile {
+    width: 100%;
+    max-width: 850px;
+    min-width: 0;
+    margin-top: 30px;
+    color: #292d27;
+}
+
+.profile-header {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #d5d8d2;
+}
+
+.profile-label {
+    display: block;
+    margin-bottom: 10px;
+    color: #73786f;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .3px;
+}
+
+.profile-name {
+    margin: 0 0 16px;
+    color: #343b31;
+    font-size: 22px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.profile-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.rank-badge,
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 9px;
+    background: #f7f8f5;
+    border: 1px solid #d5d8d2;
+    border-radius: 0;
+    color: #555d50;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.rank-badge {
+    background: #e8eee4;
+    border-color: #b7c6ae;
+    color: #46543d;
+}
+.status-ativo {
+    background: #e8eee4;
+    border-color: #b7c6ae;
+    color: #46543d;
+}
+.status-afastado {
+    background: #f5f1e3;
+    border-color: #d8cba5;
+    color: #796735;
+}
+.status-desligado {
+    background: #f4eeec;
+    border-color: #d4b6b0;
+    color: #6b3c35;
+}
+
+/* IDENTIFICAÇÃO — compatível com o HTML gerado pelo consultar.js */
+.profile-identification {
+    margin-top: 20px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #d5d8d2;
+}
+
+.profile-identification h3,
+.profile-history h3,
+.profile-header h3 {
+    margin: 0 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #d5d8d2;
+    color: #343b31;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.profile-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+.profile-data { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.profile-data-label {
+    display: block;
+    margin-bottom: 6px;
+    color: #73786f;
+    font-size: 12px;
+    font-weight: 600;
+}
+.profile-data-value {
+    color: #292d27;
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* HISTÓRICO MILITAR */
+.profile-history { margin-top: 24px; }
+.profile-history h3 { margin-bottom: 24px; }
+.history-list {
+    margin-left: 9px;
+    padding-left: 24px;
+    border-left: 2px solid #c8cdbf;
+}
+.history-item {
+    position: relative;
+    margin-bottom: 16px;
+    padding: 18px 20px;
+    background: #fff;
+    border: 1px solid #d5d8d2;
+}
+.history-item::before {
+    content: "";
+    position: absolute;
+    top: 21px;
+    left: -32px;
+    width: 12px;
+    height: 12px;
+    background: #596747;
+    border: 2px solid #f4f4f0;
+    border-radius: 50%;
+}
+.history-title {
+    display: inline-block;
+    margin-bottom: 9px;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #596747;
+    color: #343b31;
+    font-size: 15px;
+    font-weight: 600;
+}
+.history-green-olive { border-bottom-color: #596747; }
+.history-yellow { border-bottom-color: #d5a500; }
+.history-red { border-bottom-color: #bd3838; }
+.history-orange { border-bottom-color: #d97824; }
+.history-green { border-bottom-color: #38834b; }
+.history-purple { border-bottom-color: #57345f; }
+.history-neutral { border-bottom-color: #596747; }
+.history-date {
+    display: block;
+    margin-bottom: 12px;
+    color: #73786f;
+    font-size: 12px;
+    line-height: 1.5;
+}
+.history-details {
+    color: #292d27;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+.history-details p { margin: 5px 0; }
+.history-details p strong { color: #555d50; font-weight: 600; }
+
+/* TRANSIÇÃO DE PATENTES */
+.rank-transition {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 4px 0 16px;
+}
+.rank-transition-old,
+.rank-transition-new {
+    color: #292d27;
+    font-size: 15px;
+    font-weight: 600;
+}
+.rank-transition-arrow {
+    color: #46543d;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1;
+}
+.rank-transition-promotion .rank-transition-arrow,
+.rank-transition-demotion .rank-transition-arrow { color: #46543d; }
+
+/* RESPONSIVIDADE */
+@media (max-width: 600px) {
+    .search-container { flex-direction: column; }
+    .search-container button { width: 100%; }
+    .profile-header,
+    .profile-identification { padding: 15px; }
+    .profile-name { font-size: 20px; }
+    .profile-data-grid { grid-template-columns: 1fr; gap: 16px; }
+    .history-list { padding-left: 18px; }
+    .history-item { padding: 14px; }
+    .history-item::before { left: -26px; }
+    .rank-transition { gap: 8px; }
+    .rank-transition-old,
+    .rank-transition-new { font-size: 13px; }
+    .rank-transition-arrow { font-size: 25px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #military-profile *,
+    #search-results *,
+    .search-container * {
+        transition: none !important;
+    }
+}
