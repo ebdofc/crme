@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 const state = {
   documents: [], selected: null, catalog: [], editor: null,
   editing: null, allowedTargets: new Set(), currentRequest: 0,
-  militarId: null, manageableIds: new Set(), activeTab: "library-panel"
+  militarId: null, manageableIds: new Set(), activeTab: "library-panel", central: false
 };
 const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -119,15 +119,14 @@ function getEditorHtml() {
   return html;
 }
 function targetsFor(org) {
-  const options = state.allowedTargets.has((org?.codigo || "") + "/")
-    ? [{ value: "", label: "Órgão inteiro (sem unidade)" }] : [];
+  const options = [{ value: "", label: "Órgão inteiro (sem unidade)" }];
   for (const unit of org?.unidades || []) {
     options.push({ value: unit.codigo, label: unit.nome + " (" + unit.codigo + ")" });
     for (const child of unit.subunidades || []) {
       options.push({ value: child.codigo, label: "↳ " + child.nome + " (" + child.codigo + ")" });
     }
   }
-  return options;
+  return options.filter(t => state.allowedTargets.has((org?.codigo || "") + "/" + t.value));
 }
 async function loadCatalog() {
   const response = await fetch("/orgaos.json", { cache: "no-store" });
@@ -136,7 +135,7 @@ async function loadCatalog() {
   const all = (data.categorias || []).flatMap(group => group.orgaos || []);
   // Exibir apenas órgãos/unidades para os quais o banco confirmou permissão.
   const allowed = await Promise.all(all.map(async org => {
-    const targets = targetsFor(org);
+    const targets = [{value:""}, ...(org.unidades || []).flatMap(unit => [{value:unit.codigo}, ...(unit.subunidades || []).map(child=>({value:child.codigo}))])];
     const checks = await Promise.all(targets.map(async target => {
       try {
         const ok = await rpc("documentos_pode_criar", {
@@ -218,7 +217,7 @@ function documentCard(doc) {
   const origin = document.createElement("span");
   origin.className = "news-card-author";
   origin.textContent = "Publicado por " + doc.orgao + (doc.unidade ? " / " + doc.unidade : "") +
-    " · " + (doc.visibilidade === "geral" ? "Geral" : "Restrito");
+    " · " + (doc.visibilidade === "geral" ? "Oficial" : doc.visibilidade === "patentes" ? "Por patente" : "Setorial");
   const date = document.createElement("span");
   date.className = "news-card-date";
   date.textContent = formatDate(doc.criado_em);
@@ -232,7 +231,11 @@ function renderList(id, emptyId, documents) {
   $(emptyId).hidden = documents.length > 0;
 }
 function render() {
-  renderList("doc-list", "doc-empty", state.documents);
+  const section = $("doc-section").value;
+  renderList("doc-list", "doc-empty", state.documents.filter(d =>
+    section === "oficiais" ? d.visibilidade === "geral" :
+    section === "patentes" ? d.visibilidade === "patentes" : d.visibilidade === "restrito"
+  ));
   renderList("my-documents-list", "my-documents-empty",
     state.documents.filter(d => d.criado_por === state.militarId));
   renderList("manage-documents-list", "manage-documents-empty",
@@ -241,7 +244,7 @@ function render() {
 async function load() {
   const { data, error } = await supabase.from("documentos")
     .select("id,titulo,descricao,conteudo,categoria,orgao,unidade,visibilidade,criado_por,criado_em,atualizado_em")
-    .order("criado_em", { ascending: false }).limit(300);
+    .order("criado_em", { ascending: true }).limit(300);
   if (error) throw error;
   state.documents = data || [];
   const rights = await Promise.all(state.documents.map(async d => {
@@ -267,7 +270,7 @@ async function openDocument(id) {
     state.selected = doc;
     $("detail-title").textContent = doc.titulo;
     $("detail-meta").textContent = [doc.categoria, doc.orgao, doc.unidade,
-      doc.visibilidade === "geral" ? "Geral" : "Restrito", formatDate(doc.criado_em)]
+      doc.visibilidade === "geral" ? "Oficial" : doc.visibilidade === "patentes" ? "Por patente" : "Setorial", formatDate(doc.criado_em)]
       .filter(Boolean).join(" · ");
     $("detail-description").textContent = doc.descricao || "";
     $("document-content").innerHTML = sanitizeHtml(doc.conteudo);
@@ -296,6 +299,8 @@ async function loadPermissions(id) {
 function resetEditor() {
   state.editing = null;
   $("publish-form").reset();
+  renderRankChoices();
+  updateVisibility();
   $("publish-heading").textContent = "Publicar documento";
   $("publish-submit").textContent = "Publicar documento";
   $("publish-orgao").disabled = false;
@@ -321,6 +326,12 @@ function startEdit() {
   }
   updateUnits();
   f.unidade.value = doc.unidade || "";
+  if (doc.visibilidade === "patentes") {
+    $("rank-mode").value = doc.patente_modo || "todos";
+    renderRankChoices();
+    for (const input of document.querySelectorAll("#rank-choices input")) input.checked = (doc.patente_alvos || []).includes(input.value);
+  }
+  updateVisibility();
   f.orgao.disabled = true;
   f.unidade.disabled = true;
   f.visibilidade.disabled = true;
@@ -344,6 +355,10 @@ async function save(event) {
       });
       if (confirmed !== true) throw new Error("Permissão de publicação negada pelo servidor.");
     }
+    if (state.editing && f.visibilidade.value === "patentes") {
+      const targets = [...document.querySelectorAll("#rank-choices input:checked")].map(input => input.value);
+      await rpc("documentos_atualizar_patentes", {p_documento_id:state.editing,p_patente_modo:$("rank-mode").value,p_patente_alvos:$("rank-mode").value==="todos"?[]:targets});
+    }
     const html = getEditorHtml();
     const fields = {
       p_titulo: f.titulo.value.trim(),
@@ -366,9 +381,14 @@ async function save(event) {
       if (!state.catalog.some(o => o.codigo === organ && targetsFor(o).some(t => t.value === (unit || "")))) {
         throw new Error("Órgão ou unidade inválidos.");
       }
-      const id = await rpc("documentos_publicar", {
+      const visibility = f.visibilidade.value;
+      const targets = [...document.querySelectorAll("#rank-choices input:checked")].map(input => input.value);
+      if (visibility === "patentes" && $("rank-mode").value !== "todos" && !targets.length) throw new Error("Selecione os destinatários por patente.");
+      const id = await rpc("documentos_publicar_v2", {
         ...fields, p_orgao: organ, p_unidade: unit,
-        p_visibilidade: f.visibilidade.value
+        p_visibilidade: visibility,
+        p_patente_modo: visibility === "patentes" ? $("rank-mode").value : null,
+        p_patente_alvos: visibility === "patentes" ? ($("rank-mode").value === "todos" ? [] : targets) : []
       });
       if (!id) throw new Error("A publicação não retornou o identificador.");
       resetEditor();
@@ -395,6 +415,39 @@ async function removeDocument() {
 document.querySelectorAll("[data-doc-tab]").forEach(button => {
   button.addEventListener("click", () => show(button.dataset.docTab));
 });
+
+const rankOptions = {
+  todos: [],
+  grupo: ["Subalterno", "Intermediário", "Superior", "General"],
+  patente: ["Aspirante-a-Oficial", "Segundo-Tenente", "Primeiro-Tenente", "Capitão",
+    "Major", "Tenente-Coronel", "Coronel", "General-de-Brigada",
+    "General-de-Divisão", "General-de-Exército", "Marechal"]
+};
+function renderRankChoices() {
+  const mode = $("rank-mode").value;
+  const container = $("rank-choices");
+  container.replaceChildren();
+  for (const option of rankOptions[mode]) {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "checkbox"; input.value = option;
+    label.append(input, document.createTextNode(option));
+    container.append(label);
+  }
+}
+function updateVisibility() {
+  const visibility = $("publish-visibility");
+  for (const option of visibility.options) {
+    if (option.value !== "restrito") option.hidden = !state.central;
+  }
+  if (!state.central && visibility.value !== "restrito") visibility.value = "restrito";
+  $("rank-targets").hidden = visibility.value !== "patentes";
+  $("rank-choices").hidden = $("rank-mode").value === "todos";
+}
+$("publish-visibility").addEventListener("change", updateVisibility);
+$("rank-mode").addEventListener("change", () => { renderRankChoices(); updateVisibility(); });
+$("doc-section").addEventListener("change", render);
+
 $("new-document").addEventListener("click", startNew);
 for (const id of ["publish-cancel", "publish-cancel-bottom"]) {
   $(id).addEventListener("click", () => {
@@ -450,8 +503,10 @@ $("permissions-list").addEventListener("click", async e => {
     const militaryId = await rpc("crme_militar_id");
     if (!militaryId) throw new Error("Registro militar não encontrado.");
     state.militarId = militaryId;
+    state.central = await rpc("documentos_autoridade_central");
     ensureEditor();
     await loadCatalog();
+    updateVisibility();
     // A interface usa as permissões confirmadas pelo banco; o banco também
     // deve validar novamente cada operação de publicação e edição.
     await load();
