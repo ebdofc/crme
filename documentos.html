@@ -53,6 +53,7 @@
                 <button class="news-tab" data-doc-tab="manage-documents-panel" id="manage-documents-tab" type="button" hidden>Gerenciar publicações</button>
             </div>
             <section id="library-panel" class="news-panel documentos-page">
+                <div class="doc-section-picker"><label for="doc-section">Seção de documentos</label><select id="doc-section"><option value="oficiais">Documentos oficiais</option><option value="setoriais">Documentos setoriais</option><option value="patentes">Documentos por patente</option></select></div>
                 <div id="doc-list" class="news-list"><p>Carregando documentos...</p></div>
                 <div id="doc-empty" class="news-empty" hidden>Nenhum documento disponível.</div>
             </section>
@@ -96,9 +97,11 @@
                 <label for="publish-visibility">Visibilidade
                     <select id="publish-visibility" name="visibilidade">
                         <option value="restrito">Restrita — destinatários definidos</option>
-                        <option value="geral">Geral — militares autenticados</option>
+                        <option value="geral">Documento oficial — todos os militares</option>
+                        <option value="patentes">Documento por patente — destinatários selecionados</option>
                     </select>
                 </label>
+                <fieldset id="rank-targets" class="doc-rank-targets" hidden><legend>Destinatários por patente</legend><label for="rank-mode">Tipo de seleção<select id="rank-mode"><option value="todos">Todos os oficiais</option><option value="grupo">Categoria de oficial</option><option value="patente">Patentes específicas</option></select></label><div id="rank-choices" class="doc-rank-choices"></div></fieldset>
                 <label for="publish-description" class="wide">Descrição
                     <textarea id="publish-description" name="descricao" rows="3" placeholder="Resumo do documento"></textarea>
                 </label>
