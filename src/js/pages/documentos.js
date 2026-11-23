@@ -355,10 +355,6 @@ async function save(event) {
       });
       if (confirmed !== true) throw new Error("Permissão de publicação negada pelo servidor.");
     }
-    if (state.editing && f.visibilidade.value === "patentes") {
-      const targets = [...document.querySelectorAll("#rank-choices input:checked")].map(input => input.value);
-      await rpc("documentos_atualizar_patentes", {p_documento_id:state.editing,p_patente_modo:$("rank-mode").value,p_patente_alvos:$("rank-mode").value==="todos"?[]:targets});
-    }
     const html = getEditorHtml();
     const fields = {
       p_titulo: f.titulo.value.trim(),
@@ -371,6 +367,15 @@ async function save(event) {
       const id = state.editing;
       const result = await rpc("documentos_editar", { p_documento_id: id, ...fields });
       if (result !== true) throw new Error("A edição não foi confirmada.");
+      if (f.visibilidade.value === "patentes") {
+        const targets = [...document.querySelectorAll("#rank-choices input:checked")].map(input => input.value);
+        const updated = await rpc("documentos_atualizar_patentes", {
+          p_documento_id: id,
+          p_patente_modo: $("rank-mode").value,
+          p_patente_alvos: $("rank-mode").value === "todos" ? [] : targets
+        });
+        if (updated !== true) throw new Error("Não foi possível atualizar os destinatários por patente.");
+      }
       resetEditor();
       await load();
       await openDocument(id);
