@@ -1,7 +1,20 @@
 import { defineConfig } from 'vite';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 export default defineConfig({
+  plugins: [
+    {
+      name: 'emit-orgaos-catalog',
+      generateBundle() {
+        this.emitFile({
+          type: 'asset',
+          fileName: 'orgaos.json',
+          source: readFileSync(resolve(import.meta.dirname, 'orgaos.json')),
+        });
+      },
+    },
+  ],
   build: {
     rollupOptions: {
       input: {
