@@ -3,7 +3,8 @@ import { supabase } from "../supabase.js";
 const $ = id => document.getElementById(id);
 const state = {
   documents: [], selected: null, catalog: [], editor: null,
-  editing: null, allowedTargets: new Set(), currentRequest: 0
+  editing: null, allowedTargets: new Set(), currentRequest: 0,
+  militarId: null, manageableIds: new Set(), activeTab: "library-panel"
 };
 const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -21,11 +22,26 @@ function feedback(text, error = false) {
   node.className = error ? "doc-error" : "doc-success";
 }
 function fail(error) { feedback(error?.message || String(error), true); }
+const tabIds = ["library-panel", "my-documents-panel", "manage-documents-panel"];
 function show(panel) {
-  for (const id of ["library-panel", "publish-panel", "detail-panel"]) {
+  const isTab = tabIds.includes(panel);
+  for (const id of [...tabIds, "publish-panel", "detail-panel"]) {
     $(id).hidden = id !== panel;
   }
-  $(panel).scrollIntoView({ behavior: "smooth", block: "start" });
+  $("document-tabs").hidden = !isTab;
+  $("new-document").hidden = !isTab || state.catalog.length === 0;
+  if (isTab) {
+    state.activeTab = panel;
+    document.querySelectorAll("[data-doc-tab]").forEach(button => {
+      button.classList.toggle("active", button.dataset.docTab === panel);
+    });
+  }
+  window.scrollTo({ top: 0, behavior: "instant" });
+}
+function backToTab() {
+  state.selected = null;
+  ++state.currentRequest;
+  show(state.activeTab);
 }
 
 /* Quill gera HTML. Nunca inserir HTML vindo do banco sem filtragem. */
@@ -179,42 +195,68 @@ async function checkTarget() {
     }
   } catch (error) { fail(error); }
 }
+function documentCard(doc) {
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "news-card";
+  const meta = document.createElement("div");
+  meta.className = "news-card-header";
+  const category = document.createElement("span");
+  category.className = "news-card-category";
+  category.textContent = doc.categoria || "INSTITUCIONAL";
+  meta.append(category);
+  const title = document.createElement("span");
+  title.className = "news-card-title";
+  title.textContent = doc.titulo;
+  const desc = document.createElement("span");
+  desc.className = "news-card-description";
+  const plain = new DOMParser().parseFromString(sanitizeHtml(doc.conteudo || ""), "text/html").body.textContent.trim();
+  desc.textContent = (plain || doc.descricao || "").slice(0, 220) +
+    ((plain || doc.descricao || "").length > 220 ? "..." : "");
+  const footer = document.createElement("div");
+  footer.className = "news-card-footer";
+  const origin = document.createElement("span");
+  origin.className = "news-card-author";
+  origin.textContent = "Publicado por " + doc.orgao + (doc.unidade ? " / " + doc.unidade : "") +
+    " · " + (doc.visibilidade === "geral" ? "Geral" : "Restrito");
+  const date = document.createElement("span");
+  date.className = "news-card-date";
+  date.textContent = formatDate(doc.criado_em);
+  footer.append(origin, date);
+  card.append(meta, title, desc, footer);
+  card.addEventListener("click", () => openDocument(doc.id));
+  return card;
+}
+function renderList(id, emptyId, documents) {
+  $(id).replaceChildren(...documents.map(documentCard));
+  $(emptyId).hidden = documents.length > 0;
+}
 function render() {
-  const term = $("doc-search").value.trim().toLocaleLowerCase("pt-BR");
-  const category = $("doc-category").value;
-  const visibility = $("doc-visibility").value;
-  const list = state.documents.filter(doc =>
-    (!category || doc.categoria === category) &&
-    (!visibility || doc.visibilidade === visibility) &&
-    (!term || [doc.titulo, doc.descricao, doc.orgao, doc.unidade].some(value =>
-      String(value || "").toLocaleLowerCase("pt-BR").includes(term)
-    ))
-  );
-  $("doc-list").innerHTML = list.length ? list.map(doc =>
-    '<article class="doc-item">' +
-    '<h3>' + esc(doc.titulo) + '</h3>' +
-    '<div class="doc-meta">' + esc(doc.categoria) + ' · ' + esc(doc.orgao) +
-    (doc.unidade ? ' / ' + esc(doc.unidade) : '') +
-    ' · ' + (doc.visibilidade === "geral" ? "Geral" : "Restrito") +
-    ' · ' + esc(formatDate(doc.criado_em)) + '</div>' +
-    '<p>' + esc(doc.descricao || "Sem descrição.") + '</p>' +
-    '<button type="button" data-open="' + esc(doc.id) + '">Ler documento</button>' +
-    '</article>'
-  ).join("") : "<p>Nenhum documento disponível para sua conta ou para os filtros selecionados.</p>";
+  renderList("doc-list", "doc-empty", state.documents);
+  renderList("my-documents-list", "my-documents-empty",
+    state.documents.filter(d => d.criado_por === state.militarId));
+  renderList("manage-documents-list", "manage-documents-empty",
+    state.documents.filter(d => state.manageableIds.has(d.id)));
 }
 async function load() {
   const { data, error } = await supabase.from("documentos")
-    .select("id,titulo,descricao,categoria,orgao,unidade,visibilidade,criado_em,atualizado_em")
+    .select("id,titulo,descricao,conteudo,categoria,orgao,unidade,visibilidade,criado_por,criado_em,atualizado_em")
     .order("criado_em", { ascending: false }).limit(300);
   if (error) throw error;
   state.documents = data || [];
-  const current = $("doc-category").value;
-  const categories = [...new Set(state.documents.map(doc => doc.categoria).filter(Boolean))].sort();
-  $("doc-category").innerHTML = '<option value="">Todas</option>' +
-    categories.map(cat => '<option value="' + esc(cat) + '">' + esc(cat) + '</option>').join("");
-  $("doc-category").value = categories.includes(current) ? current : "";
+  const rights = await Promise.all(state.documents.map(async d => {
+    try {
+      return await rpc("documentos_pode_gerenciar", { p_documento_id: d.id }) === true;
+    } catch { return false; }
+  }));
+  state.manageableIds = new Set(state.documents.filter((_, i) => rights[i]).map(d => d.id));
+  $("my-documents-tab").hidden = state.catalog.length === 0 &&
+    !state.documents.some(d => d.criado_por === state.militarId);
+  $("manage-documents-tab").hidden = state.manageableIds.size === 0 &&
+    state.catalog.length === 0;
   render();
 }
+
 async function openDocument(id) {
   const request = ++state.currentRequest;
   feedback("");
@@ -346,29 +388,24 @@ async function removeDocument() {
     state.selected = null;
     ++state.currentRequest;
     await load();
-    show("library-panel");
+    show(state.activeTab);
     feedback("Documento excluído.");
   } catch (error) { fail(error); }
 }
-$("doc-list").addEventListener("click", e => {
-  const button = e.target.closest("[data-open]");
-  if (button) openDocument(button.dataset.open);
+document.querySelectorAll("[data-doc-tab]").forEach(button => {
+  button.addEventListener("click", () => show(button.dataset.docTab));
 });
-for (const id of ["doc-search", "doc-category", "doc-visibility"]) $(id).addEventListener("input", render);
-$("doc-refresh").addEventListener("click", async () => { try { await load(); feedback("Biblioteca atualizada."); } catch (e) { fail(e); } });
 $("new-document").addEventListener("click", startNew);
 for (const id of ["publish-cancel", "publish-cancel-bottom"]) {
   $(id).addEventListener("click", () => {
     resetEditor();
-    show(state.selected ? "detail-panel" : "library-panel");
+    show(state.selected ? "detail-panel" : state.activeTab);
   });
 }
 $("publish-orgao").addEventListener("change", updateUnits);
 $("publish-unidade").addEventListener("change", checkTarget);
 $("publish-form").addEventListener("submit", save);
-$("close-detail").addEventListener("click", () => {
-  state.selected = null; ++state.currentRequest; show("library-panel");
-});
+$("close-detail").addEventListener("click", backToTab);
 $("edit-document").addEventListener("click", startEdit);
 $("delete-document").addEventListener("click", removeDocument);
 $("permission-form").addEventListener("submit", async e => {
@@ -412,11 +449,12 @@ $("permissions-list").addEventListener("click", async e => {
     if (!session) throw new Error("Faça login para acessar os documentos.");
     const militaryId = await rpc("crme_militar_id");
     if (!militaryId) throw new Error("Registro militar não encontrado.");
+    state.militarId = militaryId;
     ensureEditor();
     await loadCatalog();
     // A interface usa as permissões confirmadas pelo banco; o banco também
     // deve validar novamente cada operação de publicação e edição.
-    $("new-document").hidden = state.catalog.length === 0;
     await load();
+    show("library-panel");
   } catch (error) { fail(error); $("doc-list").textContent = "Não foi possível carregar a biblioteca."; }
 })();

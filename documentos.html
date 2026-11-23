@@ -6,6 +6,7 @@
     <title>CRME | Documentos</title>
     <link rel="stylesheet" href="/src/css/pages/dashboard.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css">
+    <link rel="stylesheet" href="/src/css/pages/noticias.css">
     <link rel="stylesheet" href="/src/css/pages/documentos.css">
 </head>
 <body>
@@ -37,43 +38,41 @@
             <button id="logout-button">Sair</button>
         </header>
 
-        <p id="doc-message" role="status" aria-live="polite" hidden></p>
-
-        <section id="library-panel" class="dashboard-section documentos-page">
-            <div class="doc-heading">
+        <section class="dashboard-section" id="documents-section">
+            <div class="news-header">
                 <div>
                     <h2>Documentos</h2>
-                    <p>Biblioteca de documentos institucionais do Exército Brasileiro.</p>
+                    <p>Consulte os documentos e os comunicados institucionais do Exército Brasileiro.</p>
                 </div>
                 <button id="new-document" type="button" hidden>Publicar documento</button>
             </div>
-
-            <div class="doc-filters">
-                <label for="doc-search">Pesquisar
-                    <input id="doc-search" type="search" placeholder="Título, descrição ou órgão">
-                </label>
-                <label for="doc-category">Categoria
-                    <select id="doc-category"><option value="">Todas</option></select>
-                </label>
-                <label for="doc-visibility">Visibilidade
-                    <select id="doc-visibility">
-                        <option value="">Todas</option>
-                        <option value="geral">Geral</option>
-                        <option value="restrito">Restrita</option>
-                    </select>
-                </label>
-                <button id="doc-refresh" type="button">Atualizar</button>
+            <div id="doc-message" role="status" aria-live="polite" hidden></div>
+            <div class="news-tabs" id="document-tabs">
+                <button class="news-tab active" data-doc-tab="library-panel" type="button">Documentos</button>
+                <button class="news-tab" data-doc-tab="my-documents-panel" id="my-documents-tab" type="button" hidden>Minhas publicações</button>
+                <button class="news-tab" data-doc-tab="manage-documents-panel" id="manage-documents-tab" type="button" hidden>Gerenciar publicações</button>
             </div>
+            <section id="library-panel" class="news-panel documentos-page">
+                <div id="doc-list" class="news-list"><p>Carregando documentos...</p></div>
+                <div id="doc-empty" class="news-empty" hidden>Nenhum documento disponível.</div>
+            </section>
+            <section id="my-documents-panel" class="news-panel" hidden>
+                <h2>Minhas publicações</h2>
+                <p class="section-description">Consulte os documentos publicados por você.</p>
+                <div id="my-documents-list" class="news-list"></div>
+                <div id="my-documents-empty" class="news-empty" hidden>Você ainda não publicou documentos.</div>
+            </section>
+            <section id="manage-documents-panel" class="news-panel" hidden>
+                <h2>Gerenciar publicações</h2>
+                <p class="section-description">Consulte e edite documentos sob sua responsabilidade.</p>
+                <div id="manage-documents-list" class="news-list"></div>
+                <div id="manage-documents-empty" class="news-empty" hidden>Nenhum documento disponível para gerenciamento.</div>
+            </section>
 
-            <div id="doc-list" class="doc-list" aria-live="polite">
-                <p>Carregando documentos...</p>
-            </div>
-        </section>
-
-        <section id="publish-panel" class="dashboard-section doc-editor-panel" hidden>
-            <div class="doc-panel-heading">
+        <section id="publish-panel" class="doc-editor-panel" hidden>
+            <div class="news-editor-header">
+                <button id="publish-cancel" type="button" class="secondary">Voltar</button>
                 <h2 id="publish-heading">Publicar documento</h2>
-                <button id="publish-cancel" type="button" class="secondary">Voltar à biblioteca</button>
             </div>
             <p>Redija o documento diretamente no CRME. Não é necessário enviar arquivos PDF.</p>
 
@@ -114,14 +113,13 @@
             </form>
         </section>
 
-        <section id="detail-panel" class="dashboard-section doc-detail-panel" hidden>
-            <div class="doc-panel-heading">
-                <h2 id="detail-title">Documento</h2>
-                <button id="close-detail" type="button" class="secondary">Voltar à biblioteca</button>
-            </div>
-            <p id="detail-meta" class="doc-meta"></p>
+        <section id="detail-panel" class="doc-detail-panel" hidden>
+            <button id="close-detail" type="button" class="secondary">Voltar</button>
+            <article class="news-article">
+                <h1 id="detail-title">Documento</h1>
+            <p id="detail-meta" class="news-metadata doc-meta"></p>
             <p id="detail-description"></p>
-            <article id="document-content" class="doc-content ql-editor" aria-label="Conteúdo do documento"></article>
+            <div id="document-content" class="news-content ql-editor doc-content" aria-label="Conteúdo do documento"></div>
 
             <div id="manage-panel" hidden>
                 <h3>Gerenciar documento</h3>
@@ -148,6 +146,9 @@
                     </div>
                 </form>
             </div>
+            </article>
+        </section>
+
         </section>
 
         <footer>EXÉRCITO BRASILEIRO · DGP · DCR</footer>
