@@ -12,6 +12,7 @@ const INTERVALO_ATUALIZACAO = 15000;
 const NOMES_PAGINAS = {
     "dashboard.html": "Início",
     "noticias.html": "Notícias",
+    "documentos.html": "Documentos",
     "consultar.html": "Consultar Militares",
     "controle-patentes.html": "Controle de Patentes",
     "alistamento.html": "Alistamento",
