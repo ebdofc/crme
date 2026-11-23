@@ -9,13 +9,6 @@
     gap: 20px;
     margin-bottom: 24px;
 }
-.documentos-page .doc-heading h1 {
-    color: #343b31;
-    font-size: 24px;
-    font-weight: 600;
-    margin: 0 0 8px;
-}
-.documentos-page .doc-heading p,
 #publish-panel > p,
 #viewer-panel > p {
     color: #6d726a;
