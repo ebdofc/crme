@@ -565,6 +565,35 @@ body.doc-resizing { cursor: col-resize !important; user-select: none !important;
 #detail-panel #detail-updated[hidden] { display: none; }
 
 /* Leitura em celulares: aproveitar a largura disponível. */
-@media (max-width: 600px) {
-  #doc-library-layout.doc-reading #detail-panel { padding: 8px; }
+@media (max-width: 700px) {
+  #documents-section:has(#doc-library-layout.doc-reading #detail-panel:not([hidden])) {
+    padding: 12px 8px 20px;
+  }
+  #documents-section:has(#doc-library-layout.doc-reading #detail-panel:not([hidden])) > .news-header,
+  #documents-section:has(#doc-library-layout.doc-reading #detail-panel:not([hidden])) > #document-tabs {
+    display: none;
+  }
+  #library-panel:has(#doc-library-layout.doc-reading) {
+    padding: 0;
+    border: 0;
+    margin: 0;
+  }
+  #doc-library-layout.doc-reading {
+    display: block;
+  }
+  #doc-library-layout.doc-reading .doc-library-sidebar,
+  #doc-library-layout.doc-reading .doc-resize-handle {
+    display: none;
+  }
+  #doc-library-layout.doc-reading #detail-panel {
+    padding: 0;
+    border: 0;
+    margin: 0;
+    width: 100%;
+  }
+  #doc-library-layout.doc-reading #detail-panel .news-article {
+    padding: 0;
+    border: 0;
+    max-width: none;
+  }
 }
