@@ -1,3 +1,4 @@
+import { registerDivider, insertDivider } from "../quill-divider.js";
 import { supabase } from "../supabase.js";
 
 const $ = id => document.getElementById(id);
@@ -47,7 +48,7 @@ function backToTab() {
 /* Quill gera HTML. Nunca inserir HTML vindo do banco sem filtragem. */
 const allowedTags = new Set([
   "P", "BR", "STRONG", "B", "EM", "I", "U", "S", "H1", "H2", "H3",
-  "OL", "UL", "LI", "A", "SPAN", "DIV", "BLOCKQUOTE"
+  "OL", "UL", "LI", "A", "SPAN", "DIV", "BLOCKQUOTE", "HR"
 ]);
 const allowedClasses = new Set([
   "ql-align-center", "ql-align-right", "ql-align-justify",
@@ -93,16 +94,17 @@ function sanitizeHtml(html) {
 function ensureEditor() {
   if (state.editor) return state.editor;
   if (!window.Quill) throw new Error("Editor Quill indisponível. Atualize a página.");
+  registerDivider(window.Quill);
   state.editor = new window.Quill("#doc-editor", {
     theme: "snow",
     placeholder: "Redija o conteúdo do documento...",
-    modules: { toolbar: [
+    modules: { toolbar: { container: [
       [{ header: [1, 2, 3, false] }],
       ["bold", "italic", "underline", "strike"],
       [{ list: "ordered" }, { list: "bullet" }],
-      [{ align: [] }], ["blockquote", "link"], ["clean"]
-    ] },
-    formats: ["header", "bold", "italic", "underline", "strike", "list", "align", "blockquote", "link"]
+      [{ align: [] }], ["blockquote", "link"], ["divider"], ["clean"]
+    ], handlers: { divider() { insertDivider(this.quill); } } } },
+    formats: ["header", "bold", "italic", "underline", "strike", "list", "align", "blockquote", "link", "divider"]
   });
   return state.editor;
 }

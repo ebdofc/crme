@@ -1,3 +1,4 @@
+import { registerDivider, insertDivider } from "../quill-divider.js";
 import { supabase } from "../supabase.js";
 
 const $ = id => document.getElementById(id);
@@ -81,7 +82,7 @@ function sanitizarHTML(html) {
     const destino = document.createElement("div");
 
     const permitidas = new Set(
-        "P BR STRONG B EM I U S H1 H2 H3 OL UL LI A SPAN DIV BLOCKQUOTE"
+        "P BR STRONG B EM I U S H1 H2 H3 OL UL LI A SPAN DIV BLOCKQUOTE HR"
             .split(" ")
     );
 
@@ -229,11 +230,12 @@ function iniciarEditor() {
         );
     }
 
+    registerDivider(window.Quill);
     estado.editor = new window.Quill("#news-editor", {
         theme: "snow",
         placeholder: "Escreva o conteúdo da notícia...",
         modules: {
-            toolbar: [
+            toolbar: { container: [
                 [{ header: [1, 2, 3, false] }],
                 ["bold", "italic", "underline", "strike"],
                 [
@@ -242,8 +244,9 @@ function iniciarEditor() {
                 ],
                 [{ align: [] }],
                 ["blockquote", "link"],
+                ["divider"],
                 ["clean"]
-            ]
+            ], handlers: { divider() { insertDivider(this.quill); } } }
         },
         formats: [
             "header",
@@ -254,7 +257,8 @@ function iniciarEditor() {
             "list",
             "align",
             "blockquote",
-            "link"
+            "link",
+            "divider"
         ]
     });
 
