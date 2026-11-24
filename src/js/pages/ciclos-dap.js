@@ -1,3 +1,29 @@
+const rotuloCPO = valor => {
+    const texto = String(valor ?? '').trim();
+    if (!texto) return '—';
+    const rotulos = {
+        ativo:'Ativo', afastado:'Afastado', desligado:'Desligado',
+        favoravel:'Favorável', desfavoravel:'Desfavorável', contrario:'Contrário', abstencao:'Abstenção',
+        aprovada:'Aprovada', rejeitada:'Rejeitada', aprovado:'Aprovado', reprovado:'Reprovado',
+        aprovacao:'Aprovação', reprovacao:'Reprovação',
+        aguardando_avaliacao:'Aguardando avaliação', em_avaliacao:'Em avaliação',
+        aguardando_validacao:'Aguardando validação', em_deliberacao:'Em deliberação',
+        concluida:'Concluída', arquivada:'Arquivada', indicacoes_abertas:'Indicações abertas',
+        aguardando_homologacao:'Aguardando homologação', encerrado:'Encerrado', cancelado:'Cancelado',
+        empate:'Empate', desempate:'Desempate', sem_votos_validos:'Ausência de votos válidos',
+        ausencia_votos_validos:'Ausência de votos válidos', aguardando_desempate:'Aguardando desempate',
+        aguardando_decisao:'Aguardando decisão', aguardando_decisao_presidencia:'Aguardando decisão da Presidência',
+        revisao_diretor:'Revisão do diretor', revisao_do_diretor:'Revisão do diretor',
+        devolvida_para_revisao:'Devolvida para revisão', devolucao_revisao:'Devolução para revisão',
+        assumiu_avaliacao:'Assumiu a avaliação', liberou_avaliacao:'Liberou a avaliação',
+        avocou_avaliacao:'Avocou a avaliação', resultado_revisao:'Resultado da revisão',
+        votos_favoraveis:'Votos favoráveis', votos_contrarios:'Votos contrários', votos_abstencoes:'Abstenções',
+        reingresso:'Reingresso', advertencia_escrita:'Advertência escrita'
+    };
+    if (Object.hasOwn(rotulos, texto)) return rotulos[texto];
+    const legivel = texto.replaceAll('_', ' ');
+    return legivel.charAt(0).toLocaleUpperCase('pt-BR') + legivel.slice(1);
+};
 /* CRME — DAP: interface real, com todas as alterações via RPC autenticada. */
 const CATS = [
   ['disponiveis','Disponíveis'], ['minhas','Minhas avaliações'],
@@ -14,7 +40,7 @@ const fmtDate = value => { if (!value) return '—'; const s=String(value); cons
 const fmtTime = value => { if (!value) return '—'; const d=new Date(value); return Number.isNaN(d.getTime())?'—':new Intl.DateTimeFormat('pt-BR',{timeZone:'America/Sao_Paulo',dateStyle:'short',timeStyle:'short'}).format(d); };
 const btn = (label, act, opts={}) => `<button type="button" class="cpo-btn ${opts.secondary?'cpo-btn-secondary':''} ${opts.danger?'cpo-btn-danger':''} ${opts.small?'cpo-btn-small':''}" data-dap-action="${e(act)}" ${opts.id?`data-id="${e(opts.id)}"`:''} ${opts.disabled?'disabled':''}>${e(label)}</button>`;
 const field = (label,value) => `<div>${`<span class="cpo-mini-label">${e(label)}</span>`}<strong>${e(value??'—')}</strong></div>`;
-const statusLabel = s => ({aguardando_avaliacao:'Aguardando avaliação',em_avaliacao:'Em avaliação',aguardando_validacao:'Aguardando validação',em_deliberacao:'Em deliberação',concluida:'Concluída',arquivada:'Arquivada'}[s] || s || '—');
+const statusLabel = s => ({aguardando_avaliacao:'Aguardando avaliação',em_avaliacao:'Em avaliação',aguardando_validacao:'Aguardando validação',em_deliberacao:'Em deliberação',concluida:'Concluída',arquivada:'Arquivada'}[s] || rotuloCPO(s));
 
 const TIPOS_HISTORICO = {
   ingresso:'Alistamento', alistamento:'Alistamento', promocao:'Promoção',
@@ -48,7 +74,7 @@ const detalheHistorico = h => {
     const codigo = h.curso_codigo || h.codigo_curso;
     const nome = h.nome_curso || h.curso_nome || CURSOS_HISTORICO[codigo] || codigo;
     const resultado = h.resultado || h.curso_resultado;
-    return [nome, resultado].filter(Boolean).join(' — ') || '—';
+    return [nome, resultado ? rotuloCPO(resultado) : ''].filter(Boolean).join(' — ') || '—';
   }
   if (tipo === 'afastamento') {
     const inicio = h.periodo_inicial || h.data_inicio;
@@ -104,11 +130,11 @@ export function criarInterfaceDAP({supabase, painel, getAcesso, getCiclo, isActi
     const avg=mediaNotas();
     return `<div class="cpo-detail cpo-dap-detail">${btn('← Voltar à lista','back',{secondary:true,small:true})}<div class="cpo-detail-heading"><h3>Avaliação de ${e(m.nome)}</h3><p>${e(m.patente_na_indicacao)} → ${e(m.patente_pretendida)} · ${e(statusLabel(d.status))}</p></div>
     ${st.erroDetalhe?`<p class="cpo-dap-error">${e(st.erroDetalhe)}</p>`:''}
-    <details class="cpo-accordion" open><summary>Dados do indicado</summary><div class="cpo-accordion-body"><div class="cpo-data-grid">${field('Militar',m.nome)}${field('ID Discord',m.discord_id)}${field('Situação atual',m.status_atual)}${field('Patente atual',m.patente_atual)}${field('Patente pretendida',m.patente_pretendida)}${field('Data da indicação',fmtTime(m.indicado_em))}${field('Tempo na patente',m.dias_na_patente!=null?`${m.dias_na_patente} dias${m.origem_data_patente==='ingresso_estimado'?' (estimado desde o ingresso)':''}`:'Não informado')}${field('Avaliador responsável',a.avaliador_nome)}</div><div class="cpo-text-box"><strong>Justificativa da indicação</strong><p class="cpo-preserve">${e(m.justificativa||'Não disponível nesta consulta.')}</p></div></div></details>
-    <details class="cpo-accordion"><summary>Histórico militar (${history.length})</summary><div class="cpo-accordion-body"><div class="cpo-table-box"><table class="cpo-table"><thead><tr><th>DATA</th><th>TIPO</th><th>DETALHAMENTO</th><th>OBSERVAÇÃO</th></tr></thead><tbody>${history.length?history.map(h=>`<tr><td>${e(dataHistorico(h))}</td><td>${e(TIPOS_HISTORICO[h.tipo] || String(h.tipo || '—').replaceAll('_',' '))}</td><td>${e(detalheHistorico(h))}</td><td class="cpo-preserve">${e(textoHistorico(h.observacao ?? h.descricao))}</td></tr>`).join(''):'<tr><td colspan="4">Nenhum registro encontrado.</td></tr>'}</tbody></table></div></div></details>
+    <details class="cpo-accordion" open><summary>Dados do indicado</summary><div class="cpo-accordion-body"><div class="cpo-data-grid">${field('Militar',m.nome)}${field('ID Discord',m.discord_id)}${field('Situação atual',rotuloCPO(m.status_atual))}${field('Patente atual',m.patente_atual)}${field('Patente pretendida',m.patente_pretendida)}${field('Data da indicação',fmtTime(m.indicado_em))}${field('Tempo na patente',m.dias_na_patente!=null?`${m.dias_na_patente} dias${m.origem_data_patente==='ingresso_estimado'?' (estimado desde o ingresso)':''}`:'Não informado')}${field('Avaliador responsável',a.avaliador_nome)}</div><div class="cpo-text-box"><strong>Justificativa da indicação</strong><p class="cpo-preserve">${e(m.justificativa||'Não disponível nesta consulta.')}</p></div></div></details>
+    <details class="cpo-accordion"><summary>Histórico militar (${history.length})</summary><div class="cpo-accordion-body"><div class="cpo-table-box"><table class="cpo-table"><thead><tr><th>DATA</th><th>TIPO</th><th>DETALHAMENTO</th><th>OBSERVAÇÃO</th></tr></thead><tbody>${history.length?history.map(h=>`<tr><td>${e(dataHistorico(h))}</td><td>${e(TIPOS_HISTORICO[h.tipo] || rotuloCPO(h.tipo))}</td><td>${e(detalheHistorico(h))}</td><td class="cpo-preserve">${e(textoHistorico(h.observacao ?? h.descricao))}</td></tr>`).join(''):'<tr><td colspan="4">Nenhum registro encontrado.</td></tr>'}</tbody></table></div></div></details>
     <details class="cpo-accordion" open><summary>Critérios de avaliação</summary><div class="cpo-accordion-body"><div class="cpo-table-box"><table class="cpo-table cpo-score-table"><thead><tr><th>CRITÉRIO</th><th>NOTA (0 A 10)</th></tr></thead><tbody>${CRITERIOS.map(([key,label])=>`<tr><td>${e(label)}</td><td><input type="number" class="dap-nota" data-key="${key}" step="1" min="0" max="10" inputmode="numeric" pattern="[0-9]*" value="${e(st.notas[key]??'')}" ${canEdit?'':'disabled'} aria-label="${e(label)}"></td></tr>`).join('')}</tbody></table></div><div class="cpo-score-total">Média geral <strong id="dap-media">${avg===null?'—':avg.toFixed(2).replace('.',',')}</strong></div><p class="cpo-inline-note">Recomendação favorável: média geral ≥ 7,0. Notas individuais devem ser números inteiros de 0 a 10.</p></div></details>
     <details class="cpo-accordion" open><summary>Relatório e recomendação</summary><div class="cpo-accordion-body"><div class="cpo-field"><label for="dap-relatorio">Relatório de avaliação</label><textarea id="dap-relatorio" maxlength="10000" ${canEdit?'':'disabled'} placeholder="Descreva a avaliação...">${e(st.relatorio)}</textarea></div><div class="cpo-field"><span class="cpo-mini-label">Recomendação</span>${[['favoravel','Favorável à promoção'],['desfavoravel','Desfavorável à promoção']].map(([value,label])=>`<label class="cpo-choice"><input type="radio" name="dap-recomendacao" value="${value}" ${st.recomendacao===value?'checked':''} ${canEdit && !(value==='favoravel' && avg!==null && avg<7)?'':'disabled'}> ${label}</label>`).join('')}</div></div></details>
-    ${d.auditoria?.historico_revisoes?.length?`<section class="cpo-panel-card"><h4>Histórico de revisões</h4>${d.auditoria.historico_revisoes.map(x=>`<p class="cpo-preserve">${e(fmtTime(x.data))} — ${e(x.evento)}: ${e(x.motivo||'')}</p>`).join('')}</section>`:''}
+    ${d.auditoria?.historico_revisoes?.length?`<section class="cpo-panel-card"><h4>Histórico de revisões</h4>${d.auditoria.historico_revisoes.map(x=>`<p class="cpo-preserve">${e(fmtTime(x.data))} — ${e(rotuloCPO(x.evento))}: ${e(x.motivo||'')}</p>`).join('')}</section>`:''}
     ${canValidate?`<section class="cpo-panel-card"><h4>Validação pela Direção</h4><div class="cpo-field"><label for="dap-motivo">Motivo da devolução para revisão</label><textarea id="dap-motivo" maxlength="5000" placeholder="Obrigatório apenas para devolver...">${e(st.motivo)}</textarea></div><div class="cpo-actions">${btn('Devolver para revisão','revisar',{secondary:true})}${btn('Validar avaliação','validar')}</div></section>`:''}
     ${canEdit?`<div class="cpo-dap-save-area">${st.avisoEnvio?`<p id="dap-aviso-envio" class="cpo-dap-error" role="alert" style="margin:10px 0">${e(st.avisoEnvio)}</p>`:''}<div class="cpo-actions">${btn('Salvar rascunho','save',{secondary:true})}${btn(diretor()?'Finalizar avaliação':'Encaminhar para validação','submit')}</div></div>`:''}
     ${own&&d.status==='em_avaliacao'&&operacional()?`<section class="cpo-panel-card"><h4>Devolver avaliação à fila</h4><div class="cpo-field"><label for="dap-motivo-liberacao">Justificativa obrigatória</label><textarea id="dap-motivo-liberacao" maxlength="5000" placeholder="Motivo da liberação..."></textarea></div>${btn('Liberar avaliação','release',{secondary:true})}</section>`:''}
