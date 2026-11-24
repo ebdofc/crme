@@ -1,0 +1,9 @@
+#permanencia[hidden],#acesso[hidden]{display:none!important}
+.permanencia-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+#permanencia button{padding:9px 14px;border:1px solid #aaa;border-radius:5px;cursor:pointer}
+#permanencia button[aria-pressed=true]{background:#344b38;color:white}
+#permanencia button:disabled{opacity:.5;cursor:not-allowed}
+#pesquisa{display:block;width:100%;max-width:420px;padding:10px;margin:8px 0 16px}
+.permanencia-card{border:1px solid #aaa5;border-radius:8px;padding:16px;margin:12px 0;overflow-wrap:anywhere}
+.permanencia-form textarea{display:block;width:100%;min-height:75px;margin:8px 0;box-sizing:border-box}
+.permanencia-form button{margin-right:8px}
