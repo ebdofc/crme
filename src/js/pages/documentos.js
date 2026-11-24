@@ -370,8 +370,8 @@ function documentCard(doc) {
   const desc = document.createElement("span");
   desc.className = "news-card-description";
   const plain = new DOMParser().parseFromString(sanitizeHtml(doc.conteudo || ""), "text/html").body.textContent.trim();
-  desc.textContent = (plain || doc.descricao || "").slice(0, 220) +
-    ((plain || doc.descricao || "").length > 220 ? "..." : "");
+  const summary = doc.descricao || plain || "";
+  desc.textContent = summary.slice(0, 220) + (summary.length > 220 ? "..." : "");
   const footer = document.createElement("div");
   footer.className = "news-card-footer";
   const origin = document.createElement("span");
