@@ -29,6 +29,7 @@ export default defineConfig({
         aulas: resolve(import.meta.dirname, 'aulas.html'),
         orgaos: resolve(import.meta.dirname, 'orgaos.html'),
         ciclos: resolve(import.meta.dirname, 'ciclos.html'),
+        monitoramento: resolve(import.meta.dirname, 'monitoramento.html'),
       },
     },
   },
