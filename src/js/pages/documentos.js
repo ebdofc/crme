@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 const state = {
   documents: [], selected: null, catalog: [], editor: null,
   editing: null, allowedTargets: new Set(), currentRequest: 0,
-  militarId: null, manageableIds: new Set(), activeTab: "library-panel", central: false, identities: [], militaryNames: new Map(), institutionNames: new Map()
+  militarId: null, manageableIds: new Set(), activeTab: "library-panel", central: false, sectors: [], identities: [], militaryNames: new Map(), institutionNames: new Map()
 };
 const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -118,81 +118,65 @@ function getEditorHtml() {
   if (html.length > 200000) throw new Error("O conteúdo excede o limite de 200 mil caracteres.");
   return html;
 }
-function targetsFor(org) {
-  const options = [{ value: "", label: "Órgão inteiro (sem unidade)" }];
-  for (const unit of org?.unidades || []) {
-    options.push({ value: unit.codigo, label: unit.nome + " (" + unit.codigo + ")" });
-    for (const child of unit.subunidades || []) {
-      options.push({ value: child.codigo, label: "↳ " + child.nome + " (" + child.codigo + ")" });
-    }
-  }
-  return options.filter(t => state.allowedTargets.has((org?.codigo || "") + "/" + t.value));
-}
 async function loadCatalog() {
   const response = await fetch("/orgaos.json", { cache: "no-store" });
   if (!response.ok) throw new Error("Não foi possível carregar o catálogo de órgãos.");
   const data = await response.json();
   const all = (data.categorias || []).flatMap(group => group.orgaos || []);
-  // Exibir apenas órgãos/unidades para os quais o banco confirmou permissão.
   const allowed = await Promise.all(all.map(async org => {
-    const targets = [{value:""}, ...(org.unidades || []).flatMap(unit => [{value:unit.codigo}, ...(unit.subunidades || []).map(child=>({value:child.codigo}))])];
+    const targets = [{ value: "" }, ...(org.unidades || []).flatMap(unit =>
+      [{ value: unit.codigo }, ...(unit.subunidades || []).map(child => ({ value: child.codigo }))])];
     const checks = await Promise.all(targets.map(async target => {
       try {
-        const ok = await rpc("documentos_pode_criar", {
-          p_orgao: org.codigo, p_unidade: target.value || null
-        });
-        if (ok) state.allowedTargets.add(org.codigo + "/" + target.value);
+        const ok = await rpc("documentos_pode_criar", { p_orgao: org.codigo, p_unidade: target.value || null });
+        if (ok === true) state.allowedTargets.add(org.codigo + "/" + target.value);
         return ok === true;
       } catch { return false; }
     }));
-    if (!checks.some(Boolean)) return null;
-    return { ...org, unidades: (org.unidades || []).map(unit => ({
-      ...unit,
-      subunidades: (unit.subunidades || []).filter(child =>
-        state.allowedTargets.has(org.codigo + "/" + child.codigo))
-    })).filter(unit =>
-      state.allowedTargets.has(org.codigo + "/" + unit.codigo) ||
-      (unit.subunidades || []).length > 0
-    ) };
+    return checks.some(Boolean) ? org : null;
   }));
   state.catalog = allowed.filter(Boolean);
-  $("publish-orgao").innerHTML = '<option value="">Selecione</option>' +
-    state.catalog.map(o => '<option value="' + esc(o.codigo) + '">' +
-      esc(o.nome) + ' (' + esc(o.codigo) + ')</option>').join("");
-  updateUnits();
 }
-
-function updateUnits() {
-  const organ = state.catalog.find(o => o.codigo === $("publish-orgao").value);
-  const select = $("publish-unidade");
-  select.innerHTML = targetsFor(organ).map(u =>
-    '<option value="' + esc(u.value) + '">' + esc(u.label) + '</option>'
-  ).join("");
-  if (!select.options.length) {
-    select.innerHTML = '<option value="">Nenhuma unidade autorizada</option>';
+function publishingScope(visibility, identity, selectedSectors) {
+  const scopes = [...state.allowedTargets].map(key => {
+    const index = key.indexOf("/");
+    return { orgao: key.slice(0, index), unidade: key.slice(index + 1) };
+  });
+  const central = scopes.find(s => s.orgao === "P" && !s.unidade) ||
+    scopes.find(s => s.orgao === "M" && !s.unidade);
+  if (visibility !== "restrito") return central || null;
+  const source = identity !== "pessoal" ? identity : selectedSectors[0];
+  if (!source) return null;
+  const parts = source.split("/");
+  const orgao = parts[0];
+  const unit = parts.length === 1 ? "" : parts[parts.length - 1];
+  const sameOrg = scopes.filter(s => s.orgao === orgao);
+  // Preferir o departamento inteiro quando o militar é sua autoridade.
+  return sameOrg.find(s => !s.unidade) ||
+    sameOrg.find(s => s.unidade === unit) ||
+    sameOrg[0] || central || null;
+}
+async function loadSectors() {
+  const data = await rpc("documentos_setores_disponiveis");
+  state.sectors = Array.isArray(data) ? data : [];
+  renderSectorChoices();
+}
+function renderSectorChoices() {
+  const container = $("sector-choices");
+  container.replaceChildren();
+  for (const sector of state.sectors) {
+    const label = document.createElement("label");
+    label.style.paddingLeft = (Math.max(0, sector.nivel || 0) * 18) + "px";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = sector.codigo;
+    label.append(input, document.createTextNode(sector.nome));
+    container.append(label);
   }
-  if (!state.editing) checkTarget();
+  if (!state.sectors.length) container.textContent = "Nenhum setor destinatário autorizado.";
 }
-async function checkTarget() {
-  const organ = $("publish-orgao").value;
-  const unit = $("publish-unidade").value;
-  const key = organ + "/" + unit;
-  const button = $("publish-submit");
-  if (state.editing) return;
-  button.disabled = true;
-  if (!organ) return;
-  try {
-    if (!state.allowedTargets.has(key)) {
-      const allowed = await rpc("documentos_pode_criar", {
-        p_orgao: organ, p_unidade: unit || null
-      });
-      if (!allowed) return;
-      state.allowedTargets.add(key);
-    }
-    if (!state.editing && $("publish-orgao").value === organ && $("publish-unidade").value === unit) {
-      button.disabled = false;
-    }
-  } catch (error) { fail(error); }
+function selectedSectors() {
+  return [...document.querySelectorAll("#sector-choices input:checked")].map(input => input.value);
 }
 function authorLabel(doc) {
   if (doc.publicado_por_tipo === "institucional" && doc.publicado_por_codigo) {
@@ -355,22 +339,8 @@ async function openDocument(id) {
     const allowed = await rpc("documentos_pode_gerenciar", { p_documento_id: id });
     if (request !== state.currentRequest || !allowed) return;
     $("manage-panel").hidden = false;
-    $("permission-form").hidden = doc.visibilidade !== "restrito";
-    $("permissions-list").textContent = doc.visibilidade === "restrito"
-      ? "Carregando destinatários..." : "Documento geral: disponível aos militares autorizados pela política de leitura.";
-    if (doc.visibilidade === "restrito") await loadPermissions(id);
+
   } catch (error) { if (request === state.currentRequest) fail(error); }
-}
-async function loadPermissions(id) {
-  try {
-    const list = await rpc("documentos_listar_permissoes", { p_documento_id: id });
-    if (state.selected?.id !== id) return;
-    $("permissions-list").innerHTML = list?.length ? list.map(p =>
-      '<div class="permission"><span>' + esc(p.tipo) + ': ' + esc(p.codigo) + '</span>' +
-      '<button type="button" data-remove-type="' + esc(p.tipo) + '" data-remove-code="' + esc(p.codigo) +
-      '" class="secondary">Remover</button></div>'
-    ).join("") : "<p>Nenhum destinatário específico cadastrado.</p>";
-  } catch (error) { $("permissions-list").textContent = "Não foi possível carregar os destinatários."; fail(error); }
 }
 function resetEditor() {
   state.editing = null;
@@ -378,13 +348,11 @@ function resetEditor() {
   $("publish-author").disabled = false;
   updateAuthorOptions();
   renderRankChoices();
+  renderSectorChoices();
   updateVisibility();
   $("publish-heading").textContent = "Publicar documento";
   $("publish-submit").textContent = "Publicar documento";
-  $("publish-orgao").disabled = false;
-  $("publish-unidade").disabled = false;
   $("publish-visibility").disabled = false;
-  updateUnits();
   setEditorHtml("");
 }
 function startNew() {
@@ -402,7 +370,6 @@ function startEdit() {
   for (const name of ["titulo", "categoria", "descricao", "orgao", "visibilidade"]) {
     f[name].value = doc[name] || "";
   }
-  updateUnits();
   f.unidade.value = doc.unidade || "";
   if (doc.visibilidade === "patentes") {
     $("rank-mode").value = doc.patente_modo || "todos";
@@ -412,8 +379,6 @@ function startEdit() {
   updateVisibility();
   updateAuthorOptions(doc.publicado_por_tipo === "institucional" ? doc.publicado_por_codigo : "pessoal");
   $("publish-author").disabled = true;
-  f.orgao.disabled = true;
-  f.unidade.disabled = true;
   f.visibilidade.disabled = true;
   $("publish-submit").disabled = false;
   setEditorHtml(doc.conteudo);
@@ -427,14 +392,6 @@ async function save(event) {
   const f = event.currentTarget.elements;
   button.disabled = true;
   try {
-    if (!state.editing) {
-      const target = f.orgao.value + "/" + (f.unidade.value || "");
-      if (!state.allowedTargets.has(target)) throw new Error("Você não possui autorização para publicar nesta seção.");
-      const confirmed = await rpc("documentos_pode_criar", {
-        p_orgao: f.orgao.value, p_unidade: f.unidade.value || null
-      });
-      if (confirmed !== true) throw new Error("Permissão de publicação negada pelo servidor.");
-    }
     const html = getEditorHtml();
     const fields = {
       p_titulo: f.titulo.value.trim(),
@@ -461,29 +418,38 @@ async function save(event) {
       await openDocument(id);
       feedback("Documento atualizado com sucesso.");
     } else {
-      const organ = f.orgao.value;
-      const unit = f.unidade.value || null;
-      if (!state.catalog.some(o => o.codigo === organ && targetsFor(o).some(t => t.value === (unit || "")))) {
-        throw new Error("Órgão ou unidade inválidos.");
-      }
       const visibility = f.visibilidade.value;
-      const targets = [...document.querySelectorAll("#rank-choices input:checked")].map(input => input.value);
-      if (visibility === "patentes" && $("rank-mode").value !== "todos" && !targets.length) throw new Error("Selecione os destinatários por patente.");
+      const sectors = visibility === "restrito" ? selectedSectors() : [];
+      if (visibility === "restrito" && !sectors.length) throw new Error("Selecione pelo menos um setor destinatário.");
+      if (sectors.some(code => !state.sectors.some(s => s.codigo === code))) throw new Error("Setor destinatário não autorizado.");
+      const ranks = [...document.querySelectorAll("#rank-choices input:checked")].map(input => input.value);
+      if (visibility === "patentes" && $("rank-mode").value !== "todos" && !ranks.length)
+        throw new Error("Selecione os destinatários por patente.");
       const identity = $("publish-author").value;
-      if (identity !== "pessoal" && !state.identities.some(item => item.codigo === identity)) throw new Error("Identificação institucional não autorizada.");
-      const id = await rpc("documentos_publicar_v3", {
-        ...fields, p_orgao: organ, p_unidade: unit,
+      if (identity !== "pessoal" && !state.identities.some(item => item.codigo === identity))
+        throw new Error("Identificação institucional não autorizada.");
+      const scope = publishingScope(visibility, identity, sectors);
+      if (!scope) throw new Error("Não foi possível identificar um órgão de publicação autorizado.");
+      const confirmed = await rpc("documentos_pode_criar", {
+        p_orgao: scope.orgao, p_unidade: scope.unidade || null
+      });
+      if (confirmed !== true) throw new Error("Permissão de publicação negada pelo servidor.");
+      const id = await rpc("documentos_publicar_v4", {
+        ...fields,
+        p_orgao: scope.orgao,
+        p_unidade: scope.unidade || null,
         p_visibilidade: visibility,
         p_patente_modo: visibility === "patentes" ? $("rank-mode").value : null,
-        p_patente_alvos: visibility === "patentes" ? ($("rank-mode").value === "todos" ? [] : targets) : [],
+        p_patente_alvos: visibility === "patentes" ? ($("rank-mode").value === "todos" ? [] : ranks) : [],
         p_publicado_por_tipo: identity === "pessoal" ? "pessoal" : "institucional",
-        p_publicado_por_codigo: identity === "pessoal" ? null : identity
+        p_publicado_por_codigo: identity === "pessoal" ? null : identity,
+        p_destinatarios: sectors
       });
       if (!id) throw new Error("A publicação não retornou o identificador.");
       resetEditor();
       await load();
       await openDocument(id);
-      feedback("Documento publicado. Se for restrito, cadastre os destinatários abaixo.");
+      feedback("Documento publicado com sucesso.");
     }
   } catch (error) { fail(error); }
   finally { button.disabled = false; }
@@ -530,6 +496,7 @@ function updateVisibility() {
     if (option.value !== "restrito") option.hidden = !state.central;
   }
   if (!state.central && visibility.value !== "restrito") visibility.value = "restrito";
+  $("sector-targets").hidden = visibility.value !== "restrito" || !!state.editing;
   $("rank-targets").hidden = visibility.value !== "patentes";
   $("rank-choices").hidden = $("rank-mode").value === "todos";
 }
@@ -544,47 +511,10 @@ for (const id of ["publish-cancel", "publish-cancel-bottom"]) {
     show(state.selected ? "detail-panel" : state.activeTab);
   });
 }
-$("publish-orgao").addEventListener("change", updateUnits);
-$("publish-unidade").addEventListener("change", checkTarget);
 $("publish-form").addEventListener("submit", save);
 $("close-detail").addEventListener("click", backToTab);
 $("edit-document").addEventListener("click", startEdit);
 $("delete-document").addEventListener("click", removeDocument);
-$("permission-form").addEventListener("submit", async e => {
-  e.preventDefault();
-  const doc = state.selected;
-  if (!doc) return;
-  const form = e.currentTarget;
-  const f = form.elements;
-  const button = $("permission-submit");
-  button.disabled = true;
-  try {
-    const result = await rpc("documentos_adicionar_permissao", {
-      p_documento_id: doc.id, p_tipo: f.tipo.value, p_codigo: f.codigo.value.trim()
-    });
-    if (result !== true) throw new Error("A permissão não foi confirmada.");
-    f.codigo.value = "";
-    await loadPermissions(doc.id);
-    feedback("Destinatário adicionado.");
-  } catch (error) { fail(error); }
-  finally { button.disabled = false; }
-});
-$("permissions-list").addEventListener("click", async e => {
-  const button = e.target.closest("[data-remove-type]");
-  const doc = state.selected;
-  if (!button || !doc || !confirm("Remover este destinatário?")) return;
-  button.disabled = true;
-  try {
-    const result = await rpc("documentos_remover_permissao", {
-      p_documento_id: doc.id, p_tipo: button.dataset.removeType,
-      p_codigo: button.dataset.removeCode
-    });
-    if (result !== true) throw new Error("A remoção não foi confirmada.");
-    await loadPermissions(doc.id);
-    feedback("Destinatário removido.");
-  } catch (error) { fail(error); }
-  finally { button.disabled = false; }
-});
 (async function init() {
   try {
     const { data: { session } } = await supabase.auth.getSession();
@@ -597,6 +527,7 @@ $("permissions-list").addEventListener("click", async e => {
     await loadCatalog();
     await loadInstitutionNames();
     await loadIdentities();
+    await loadSectors();
     updateVisibility();
     // A interface usa as permissões confirmadas pelo banco; o banco também
     // deve validar novamente cada operação de publicação e edição.
