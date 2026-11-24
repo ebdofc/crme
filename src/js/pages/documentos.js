@@ -5,7 +5,7 @@ const $ = id => document.getElementById(id);
 const state = {
   documents: [], selected: null, catalog: [], editor: null,
   editing: null, allowedTargets: new Set(), currentRequest: 0,
-  militarId: null, documentFilters: new Map(), filterCatalog: new Map(), manageableIds: new Set(), activeTab: "library-panel", central: false, sectors: [], identities: [], militaryNames: new Map(), institutionNames: new Map()
+  militarId: null, orderPositions: new Map(), orderDraft: [], documentFilters: new Map(), filterCatalog: new Map(), manageableIds: new Set(), activeTab: "library-panel", central: false, sectors: [], identities: [], militaryNames: new Map(), institutionNames: new Map()
 };
 const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -425,22 +425,113 @@ function updateDocumentFilter() {
   }
   if ([...select.options].some(o => o.value === current)) select.value = current;
 }
-function render() {
+function filteredDocuments() {
   const section = $("doc-section").value;
-  updateDocumentFilter();
   const selected = $("doc-filter").value;
-  renderList("doc-list", "doc-empty", state.documents.filter(d => {
+  return state.documents.filter(d => {
     const matching = section === "oficiais" ? d.visibilidade === "geral" :
       section === "patentes" ? d.visibilidade === "patentes" : d.visibilidade === "restrito";
-    if (!matching || !selected) return matching;
-    return (state.documentFilters.get(d.id) || []).some(entry =>
-      entry.tipo + ":" + entry.codigo === selected);
-  }));
+    return matching && (!selected || (state.documentFilters.get(d.id) || [])
+      .some(entry => entry.tipo + ":" + entry.codigo === selected));
+  }).sort((a, b) => {
+    const pa = state.orderPositions.get(a.id) ?? Number.MAX_SAFE_INTEGER;
+    const pb = state.orderPositions.get(b.id) ?? Number.MAX_SAFE_INTEGER;
+    return pa - pb || new Date(a.criado_em) - new Date(b.criado_em) || a.id.localeCompare(b.id);
+  });
+}
+function render() {
+  updateDocumentFilter();
+  const documents = filteredDocuments();
+  renderList("doc-list", "doc-empty", documents);
+  const canOrder = documents.length > 1 && documents.every(d => state.manageableIds.has(d.id));
+  $("doc-order-open").hidden = !canOrder;
   renderList("my-documents-list", "my-documents-empty",
     state.documents.filter(d => d.criado_por === state.militarId));
   renderList("manage-documents-list", "manage-documents-empty",
     state.documents.filter(d => state.manageableIds.has(d.id)));
 }
+async function loadOrderPositions() {
+  const { data, error } = await supabase.from("documentos_ordem").select("documento_id,posicao");
+  if (error) {
+    // Antes de executar a migração, a biblioteca permanece utilizável.
+    state.orderPositions = new Map();
+    return;
+  }
+  state.orderPositions = new Map((data || []).map(row => [row.documento_id, row.posicao]));
+}
+function moveOrder(from, to) {
+  if (from === to || from < 0 || to < 0 || to >= state.orderDraft.length) return;
+  const [doc] = state.orderDraft.splice(from, 1);
+  state.orderDraft.splice(to, 0, doc);
+  drawOrderList();
+}
+function drawOrderList() {
+  const list = $("doc-order-list");
+  list.replaceChildren();
+  state.orderDraft.forEach((doc, index) => {
+    const item = document.createElement("div");
+    item.className = "doc-order-item";
+    item.draggable = true;
+    item.dataset.id = doc.id;
+    const grip = document.createElement("span");
+    grip.className = "doc-order-grip";
+    grip.textContent = "⠿";
+    grip.title = "Arraste para reorganizar";
+    const title = document.createElement("span");
+    title.className = "doc-order-title";
+    title.textContent = doc.titulo;
+    const up = document.createElement("button");
+    up.type = "button"; up.textContent = "↑"; up.title = "Subir";
+    up.disabled = index === 0;
+    up.addEventListener("click", () => moveOrder(index, index - 1));
+    const down = document.createElement("button");
+    down.type = "button"; down.textContent = "↓"; down.title = "Descer";
+    down.disabled = index === state.orderDraft.length - 1;
+    down.addEventListener("click", () => moveOrder(index, index + 1));
+    item.append(grip, title, up, down);
+    item.addEventListener("dragstart", event => {
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", doc.id);
+      item.classList.add("doc-order-dragging");
+    });
+    item.addEventListener("dragend", () => item.classList.remove("doc-order-dragging"));
+    item.addEventListener("dragover", event => { event.preventDefault(); event.dataTransfer.dropEffect = "move"; });
+    item.addEventListener("drop", event => {
+      event.preventDefault();
+      const dragged = event.dataTransfer.getData("text/plain");
+      moveOrder(state.orderDraft.findIndex(d => d.id === dragged), index);
+    });
+    list.append(item);
+  });
+}
+function openOrderDialog() {
+  state.orderDraft = [...filteredDocuments()];
+  if (state.orderDraft.length < 2 || !state.orderDraft.every(d => state.manageableIds.has(d.id))) return;
+  $("doc-order-error").hidden = true;
+  drawOrderList();
+  $("doc-order-dialog").showModal();
+}
+async function saveOrder() {
+  const button = $("doc-order-save");
+  button.disabled = true;
+  $("doc-order-error").hidden = true;
+  try {
+    const result = await rpc("documentos_reordenar", {
+      p_secao: $("doc-section").value,
+      p_filtro: $("doc-filter").value || null,
+      p_documentos: state.orderDraft.map(d => d.id)
+    });
+    if (result !== true) throw new Error("A nova ordem não foi confirmada.");
+    await loadOrderPositions();
+    render();
+    $("doc-order-dialog").close();
+    feedback("Ordem dos documentos atualizada com sucesso.");
+  } catch (error) {
+    $("doc-order-error").textContent = error.message || String(error);
+    $("doc-order-error").hidden = false;
+  } finally { button.disabled = false; }
+}
+
 async function loadDocumentFilters() {
   const data = await rpc("documentos_filtros_disponiveis");
   state.documentFilters = new Map();
@@ -457,6 +548,7 @@ async function load() {
   state.documents = data || [];
   await loadMilitaryNames(state.documents);
   await loadDocumentFilters();
+  await loadOrderPositions();
   const rights = await Promise.all(state.documents.map(async d => {
     try {
       return await rpc("documentos_pode_gerenciar", { p_documento_id: d.id }) === true;
@@ -711,6 +803,9 @@ $("rank-mode").addEventListener("change", () => { renderRankChoices(); updateVis
 $("doc-section").addEventListener("change", () => { $("doc-filter").value = ""; render(); });
 $("doc-filter").addEventListener("change", render);
 
+$("doc-order-open").addEventListener("click", openOrderDialog);
+$("doc-order-cancel").addEventListener("click", () => $("doc-order-dialog").close());
+$("doc-order-save").addEventListener("click", saveOrder);
 $("new-document").addEventListener("click", startNew);
 for (const id of ["publish-cancel", "publish-cancel-bottom"]) {
   $(id).addEventListener("click", () => {
