@@ -1,3 +1,29 @@
+const rotuloCPO = valor => {
+    const texto = String(valor ?? '').trim();
+    if (!texto) return '—';
+    const rotulos = {
+        ativo:'Ativo', afastado:'Afastado', desligado:'Desligado',
+        favoravel:'Favorável', desfavoravel:'Desfavorável', contrario:'Contrário', abstencao:'Abstenção',
+        aprovada:'Aprovada', rejeitada:'Rejeitada', aprovado:'Aprovado', reprovado:'Reprovado',
+        aprovacao:'Aprovação', reprovacao:'Reprovação',
+        aguardando_avaliacao:'Aguardando avaliação', em_avaliacao:'Em avaliação',
+        aguardando_validacao:'Aguardando validação', em_deliberacao:'Em deliberação',
+        concluida:'Concluída', arquivada:'Arquivada', indicacoes_abertas:'Indicações abertas',
+        aguardando_homologacao:'Aguardando homologação', encerrado:'Encerrado', cancelado:'Cancelado',
+        empate:'Empate', desempate:'Desempate', sem_votos_validos:'Ausência de votos válidos',
+        ausencia_votos_validos:'Ausência de votos válidos', aguardando_desempate:'Aguardando desempate',
+        aguardando_decisao:'Aguardando decisão', aguardando_decisao_presidencia:'Aguardando decisão da Presidência',
+        revisao_diretor:'Revisão do diretor', revisao_do_diretor:'Revisão do diretor',
+        devolvida_para_revisao:'Devolvida para revisão', devolucao_revisao:'Devolução para revisão',
+        assumiu_avaliacao:'Assumiu a avaliação', liberou_avaliacao:'Liberou a avaliação',
+        avocou_avaliacao:'Avocou a avaliação', resultado_revisao:'Resultado da revisão',
+        votos_favoraveis:'Votos favoráveis', votos_contrarios:'Votos contrários', votos_abstencoes:'Abstenções',
+        reingresso:'Reingresso', advertencia_escrita:'Advertência escrita'
+    };
+    if (Object.hasOwn(rotulos, texto)) return rotulos[texto];
+    const legivel = texto.replaceAll('_', ' ');
+    return legivel.charAt(0).toLocaleUpperCase('pt-BR') + legivel.slice(1);
+};
 import { supabase } from "../supabase.js";
 import { carregarAcessoCPO } from "./ciclos-permissoes.js";
 import { criarInterfaceDAP } from "./ciclos-dap.js";
@@ -256,7 +282,7 @@ function renderIndicacoesReais() {
     const cab=sectionHeading('Indicações','Lista pública dos oficiais indicados para o CPO atual.',nova);
     const lista=state.listaIndicacoes;
     const linhas=lista?.indicacoes || [];
-    const registros=linhas.map(x=>`<tr><td><span class="cpo-row-name">${esc(x.nome)}</span></td><td>${esc(x.status)}</td></tr>`).join('');
+    const registros=linhas.map(x=>`<tr><td><span class="cpo-row-name">${esc(x.nome)}</span></td><td>${esc(rotuloCPO(x.status))}</td></tr>`).join('');
     const corpo=state.carregandoIndicacoes?'Consultando indicações...':state.erroIndicacoes?`Erro: ${state.erroIndicacoes}`:'Nenhum militar encontrado nesta categoria.';
     const paginas=Math.max(1,Number(lista?.total_paginas)||1);
     const pagina=Number(lista?.pagina)||state.indicacoesPagina;
@@ -306,7 +332,7 @@ function renderDeliberacoesReais() {
     const resultados=linhas.map(x=>{
         const contagem=x.contagem;
         const detalhe=contagem ? ` · ${Number(contagem.favoraveis)||0} favoráveis, ${Number(contagem.contrarios)||0} contrários, ${Number(contagem.abstencoes)||0} abstenções` : '';
-        const situacao=x.aguardando_decisao_presidencia ? 'Aguardando decisão da Presidência' : x.resultado_deliberacao ? String(x.resultado_deliberacao).replaceAll('_',' ') : x.ja_votou ? 'Voto registrado' : x.votacao_aberta ? 'Aguardando voto' : 'Votação encerrada';
+        const situacao=x.aguardando_decisao_presidencia ? 'Aguardando decisão da Presidência' : x.resultado_deliberacao ? rotuloCPO(x.resultado_deliberacao) : x.ja_votou ? 'Voto registrado' : x.votacao_aberta ? 'Aguardando voto' : 'Votação encerrada';
         return `<tr><td><span class="cpo-row-name">${esc(x.nome)}</span></td><td>${esc(x.patente_atual)} → ${esc(x.patente_pretendida)}</td><td>${x.media_dap==null?'—':esc(x.media_dap)}</td><td>${esc(situacao)}${x.meu_voto?`<div class="cpo-muted">Meu voto: ${esc(votos[x.meu_voto]||x.meu_voto)}</div>`:''}${contagem?`<div class="cpo-muted">${esc(detalhe.slice(3))}</div>`:''}</td><td>${button(x.aguardando_decisao_presidencia?'Decidir':x.pode_votar?'Consultar e votar':'Consultar','real-ace-open',{secondary:!x.aguardando_decisao_presidencia,small:true,arg:x.indicacao_id})}</td></tr>`;
     }).join('');
     const aviso=state.carregandoDeliberacoes?'Consultando deliberações...':state.erroDeliberacoes?`Erro: ${state.erroDeliberacoes}`:'Nenhuma deliberação nesta categoria.';
@@ -352,27 +378,27 @@ function renderDeliberacaoDetalheReal() {
       ${button('Prosseguir para confirmação','real-ace-decision',{disabled:!['favoravel','contrario'].includes(state.decisaoEscolhida)})}`}
       </section>` : '';
     const registroPresidencia=decisaoAnterior && typeof decisaoAnterior==='object' ? `<section class="cpo-panel-card"><h4>Decisão da Presidência</h4>
-      <p><strong>Decisão:</strong> ${esc(rotuloVoto[decisaoAnterior.decisao]||decisaoAnterior.decisao||'—')}</p>
+      <p><strong>Decisão:</strong> ${esc(decisaoAnterior.decisao==='contrario'?'Contrária':rotuloCPO(decisaoAnterior.decisao))}</p>
       <p><strong>Responsável:</strong> ${esc(decisaoAnterior.responsavel_nome||'—')} · <strong>Data:</strong> ${esc(data(decisaoAnterior.decidido_em))}</p></section>` : '';
     return `<div class="cpo-detail">${detailHead(i.nome||'Deliberação','Alto-Comando do Exército — ACE')}
       <section class="cpo-panel-card"><h4>Indicação</h4><div class="cpo-data-grid">
       <div>${caps('Patente atual')}<strong>${esc(i.patente_atual)}</strong></div><div>${caps('Patente pretendida')}<strong>${esc(i.patente_pretendida)}</strong></div>
-      <div>${caps('Indicado por')}<strong>${esc(i.indicado_por||'—')}</strong></div><div>${caps('Prazo da votação')}<strong>${esc(d.prazo_votacao||'—')}</strong></div></div>
+      <div>${caps('Indicado por')}<strong>${esc(i.indicado_por||'—')}</strong></div><div>${caps('Prazo da votação')}<strong>${esc(formatarDataCivil(d.prazo_votacao))}</strong></div></div>
       <p><strong>Justificativa:</strong> ${esc(i.justificativa_indicacao||'—')}</p></section>
       <section class="cpo-panel-card"><h4>Parecer da DAP</h4><p><strong>Avaliador:</strong> ${esc(a.avaliador||'—')} · <strong>Validador:</strong> ${esc(a.validado_por||'—')}</p>
-      <p><strong>Média:</strong> ${a.media==null?'—':esc(a.media)} · <strong>Recomendação:</strong> ${esc(a.recomendacao||'—')}</p>
+      <p><strong>Média:</strong> ${a.media==null?'—':esc(a.media)} · <strong>Recomendação:</strong> ${esc(rotuloCPO(a.recomendacao))}</p>
       <p style="white-space:pre-wrap"><strong>Relatório:</strong> ${esc(a.relatorio||'—')}</p></section>
       <section class="cpo-panel-card"><h4>Votação</h4>
-      ${v.ja_votou?`<p>${status('Voto registrado','success')} Seu voto: <strong>${esc(rotuloVoto[v.voto]||v.voto)}</strong> · ${esc(data(v.registrado_em))}</p>`:''}
+      ${v.ja_votou?`<p>${status('Voto registrado','success')} Seu voto: <strong>${esc(rotuloCPO(v.voto))}</strong> · ${esc(data(v.registrado_em))}</p>`:''}
       ${v.pode_votar&&!state.registrandoVoto?`<p>Selecione uma opção. O voto será definitivo após a confirmação.</p>
       <div class="cpo-field"><label for="cpo-real-vote">Seu voto</label><select id="cpo-real-vote"><option value="">Selecione...</option>${Object.entries(rotuloVoto).map(([k,l])=>`<option value="${k}" ${state.votoEscolhido===k?'selected':''}>${l}</option>`).join('')}</select></div>
       ${button('Prosseguir para confirmação','real-ace-vote',{disabled:!state.votoEscolhido})}`:''}
       ${state.registrandoVoto?'<p>Registrando voto...</p>':''}
       ${!v.pode_votar&&!v.ja_votou?'<p>Esta indicação não está disponível para seu voto.</p>':''}
       ${cont?`<p><strong>Contagem:</strong> ${Number(cont.favoraveis)||0} favoráveis · ${Number(cont.contrarios)||0} contrários · ${Number(cont.abstencoes)||0} abstenções</p>`:''}
-      ${ap.resultado_calculado?`<p><strong>Resultado calculado:</strong> ${esc(ap.resultado_calculado)}</p>`:''}
-      ${ap.resultado_oficial?`<p><strong>Resultado oficial:</strong> ${esc(ap.resultado_oficial)}</p>`:''}
-      ${Array.isArray(ap.votos_identificados)?`<h4>Votos após encerramento</h4>${ap.votos_identificados.length?ap.votos_identificados.map(x=>`<p>${esc(x.eleitor_nome||'—')}: ${esc(rotuloVoto[x.voto]||x.voto)}</p>`).join(''):'<p>Nenhum voto registrado.</p>'}`:''}
+      ${ap.resultado_calculado?`<p><strong>Resultado calculado:</strong> ${esc(rotuloCPO(ap.resultado_calculado))}</p>`:''}
+      ${ap.resultado_oficial?`<p><strong>Resultado oficial:</strong> ${esc(rotuloCPO(ap.resultado_oficial))}</p>`:''}
+      ${Array.isArray(ap.votos_identificados)?`<h4>Votos após encerramento</h4>${ap.votos_identificados.length?ap.votos_identificados.map(x=>`<p>${esc(x.eleitor_nome||'—')}: ${esc(rotuloCPO(x.voto))}</p>`).join(''):'<p>Nenhum voto registrado.</p>'}`:''}
       </section>${painelPresidencia}${registroPresidencia}</div>`;
 }
 function confirmarVotoReal() {
@@ -442,7 +468,7 @@ function renderFormularioIndicacaoReal() {
        ${button(state.consultandoIndicado?'Consultando...':'Consultar','real-lookup',{secondary:true,disabled:bloqueado})}</div></div>
        ${i?`<section class="cpo-panel-card"><h4>Militar localizado</h4><div class="cpo-data-grid">
           <div>${caps('Nome')}<strong>${esc(i.nome)}</strong></div>
-          <div>${caps('Situação')}<strong>${esc(i.status)}</strong></div>
+          <div>${caps('Situação')}<strong>${esc(rotuloCPO(i.status))}</strong></div>
           <div>${caps('Patente atual')}<strong>${esc(i.patente_atual)}</strong></div>
           <div>${caps('Patente pretendida')}<strong>${esc(i.proxima_patente)}</strong></div>
        </div></section>
