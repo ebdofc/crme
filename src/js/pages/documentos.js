@@ -98,12 +98,12 @@ function ensureEditor() {
   state.editor = new window.Quill("#doc-editor", {
     theme: "snow",
     placeholder: "Redija o conteúdo do documento...",
-    modules: { toolbar: [
+    modules: { toolbar: { container: [
       [{ header: [1, 2, 3, false] }],
       ["bold", "italic", "underline", "strike"],
       [{ list: "ordered" }, { list: "bullet" }],
       [{ align: [] }], ["blockquote", "link"], ["divider"], ["clean"]
-    ], handlers: { divider() { insertDivider(this.quill); } } },
+    ], handlers: { divider() { insertDivider(this.quill); } } } },
     formats: ["header", "bold", "italic", "underline", "strike", "list", "align", "blockquote", "link", "divider"]
   });
   return state.editor;
