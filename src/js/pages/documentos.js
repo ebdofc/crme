@@ -572,9 +572,13 @@ async function openDocument(id) {
     state.selected = doc;
     $("detail-title").textContent = doc.titulo;
     await loadMilitaryNames([doc]);
-    $("detail-meta").textContent = ["Publicado por " + authorLabel(doc), doc.categoria,
-      doc.visibilidade === "geral" ? "Oficial" : doc.visibilidade === "patentes" ? "Por patente" : "Setorial", formatDate(doc.criado_em)]
-      .filter(Boolean).join(" · ");
+    $("detail-category").textContent = doc.categoria || "Institucional";
+    $("detail-author").textContent = "Publicado por " + authorLabel(doc);
+    const formatNewsDate = value => value ? new Intl.DateTimeFormat("pt-BR", {dateStyle:"short",timeStyle:"short"}).format(new Date(value)) : "—";
+    $("detail-date").textContent = "Publicado em " + formatNewsDate(doc.criado_em);
+    const changed = doc.atualizado_em && doc.criado_em && new Date(doc.atualizado_em) - new Date(doc.criado_em) > 1000;
+    $("detail-updated").hidden = !changed;
+    $("detail-updated").textContent = changed ? "Atualizado em " + formatNewsDate(doc.atualizado_em) : "";
     $("detail-description").textContent = doc.descricao || "";
     $("document-content").innerHTML = sanitizeHtml(doc.conteudo);
     $("manage-panel").hidden = true;
