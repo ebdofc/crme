@@ -528,3 +528,11 @@ body.doc-resizing { cursor: col-resize !important; user-select: none !important;
   #doc-library-layout.doc-reading .doc-resize-handle { display: none; }
   #doc-library-layout.doc-reading #detail-panel { padding: 20px; }
 }
+
+/* A leitura mantém apenas a moldura externa do painel. */
+#doc-library-layout.doc-reading #detail-panel .news-article {
+  border: 0;
+  box-shadow: none;
+  outline: 0;
+  background: transparent;
+}
