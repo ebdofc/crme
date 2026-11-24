@@ -619,6 +619,60 @@ async function removeDocument() {
     feedback("Documento excluído.");
   } catch (error) { fail(error); }
 }
+
+/* Divisor acessível por mouse, toque e teclado. */
+function setupDocumentResize() {
+  const layout = $("doc-library-layout");
+  const handle = $("doc-resize-handle");
+  const min = 40, max = 85;
+  let width = 70;
+  try {
+    const saved = Number(localStorage.getItem("crme-document-reader-width"));
+    if (Number.isFinite(saved) && saved >= min && saved <= max) width = saved;
+  } catch { /* Usa o padrão se armazenamento estiver indisponível. */ }
+  function apply(value, persist = false) {
+    width = Math.max(min, Math.min(max, Math.round(value)));
+    layout.style.setProperty("--doc-reader-width", width + "%");
+    handle.setAttribute("aria-valuenow", String(width));
+    handle.setAttribute("aria-valuetext", width + "% para o documento");
+    if (persist) {
+      try { localStorage.setItem("crme-document-reader-width", String(width)); }
+      catch { /* Preferência opcional. */ }
+    }
+  }
+  apply(width);
+  handle.addEventListener("pointerdown", event => {
+    if (event.button !== 0 || !layout.classList.contains("doc-reading")) return;
+    event.preventDefault();
+    handle.setPointerCapture(event.pointerId);
+    document.body.classList.add("doc-resizing");
+  });
+  handle.addEventListener("pointermove", event => {
+    if (!handle.hasPointerCapture(event.pointerId)) return;
+    const rect = layout.getBoundingClientRect();
+    if (rect.width > 0) apply(((event.clientX - rect.left - 10) / rect.width) * 100);
+  });
+  function finish(event) {
+    if (!handle.hasPointerCapture(event.pointerId)) return;
+    handle.releasePointerCapture(event.pointerId);
+    document.body.classList.remove("doc-resizing");
+    apply(width, true);
+  }
+  handle.addEventListener("pointerup", finish);
+  handle.addEventListener("pointercancel", finish);
+  handle.addEventListener("lostpointercapture", () => document.body.classList.remove("doc-resizing"));
+  handle.addEventListener("keydown", event => {
+    const step = event.shiftKey ? 10 : 2;
+    if (event.key === "ArrowLeft") apply(width - step, true);
+    else if (event.key === "ArrowRight") apply(width + step, true);
+    else if (event.key === "Home") apply(min, true);
+    else if (event.key === "End") apply(max, true);
+    else return;
+    event.preventDefault();
+  });
+}
+setupDocumentResize();
+
 document.querySelectorAll("[data-doc-tab]").forEach(button => {
   button.addEventListener("click", () => show(button.dataset.docTab));
 });
