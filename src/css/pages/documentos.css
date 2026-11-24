@@ -411,3 +411,24 @@
   background: #f7f8f5;
   box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
 }
+
+/* Divisória inserida manualmente pelo botão do Quill. */
+#doc-editor .ql-editor h1, #doc-editor .ql-editor h2, #doc-editor .ql-editor h3,
+.doc-content.ql-editor h1, .doc-content.ql-editor h2, .doc-content.ql-editor h3 {
+  border: 0 !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+#doc-editor .ql-editor hr, .doc-content.ql-editor hr {
+  border: 0;
+  border-top: 1px solid #aeb8a8;
+  margin: 18px 0;
+}
+#publish-panel .ql-toolbar button.ql-divider::before {
+  content: "―";
+  display: block;
+  font-size: 19px;
+  line-height: 22px;
+  font-weight: 700;
+  text-align: center;
+}
