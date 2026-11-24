@@ -308,8 +308,8 @@ async function loadInstitutionNames() {
   }
   state.institutionNames.set("ACE/P", "Presidência do Alto-Comando do Exército");
   state.institutionNames.set("ACE/ACE", "Conselho do Alto-Comando do Exército");
-  state.institutionNames.set("DEC/D", "Diretoria do Departamento de Educação e Ciência");
-  state.institutionNames.set("DTC/D", "Diretoria do Departamento de Tecnologia e Comunicação");
+  state.institutionNames.set("DEC/D", "Direção do Departamento de Educação e Ciência");
+  state.institutionNames.set("DTC/D", "Direção do Departamento de Tecnologia e Comunicação");
   state.institutionNames.set("DGP/DG", "Direção-Geral do Departamento-Geral do Pessoal");
   state.institutionNames.set("EME/Ch", "Chefia do Estado-Maior do Exército");
 }
