@@ -25,10 +25,12 @@ function feedback(text, error = false) {
 function fail(error) { feedback(error?.message || String(error), true); }
 const tabIds = ["library-panel", "my-documents-panel", "manage-documents-panel"];
 function show(panel) {
+  const reading = panel === "detail-panel";
   const isTab = tabIds.includes(panel);
-  for (const id of [...tabIds, "publish-panel", "detail-panel"]) {
-    $(id).hidden = id !== panel;
-  }
+  for (const id of tabIds) $(id).hidden = reading ? id !== "library-panel" : id !== panel;
+  $("publish-panel").hidden = panel !== "publish-panel";
+  $("detail-panel").hidden = !reading;
+  $("doc-library-layout").classList.toggle("doc-reading", reading);
   $("document-tabs").hidden = !isTab;
   $("new-document").hidden = !isTab || state.catalog.length === 0;
   if (isTab) {
@@ -353,7 +355,9 @@ async function loadInstitutionNames() {
 function documentCard(doc) {
   const card = document.createElement("button");
   card.type = "button";
+  card.dataset.documentId = doc.id;
   card.className = "news-card";
+  if (state.selected?.id === doc.id) card.classList.add("doc-selected");
   const meta = document.createElement("div");
   meta.className = "news-card-header";
   const category = document.createElement("span");
@@ -366,8 +370,8 @@ function documentCard(doc) {
   const desc = document.createElement("span");
   desc.className = "news-card-description";
   const plain = new DOMParser().parseFromString(sanitizeHtml(doc.conteudo || ""), "text/html").body.textContent.trim();
-  desc.textContent = (plain || doc.descricao || "").slice(0, 220) +
-    ((plain || doc.descricao || "").length > 220 ? "..." : "");
+  const summary = doc.descricao || plain || "";
+  desc.textContent = summary.slice(0, 220) + (summary.length > 220 ? "..." : "");
   const footer = document.createElement("div");
   footer.className = "news-card-footer";
   const origin = document.createElement("span");
@@ -483,6 +487,7 @@ async function openDocument(id) {
     $("document-content").innerHTML = sanitizeHtml(doc.conteudo);
     $("manage-panel").hidden = true;
     show("detail-panel");
+    document.querySelectorAll("#doc-list .news-card").forEach(card => card.classList.toggle("doc-selected", card.dataset.documentId === id));
     const allowed = await rpc("documentos_pode_gerenciar", { p_documento_id: id });
     if (request !== state.currentRequest || !allowed) return;
     $("manage-panel").hidden = false;

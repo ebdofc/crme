@@ -432,3 +432,57 @@
   font-weight: 700;
   text-align: center;
 }
+
+/* Leitura em duas colunas: documento (60%) e biblioteca (40%). */
+#doc-library-layout { min-width: 0; }
+#doc-library-layout.doc-reading {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(260px, 2fr);
+  gap: 20px;
+  align-items: start;
+}
+#doc-library-layout .doc-library-sidebar { min-width: 0; }
+#doc-library-layout.doc-reading #detail-panel {
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  border: 1px solid #d5d8d2;
+  background: #fff;
+}
+#doc-library-layout.doc-reading #detail-panel .news-article { min-width: 0; padding: 0; }
+#doc-library-layout.doc-reading #doc-list { display: flex; flex-direction: column; gap: 10px; }
+#doc-library-layout .news-card.doc-selected {
+  border-color: #596e50;
+  background: #e9efe5;
+}
+#doc-library-layout.doc-reading .doc-section-picker,
+#doc-library-layout.doc-reading .doc-filter-wrap {
+  flex-wrap: wrap;
+  padding: 10px;
+  gap: 8px;
+}
+#doc-library-layout.doc-reading .doc-section-picker select,
+#doc-library-layout.doc-reading .doc-filter-wrap select { max-width: 100%; }
+@media (max-width: 1050px) {
+  #doc-library-layout.doc-reading { grid-template-columns: minmax(0, 1fr); }
+  #doc-library-layout.doc-reading #detail-panel { order: 0; }
+  #doc-library-layout.doc-reading .doc-library-sidebar { order: 1; }
+}
+
+/* Espaçamento compacto: linhas consecutivas não ganham margens extras. */
+#doc-editor .ql-editor, .doc-content.ql-editor {
+  line-height: 1.45;
+}
+#doc-editor .ql-editor p, .doc-content.ql-editor p,
+#doc-editor .ql-editor ol, .doc-content.ql-editor ol,
+#doc-editor .ql-editor ul, .doc-content.ql-editor ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+#doc-editor .ql-editor h1, #doc-editor .ql-editor h2, #doc-editor .ql-editor h3,
+.doc-content.ql-editor h1, .doc-content.ql-editor h2, .doc-content.ql-editor h3 {
+  line-height: 1.35;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+#doc-editor .ql-editor > :first-child, .doc-content.ql-editor > :first-child { margin-top: 0; }

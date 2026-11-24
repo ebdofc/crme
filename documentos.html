@@ -53,6 +53,26 @@
                 <button class="news-tab" data-doc-tab="manage-documents-panel" id="manage-documents-tab" type="button" hidden>Gerenciar publicações</button>
             </div>
             <section id="library-panel" class="news-panel documentos-page">
+                <div class="doc-library-layout" id="doc-library-layout">
+        <section id="detail-panel" class="doc-detail-panel" hidden>
+            <button id="close-detail" type="button" class="secondary">Voltar</button>
+            <article class="news-article">
+                <h1 id="detail-title">Documento</h1>
+            <p id="detail-meta" class="news-metadata doc-meta"></p>
+            <p id="detail-description"></p>
+            <div id="document-content" class="news-content ql-editor doc-content" aria-label="Conteúdo do documento"></div>
+
+            <div id="manage-panel" hidden>
+                <h3>Gerenciar documento</h3>
+                <div class="doc-actions">
+                    <button id="edit-document" type="button">Editar documento</button>
+                    <button id="delete-document" type="button" class="danger">Excluir documento</button>
+                </div>
+
+            </div>
+            </article>
+        </section>
+                <div class="doc-library-sidebar">
                 <div class="doc-section-picker"><label for="doc-section">Seção de documentos</label><select id="doc-section"><option value="oficiais">Documentos oficiais</option><option value="setoriais">Documentos setoriais</option><option value="patentes">Documentos por patente</option></select></div>
                 <div id="doc-filter-wrap" class="doc-filter-wrap" hidden>
                     <label for="doc-filter" id="doc-filter-label">Filtrar documentos</label>
@@ -60,6 +80,8 @@
                 </div>
                 <div id="doc-list" class="news-list"><p>Carregando documentos...</p></div>
                 <div id="doc-empty" class="news-empty" hidden>Nenhum documento disponível.</div>
+                </div>
+                </div>
             </section>
             <section id="my-documents-panel" class="news-panel" hidden>
                 <h2>Minhas publicações</h2>
@@ -129,24 +151,7 @@
             </form>
         </section>
 
-        <section id="detail-panel" class="doc-detail-panel" hidden>
-            <button id="close-detail" type="button" class="secondary">Voltar</button>
-            <article class="news-article">
-                <h1 id="detail-title">Documento</h1>
-            <p id="detail-meta" class="news-metadata doc-meta"></p>
-            <p id="detail-description"></p>
-            <div id="document-content" class="news-content ql-editor doc-content" aria-label="Conteúdo do documento"></div>
 
-            <div id="manage-panel" hidden>
-                <h3>Gerenciar documento</h3>
-                <div class="doc-actions">
-                    <button id="edit-document" type="button">Editar documento</button>
-                    <button id="delete-document" type="button" class="danger">Excluir documento</button>
-                </div>
-
-            </div>
-            </article>
-        </section>
 
         </section>
 
