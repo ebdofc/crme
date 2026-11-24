@@ -168,73 +168,96 @@ function renderSectorChoices() {
     container.textContent = "Nenhum setor destinatário autorizado.";
     return;
   }
-  const entries = new Map();
-  const createChoice = (sector, parent) => {
+
+  const available = new Map(state.sectors.map(sector => [sector.codigo, sector]));
+  const names = new Map([
+    ["DEC", "Departamento de Educação e Ciência"],
+    ["DGP", "Departamento-Geral do Pessoal"],
+    ["DTC", "Departamento de Tecnologia e Comunicação"],
+    ["DEC/DEA", "Diretoria de Ensino Avançado"],
+    ["DEC/DEB", "Diretoria de Ensino Básico"]
+  ]);
+  const nodes = new Map();
+  const ensure = code => {
+    if (nodes.has(code)) return nodes.get(code);
+    const parentCode = code.includes("/") ? code.slice(0, code.lastIndexOf("/")) : null;
+    const node = { code, parentCode, children: [], sector: available.get(code) || null };
+    nodes.set(code, node);
+    if (parentCode) ensure(parentCode).children.push(node);
+    return node;
+  };
+  for (const sector of state.sectors) ensure(sector.codigo);
+
+  const selected = new Map();
+  const createOption = (node, host) => {
     const label = document.createElement("label");
     label.className = "doc-sector-option";
     const input = document.createElement("input");
     input.type = "checkbox";
-    input.value = sector.codigo;
+    input.value = node.code;
     const name = document.createElement("span");
-    name.textContent = sector.nome;
+    name.textContent = node.sector.nome;
     label.append(input, name);
-    parent.append(label);
-    entries.set(sector.codigo, { sector, input, label });
-    return input;
-  };
-  const roots = state.sectors.filter(s => !s.codigo.includes("/"));
-  for (const root of roots) {
-    const group = document.createElement("section");
-    group.className = "doc-sector-group";
-    const heading = document.createElement("div");
-    heading.className = "doc-sector-heading";
-    const title = document.createElement("strong");
-    title.textContent = root.nome;
-    heading.append(title);
-    group.append(heading);
-    const children = state.sectors.filter(s => s.codigo.startsWith(root.codigo + "/"));
-    if (!children.length) {
-      createChoice(root, group);
-    } else {
-      createChoice(root, group);
-      const branches = document.createElement("div");
-      branches.className = "doc-sector-branches";
-      const firstLevel = children.filter(s => s.codigo.split("/").length === 2);
-      for (const sector of firstLevel) {
-        const branch = document.createElement("div");
-        branch.className = "doc-sector-branch";
-        createChoice(sector, branch);
-        const nested = children.filter(s => s.codigo.startsWith(sector.codigo + "/"));
-        if (nested.length) {
-          const leaf = document.createElement("div");
-          leaf.className = "doc-sector-leaves";
-          for (const child of nested) createChoice(child, leaf);
-          branch.append(leaf);
-        }
-        branches.append(branch);
-      }
-      group.append(branches);
-    }
-    container.append(group);
-  }
-  // A escolha de um setor superior já abrange suas unidades subordinadas.
-  for (const [code, entry] of entries) {
-    entry.input.addEventListener("change", () => {
-      if (entry.input.checked) {
-        for (const [childCode, child] of entries) {
-          if (childCode.startsWith(code + "/")) child.input.checked = false;
-        }
-        for (const [parentCode, parent] of entries) {
-          if (code.startsWith(parentCode + "/") && parent.input.checked) parent.input.checked = false;
+    host.append(label);
+    selected.set(node.code, { input, label });
+    input.addEventListener("change", () => {
+      if (input.checked) {
+        // Um setor superior já inclui seus subordinados, mas não uma direção
+        // exclusiva: a direção é uma permissão independente.
+        for (const [otherCode, other] of selected) {
+          if (otherCode !== node.code && otherCode.startsWith(node.code + "/") &&
+              !otherCode.endsWith("/D") && otherCode !== "DGP/DG") {
+            other.input.checked = false;
+          }
         }
       }
-      for (const [childCode, child] of entries) {
-        const covered = [...entries].some(([parentCode, parent]) =>
-          parent.input.checked && childCode.startsWith(parentCode + "/"));
-        child.label.classList.toggle("doc-sector-covered", covered);
-      }
+      refresh();
     });
+  };
+  const isExclusive = code => [
+    "DGP/DG", "DEC/D", "DEC/DEA/D", "DEC/DEB/D", "DTC/D"
+  ].includes(code);
+  function refresh() {
+    for (const [code, item] of selected) {
+      const covered = [...selected].some(([ancestor, other]) =>
+        ancestor !== code && other.input.checked &&
+        code.startsWith(ancestor + "/") && !isExclusive(code));
+      item.label.classList.toggle("doc-sector-covered", covered);
+      item.input.disabled = covered;
+      if (covered) item.input.checked = false;
+    }
   }
+  function renderNode(node, host, depth = 0) {
+    const section = document.createElement("div");
+    section.className = depth === 0 ? "doc-sector-group" :
+      depth === 1 ? "doc-sector-branch" : "doc-sector-leaf";
+    if (depth === 0) {
+      const heading = document.createElement("div");
+      heading.className = "doc-sector-heading";
+      const title = document.createElement("strong");
+      title.textContent = node.sector?.nome || names.get(node.code) || node.code;
+      heading.append(title);
+      section.append(heading);
+    }
+    if (node.sector) createOption(node, section);
+    else if (depth > 0) {
+      const title = document.createElement("div");
+      title.className = "doc-sector-subheading";
+      title.textContent = names.get(node.code) || node.code;
+      section.append(title);
+    }
+    if (node.children.length) {
+      const wrapper = document.createElement("div");
+      wrapper.className = depth === 0 ? "doc-sector-branches" : "doc-sector-leaves";
+      for (const child of node.children) renderNode(child, wrapper, depth + 1);
+      section.append(wrapper);
+    }
+    host.append(section);
+  }
+  for (const node of nodes.values()) {
+    if (!node.parentCode) renderNode(node, container);
+  }
+  refresh();
 }
 function selectedSectors() {
   return [...document.querySelectorAll("#sector-choices input:checked")].map(input => input.value);
