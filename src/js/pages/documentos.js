@@ -164,16 +164,77 @@ async function loadSectors() {
 function renderSectorChoices() {
   const container = $("sector-choices");
   container.replaceChildren();
-  for (const sector of state.sectors) {
+  if (!state.sectors.length) {
+    container.textContent = "Nenhum setor destinatário autorizado.";
+    return;
+  }
+  const entries = new Map();
+  const createChoice = (sector, parent) => {
     const label = document.createElement("label");
-    label.style.paddingLeft = (Math.max(0, sector.nivel || 0) * 18) + "px";
+    label.className = "doc-sector-option";
     const input = document.createElement("input");
     input.type = "checkbox";
     input.value = sector.codigo;
-    label.append(input, document.createTextNode(sector.nome));
-    container.append(label);
+    const name = document.createElement("span");
+    name.textContent = sector.nome;
+    label.append(input, name);
+    parent.append(label);
+    entries.set(sector.codigo, { sector, input, label });
+    return input;
+  };
+  const roots = state.sectors.filter(s => !s.codigo.includes("/"));
+  for (const root of roots) {
+    const group = document.createElement("section");
+    group.className = "doc-sector-group";
+    const heading = document.createElement("div");
+    heading.className = "doc-sector-heading";
+    const title = document.createElement("strong");
+    title.textContent = root.nome;
+    heading.append(title);
+    group.append(heading);
+    const children = state.sectors.filter(s => s.codigo.startsWith(root.codigo + "/"));
+    if (!children.length) {
+      createChoice(root, group);
+    } else {
+      createChoice(root, group);
+      const branches = document.createElement("div");
+      branches.className = "doc-sector-branches";
+      const firstLevel = children.filter(s => s.codigo.split("/").length === 2);
+      for (const sector of firstLevel) {
+        const branch = document.createElement("div");
+        branch.className = "doc-sector-branch";
+        createChoice(sector, branch);
+        const nested = children.filter(s => s.codigo.startsWith(sector.codigo + "/"));
+        if (nested.length) {
+          const leaf = document.createElement("div");
+          leaf.className = "doc-sector-leaves";
+          for (const child of nested) createChoice(child, leaf);
+          branch.append(leaf);
+        }
+        branches.append(branch);
+      }
+      group.append(branches);
+    }
+    container.append(group);
   }
-  if (!state.sectors.length) container.textContent = "Nenhum setor destinatário autorizado.";
+  // A escolha de um setor superior já abrange suas unidades subordinadas.
+  for (const [code, entry] of entries) {
+    entry.input.addEventListener("change", () => {
+      if (entry.input.checked) {
+        for (const [childCode, child] of entries) {
+          if (childCode.startsWith(code + "/")) child.input.checked = false;
+        }
+        for (const [parentCode, parent] of entries) {
+          if (code.startsWith(parentCode + "/") && parent.input.checked) parent.input.checked = false;
+        }
+      }
+      for (const [childCode, child] of entries) {
+        const covered = [...entries].some(([parentCode, parent]) =>
+          parent.input.checked && childCode.startsWith(parentCode + "/"));
+        child.label.classList.toggle("doc-sector-covered", covered);
+      }
+    });
+  }
 }
 function selectedSectors() {
   return [...document.querySelectorAll("#sector-choices input:checked")].map(input => input.value);
