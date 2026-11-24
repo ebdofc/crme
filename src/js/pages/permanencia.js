@@ -3,6 +3,7 @@ const $ = id => document.getElementById(id);
 let efetivo = [], ocorrencias = [], aba = "pendente", ocupado = false, autorizado = false, meuId;
 const data = v => v ? new Date(v).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}) : "Não verificado";
 const presenca = m => m?.presente_servidor === true ? "Presente" : m?.presente_servidor === false ? "Ausente" : "Indeterminada";
+const situacao = v => ({ativo:"Ativo",afastado:"Afastado",desligamento_pendente:"Desligamento pendente",desligado:"Desligado",mantido:"Mantido",reativado:"Reativado"})[v] || v || "Não informada";
 function el(tag, texto, classe) {
  const e = document.createElement(tag); e.textContent = texto ?? ""; if(classe)e.className=classe; return e;
 }
@@ -24,23 +25,24 @@ function renderizar(){
  for(const item of itens){
  const m=aba==="efetivo"?item:item.militares||{};
  const atual=efetivo.find(e=>e.militar_id===item.militar_id);
- if(![m.nome,m.discord_id].some(v=>String(v??"").toLowerCase().includes(busca)))continue;
+ if(![m.nome,m.discord_id,situacao(m.status),m.patente,situacao(item.status_anterior)].some(v=>String(v??"").toLowerCase().includes(busca)))continue;
  const card=el("article","","permanencia-card");
- card.append(el("h3",m.nome||"Militar"),el("p",[m.patente||"Sem patente",m.status,m.discord_id].filter(Boolean).join(" · ")));
+ card.append(el("h3",m.nome||"Militar"),el("p",[m.patente||"Sem patente",situacao(m.status),m.discord_id].filter(Boolean).join(" · ")));
  if(aba==="efetivo"||aba==="pendente"){
  card.append(el("p",atual?presenca(atual)+" · Última verificação: "+data(atual.ultima_verificacao):"Fora do efetivo monitorado"));
  }
  if(aba!=="efetivo"){
  card.append(el("p","Abertura: "+data(item.aberta_em)));
+ if(item.status_anterior)card.append(el("p","Situação anterior: "+situacao(item.status_anterior)));
  const movimentos=el("ul","");
  for(const mov of item.movimentacoes||[])movimentos.append(el("li",(mov.verificacao_inicial?"Ausência inicial":mov.tipo==="saida"?"Saída":"Retorno")+" — "+data(mov.detectado_em)+" ("+mov.origem+")"));
  card.append(movimentos);
- if(aba==="resolvida")card.append(el("p","Decisão: "+item.decisao+" · "+data(item.resolvida_em)),el("p","Responsável: "+item.responsavel_nome),el("p","Justificativa: "+item.justificativa));
+ if(aba==="resolvida")card.append(el("p","Decisão: "+situacao(item.decisao)+" · "+data(item.resolvida_em)),el("p","Responsável: "+item.responsavel_nome),el("p","Justificativa: "+item.justificativa));
  else if(item.militar_id!==meuId){
  const form=el("form","","permanencia-form");
  const label=el("label","Justificativa obrigatória");const campo=el("textarea","");campo.required=true;label.append(campo);form.append(label);
- for(const decisao of ["mantido","desligado"]){
- const b=el("button",decisao==="mantido"?"Manter":"Desligar");b.type="button";b.disabled=ocupado||(decisao==="mantido"&&atual?.presente_servidor!==true);
+ for(const decisao of ["reativado","desligado"]){
+ const b=el("button",decisao==="reativado"?"Reativar militar":"Confirmar desligamento");b.type="button";b.disabled=ocupado||(decisao==="reativado"&&(m.status!=="desligamento_pendente"||atual?.presente_servidor!==true));
  b.onclick=()=>resolver(item,decisao,campo.value);form.append(b);
  }card.append(form);
  }
@@ -60,9 +62,9 @@ async function executar(fn){
 }
 function resolver(o,decisao,justificativa){
  if(!justificativa.trim()){$("resultado").textContent="Informe a justificativa.";return;}
- if(!confirm("Confirmar decisão: "+decisao+"?"))return;
+ if(!confirm(decisao==="reativado"?"Reativar militar?":"Confirmar desligamento definitivo?"))return;
  executar(async()=>{
- if(decisao==="mantido"){await verificar();await carregar();if(efetivo.find(m=>m.militar_id===o.militar_id)?.presente_servidor!==true)throw new Error("Presença não confirmada.");}
+ if(decisao==="reativado"){await verificar();await carregar();if(efetivo.find(m=>m.militar_id===o.militar_id)?.presente_servidor!==true)throw new Error("Presença não confirmada.");}
  conferir(await supabase.rpc("permanencia_resolver_ocorrencia",{p_ocorrencia_id:o.id,p_decisao:decisao,p_justificativa:justificativa.trim()}));
  $("resultado").textContent="Ocorrência resolvida.";
  });
