@@ -79,6 +79,7 @@
                     <label for="doc-filter" id="doc-filter-label">Filtrar documentos</label>
                     <select id="doc-filter"><option value="">Todos</option></select>
                 </div>
+                <div class="doc-order-actions"><button id="doc-order-open" type="button" hidden>Organizar documentos</button></div>
                 <div id="doc-list" class="news-list"><p>Carregando documentos...</p></div>
                 <div id="doc-empty" class="news-empty" hidden>Nenhum documento disponível.</div>
                 </div>
@@ -97,6 +98,18 @@
                 <div id="manage-documents-empty" class="news-empty" hidden>Nenhum documento disponível para gerenciamento.</div>
             </section>
 
+        <dialog id="doc-order-dialog" class="doc-order-dialog" aria-labelledby="doc-order-heading">
+            <form method="dialog" class="doc-order-shell">
+                <h2 id="doc-order-heading">Organizar documentos</h2>
+                <p>Arraste os títulos para mudar a ordem. Também é possível usar as setas.</p>
+                <div id="doc-order-list" class="doc-order-list"></div>
+                <div id="doc-order-error" role="alert" hidden></div>
+                <div class="doc-order-buttons">
+                    <button type="button" id="doc-order-cancel" class="secondary">Cancelar</button>
+                    <button type="button" id="doc-order-save">Salvar ordem</button>
+                </div>
+            </form>
+        </dialog>
         <section id="publish-panel" class="doc-editor-panel" hidden>
             <div class="news-editor-header">
                 <button id="publish-cancel" type="button" class="secondary">Voltar</button>

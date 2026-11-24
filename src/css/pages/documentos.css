@@ -536,3 +536,22 @@ body.doc-resizing { cursor: col-resize !important; user-select: none !important;
   outline: 0;
   background: transparent;
 }
+
+/* Reordenação de documentos por responsáveis autorizados. */
+.doc-order-actions { display: flex; justify-content: flex-end; margin: 12px 0; }
+.doc-order-dialog { width: min(640px, calc(100vw - 32px)); max-height: 85vh; border: 1px solid #aeb8a8; padding: 0; color: #292d27; background: #fff; }
+.doc-order-dialog::backdrop { background: rgba(0,0,0,.45); }
+.doc-order-shell { padding: 24px; }
+.doc-order-shell h2 { margin: 0 0 8px; font-size: 20px; }
+.doc-order-shell p { margin: 0 0 20px; color: #606a5c; font-size: 13px; }
+.doc-order-list { display: grid; gap: 8px; max-height: 55vh; overflow-y: auto; }
+.doc-order-item { display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid #d5d8d2; background: #f7f8f5; cursor: grab; }
+.doc-order-item.doc-order-dragging { opacity: .45; }
+.doc-order-grip { font-size: 23px; color: #71806c; }
+.doc-order-title { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: 14px; font-weight: 600; }
+.doc-order-item button { min-width: 34px; padding: 6px; border: 1px solid #b7c4b1; background: #fff; color: #354330; cursor: pointer; }
+.doc-order-item button:disabled { opacity: .35; cursor: default; }
+.doc-order-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.doc-order-buttons button, .doc-order-actions button { padding: 9px 14px; border: 1px solid #59664e; background: #46543d; color: #fff; cursor: pointer; }
+.doc-order-buttons .secondary { background: #fff; color: #46543d; }
+#doc-order-error { margin-top: 12px; padding: 10px; color: #803b32; background: #f8eeeb; }
