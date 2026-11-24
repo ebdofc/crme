@@ -166,7 +166,7 @@ function renderSummary() {
         const tituloStatus={
             indicacoes_abertas:'Indicações abertas',em_avaliacao:'Em avaliação',
             em_deliberacao:'Em deliberação',aguardando_homologacao:'Aguardando homologação',
-            homologado:'Homologado',encerrado:'Encerrado',cancelado:'Cancelado'
+            encerrado:'Encerrado',cancelado:'Cancelado'
         }[ciclo.status] || 'Situação não identificada';
         const formato=(data)=>{
             if (!data || !/^\d{4}-\d{2}-\d{2}/.test(String(data))) return '—';
@@ -189,13 +189,13 @@ function renderSummary() {
             ['Deliberações',ciclo.prazo_votacao],
             ['Homologação',ciclo.homologacao_prevista]
         ];
-        const ordem={indicacoes_abertas:0,em_avaliacao:1,em_deliberacao:2,aguardando_homologacao:3,homologado:4,encerrado:4,cancelado:-1};
+        const ordem={indicacoes_abertas:0,em_avaliacao:1,em_deliberacao:2,aguardando_homologacao:3,encerrado:4,cancelado:-1};
         const atual=ordem[ciclo.status] ?? -1;
         const campoHTML=campos.map(([rotulo,valor])=>`<div class="cpo-summary-field">${caps(rotulo)}<strong>${esc(valor)}</strong></div>`).join('');
         const progresso=passos.map(([rotulo,data],indice)=>`<div class="cpo-timeline-step ${atual>indice?'done':atual===indice?'current':''}"><div class="cpo-step-dot">${atual>indice?'✓':indice+1}</div><span>${esc(rotulo)}</span><small>${esc(formato(data))}</small></div>`).join('');
         $('cpo-cycle-summary').innerHTML=`<section class="cpo-cycle-card" aria-label="Informações oficiais do ciclo atual">
             <div class="cpo-cycle-header"><div>${caps('Ciclo atual')}<strong>${esc(ciclo.identificacao || 'CPO')}</strong></div>
-            ${status(tituloStatus,['homologado','encerrado'].includes(ciclo.status)?'success':ciclo.status==='cancelado'?'danger':ciclo.status==='aguardando_homologacao'?'warning':'')}</div>
+            ${status(tituloStatus,['encerrado'].includes(ciclo.status)?'success':ciclo.status==='cancelado'?'danger':ciclo.status==='aguardando_homologacao'?'warning':'')}</div>
             <div class="cpo-summary-grid">${campoHTML}</div>
             <div class="cpo-timeline">${progresso}</div>
             ${ciclo.status==='cancelado'?note('Este ciclo foi cancelado.'):''}
@@ -223,7 +223,7 @@ function renderCategories(categories,current,action,counts) {
 }
 function indicacoesAbertasReais() {
     if (!state.ciclo?.tem_ciclo || !canNominate()) return false;
-    if (['homologado','encerrado','cancelado','aguardando_homologacao'].includes(state.ciclo.status)) return false;
+    if (['encerrado','cancelado','aguardando_homologacao'].includes(state.ciclo.status)) return false;
     return hojeBrasilia() <= String(state.ciclo.prazo_indicacoes || '');
 }
 async function carregarIndicacoesReais() {
