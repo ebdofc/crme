@@ -330,3 +330,47 @@
   #sector-targets #sector-choices { grid-template-columns: minmax(0, 1fr); }
   .doc-sector-branches { padding: 0 8px 8px; }
 }
+
+/* Lista compacta: órgãos em coluna única, com abertura sob demanda. */
+#sector-targets #sector-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#sector-targets .doc-sector-group {
+  width: 100%;
+  border-radius: 5px;
+}
+#sector-targets .doc-sector-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 11px 14px;
+  cursor: pointer;
+  list-style: none;
+  border-bottom: 0;
+}
+#sector-targets .doc-sector-heading::-webkit-details-marker { display: none; }
+#sector-targets .doc-sector-heading::before {
+  content: "▸";
+  color: #52644b;
+  font-size: 16px;
+  transition: transform .15s ease;
+}
+#sector-targets .doc-sector-group[open] > .doc-sector-heading::before { transform: rotate(90deg); }
+#sector-targets .doc-sector-heading:hover { background: #e3eadf; }
+#sector-targets .doc-sector-group[open] > .doc-sector-heading {
+  border-bottom: 1px solid #d8ded4;
+}
+#sector-targets .doc-sector-body { padding: 5px 12px 12px; }
+#sector-targets .doc-sector-count {
+  margin-left: auto;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: #dce8d6;
+  color: #344b2d;
+  font-size: 11px;
+  white-space: nowrap;
+}
+#sector-targets .doc-sector-count[hidden] { display: none; }

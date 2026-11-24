@@ -228,29 +228,41 @@ function renderSectorChoices() {
     }
   }
   function renderNode(node, host, depth = 0) {
-    const section = document.createElement("div");
+    const section = document.createElement(depth === 0 ? "details" : "div");
     section.className = depth === 0 ? "doc-sector-group" :
       depth === 1 ? "doc-sector-branch" : "doc-sector-leaf";
+    let body = section;
     if (depth === 0) {
-      const heading = document.createElement("div");
+      const heading = document.createElement("summary");
       heading.className = "doc-sector-heading";
       const title = document.createElement("strong");
       title.textContent = node.sector?.nome || names.get(node.code) || node.code;
-      heading.append(title);
+      const count = document.createElement("span");
+      count.className = "doc-sector-count";
+      count.hidden = true;
+      heading.append(title, count);
       section.append(heading);
+      body = document.createElement("div");
+      body.className = "doc-sector-body";
+      section.append(body);
+      section.addEventListener("change", () => {
+        const n = body.querySelectorAll("input[type=checkbox]:checked").length;
+        count.textContent = n === 1 ? "1 selecionado" : n + " selecionados";
+        count.hidden = n === 0;
+      });
     }
-    if (node.sector) createOption(node, section);
+    if (node.sector) createOption(node, body);
     else if (depth > 0) {
       const title = document.createElement("div");
       title.className = "doc-sector-subheading";
       title.textContent = names.get(node.code) || node.code;
-      section.append(title);
+      body.append(title);
     }
     if (node.children.length) {
       const wrapper = document.createElement("div");
       wrapper.className = depth === 0 ? "doc-sector-branches" : "doc-sector-leaves";
       for (const child of node.children) renderNode(child, wrapper, depth + 1);
-      section.append(wrapper);
+      body.append(wrapper);
     }
     host.append(section);
   }
