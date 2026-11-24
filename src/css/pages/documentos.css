@@ -563,3 +563,8 @@ body.doc-resizing { cursor: col-resize !important; user-select: none !important;
 #detail-panel #detail-author { color: #495343; font-weight: 600; }
 #detail-panel #detail-updated { font-size: 12px; font-style: italic; }
 #detail-panel #detail-updated[hidden] { display: none; }
+
+/* Leitura em celulares: aproveitar a largura disponível. */
+@media (max-width: 600px) {
+  #doc-library-layout.doc-reading #detail-panel { padding: 8px; }
+}
