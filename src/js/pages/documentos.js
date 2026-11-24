@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 const state = {
   documents: [], selected: null, catalog: [], editor: null,
   editing: null, allowedTargets: new Set(), currentRequest: 0,
-  militarId: null, manageableIds: new Set(), activeTab: "library-panel", central: false, sectors: [], identities: [], militaryNames: new Map(), institutionNames: new Map()
+  militarId: null, documentFilters: new Map(), filterCatalog: new Map(), manageableIds: new Set(), activeTab: "library-panel", central: false, sectors: [], identities: [], militaryNames: new Map(), institutionNames: new Map()
 };
 const esc = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -384,16 +384,64 @@ function renderList(id, emptyId, documents) {
   $(id).replaceChildren(...documents.map(documentCard));
   $(emptyId).hidden = documents.length > 0;
 }
+function filterOptionsFor(section) {
+  const visibility = section === "setoriais" ? "restrito" : "patentes";
+  const options = new Map();
+  for (const doc of state.documents.filter(d => d.visibilidade === visibility)) {
+    for (const entry of state.documentFilters.get(doc.id) || []) {
+      const key = entry.tipo + ":" + entry.codigo;
+      if (!options.has(key)) options.set(key, entry.nome);
+    }
+  }
+  return [...options].sort((a, b) => a[1].localeCompare(b[1], "pt-BR"));
+}
+function updateDocumentFilter() {
+  const section = $("doc-section").value;
+  const wrap = $("doc-filter-wrap");
+  const select = $("doc-filter");
+  const current = select.value;
+  wrap.hidden = section === "oficiais";
+  if (wrap.hidden) {
+    select.value = "";
+    return;
+  }
+  $("doc-filter-label").textContent = section === "setoriais" ? "Filtrar por divisão" : "Filtrar por destinatários";
+  select.replaceChildren();
+  const all = document.createElement("option");
+  all.value = "";
+  all.textContent = section === "setoriais" ? "Todas as divisões" : "Todos os destinatários";
+  select.append(all);
+  for (const [key, name] of filterOptionsFor(section)) {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = name;
+    select.append(option);
+  }
+  if ([...select.options].some(o => o.value === current)) select.value = current;
+}
 function render() {
   const section = $("doc-section").value;
-  renderList("doc-list", "doc-empty", state.documents.filter(d =>
-    section === "oficiais" ? d.visibilidade === "geral" :
-    section === "patentes" ? d.visibilidade === "patentes" : d.visibilidade === "restrito"
-  ));
+  updateDocumentFilter();
+  const selected = $("doc-filter").value;
+  renderList("doc-list", "doc-empty", state.documents.filter(d => {
+    const matching = section === "oficiais" ? d.visibilidade === "geral" :
+      section === "patentes" ? d.visibilidade === "patentes" : d.visibilidade === "restrito";
+    if (!matching || !selected) return matching;
+    return (state.documentFilters.get(d.id) || []).some(entry =>
+      entry.tipo + ":" + entry.codigo === selected);
+  }));
   renderList("my-documents-list", "my-documents-empty",
     state.documents.filter(d => d.criado_por === state.militarId));
   renderList("manage-documents-list", "manage-documents-empty",
     state.documents.filter(d => state.manageableIds.has(d.id)));
+}
+async function loadDocumentFilters() {
+  const data = await rpc("documentos_filtros_disponiveis");
+  state.documentFilters = new Map();
+  for (const item of data || []) {
+    if (!state.documentFilters.has(item.documento_id)) state.documentFilters.set(item.documento_id, []);
+    state.documentFilters.get(item.documento_id).push(item);
+  }
 }
 async function load() {
   const { data, error } = await supabase.from("documentos")
@@ -402,6 +450,7 @@ async function load() {
   if (error) throw error;
   state.documents = data || [];
   await loadMilitaryNames(state.documents);
+  await loadDocumentFilters();
   const rights = await Promise.all(state.documents.map(async d => {
     try {
       return await rpc("documentos_pode_gerenciar", { p_documento_id: d.id }) === true;
@@ -598,7 +647,8 @@ function updateVisibility() {
 }
 $("publish-visibility").addEventListener("change", updateVisibility);
 $("rank-mode").addEventListener("change", () => { renderRankChoices(); updateVisibility(); });
-$("doc-section").addEventListener("change", render);
+$("doc-section").addEventListener("change", () => { $("doc-filter").value = ""; render(); });
+$("doc-filter").addEventListener("change", render);
 
 $("new-document").addEventListener("click", startNew);
 for (const id of ["publish-cancel", "publish-cancel-bottom"]) {
