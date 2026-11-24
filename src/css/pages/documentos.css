@@ -402,3 +402,12 @@
   .doc-filter-wrap { flex-direction: column; align-items: stretch; }
   .doc-filter-wrap select { max-width: none; }
 }
+
+/* A barra acompanha a rolagem de documentos longos, sem sair do editor. */
+#publish-panel .doc-richtext-group > .ql-toolbar.ql-snow {
+  position: sticky;
+  top: 8px;
+  z-index: 30;
+  background: #f7f8f5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .08);
+}
