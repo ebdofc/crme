@@ -17,7 +17,6 @@ const state = {
     deliberacaoDetalhe:null, deliberacaoErro:'', carregandoDetalhe:false,
     votoEscolhido:'', registrandoVoto:false, decisaoEscolhida:'', registrandoDecisao:false,
     homologacao:null, carregandoHomologacao:false, erroHomologacao:'', homologando:false,
-    cargos:null, carregandoCargos:false, erroCargos:'', confirmandoCargo:null, cargosVersao:0,
     alterandoCalendario:false, cancelandoCiclo:false, motivoCancelamentoReal:''
 };
 function esc(value) {
@@ -40,15 +39,12 @@ function canDAP() { return permissaoReal('consultarDAP'); }
 function canACE() { return permissaoReal('consultarACE'); }
 function canNominate() { return permissaoReal('indicar'); }
 function canVote() { return permissaoReal('votarACE'); }
-function podeAtualizarCargos() { return permissaoReal('presidenciaACE') || permissaoReal('conselhoACE'); }
-function cicloHomologado() { return state.ciclo?.status === 'homologado'; }
 function temAuditoria() { return permissaoReal('auditar'); }
 function activeTabs() {
     return [
         ['indicacoes','Indicações'],
         ...(canDAP()?[['avaliacoes','Avaliações']]:[]),
         ...(canACE()?[['deliberacoes','Deliberações']]:[]),
-        ...(podeAtualizarCargos() && cicloHomologado() ? [['cargos','Atualização de Cargos']] : []),
         ...((isAdmin()||temAuditoria())?[['gerenciamento','Gerenciamento']]:[])
     ];
 }
@@ -273,79 +269,6 @@ function renderIndicacoesReais() {
       ${button('Anterior','real-previous',{secondary:true,small:true,disabled:state.carregandoIndicacoes||pagina<=1})}
       <span>Página ${pagina} de ${paginas}</span>
       ${button('Próxima','real-next',{secondary:true,small:true,disabled:state.carregandoIndicacoes||pagina>=paginas})}</div></div>`;
-}
-async function carregarCargosReais() {
-    if (!podeAtualizarCargos() || !cicloHomologado()) return;
-    const versao=++state.cargosVersao;
-    state.carregandoCargos=true;
-    state.erroCargos='';
-    if (state.tab==='cargos') renderMain();
-    try {
-        const {data,error}=await supabase.rpc('cpo_listar_cargos_pendentes');
-        if (error) throw new Error(error.message||'Não foi possível consultar os cargos.');
-        if (!data?.sucesso || !Array.isArray(data.cargos) || data.ciclo_id!==state.ciclo?.ciclo_id) {
-            throw new Error('Resposta inválida da consulta de cargos.');
-        }
-        if (versao===state.cargosVersao) state.cargos=data;
-    } catch(e) {
-        if (versao===state.cargosVersao) {state.erroCargos=e.message||'Erro ao consultar cargos.';state.cargos=null;}
-    } finally {
-        if (versao===state.cargosVersao) {
-            state.carregandoCargos=false;
-            if (state.tab==='cargos') renderMain();
-        }
-    }
-}
-function renderCargosReais() {
-    const lista=state.cargos?.cargos||[];
-    const pendentes=lista.filter(x=>!x.cargo_atualizado).length;
-    const linhas=lista.map(x=>`<tr>
-      <td><span class="cpo-row-name">${esc(x.nome)}</span><span class="cpo-row-meta">Discord ID: ${esc(x.discord_id)}</span></td>
-      <td>${esc(x.patente_anterior)} → ${esc(x.patente_pretendida)}</td>
-      <td>${x.cargo_atualizado?status('Atualizado','success'):status('Pendente','warning')}${x.cargo_atualizado?`<span class="cpo-row-meta">${esc(x.confirmado_por_nome||'—')} · ${esc(x.cargo_atualizado_em?new Date(x.cargo_atualizado_em).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'}):'—')}</span>`:''}</td>
-      <td>${x.cargo_atualizado?'—':button(state.confirmandoCargo===x.indicacao_id?'Confirmando...':'Atualizar cargo','real-confirm-role',{small:true,disabled:!!state.confirmandoCargo,arg:x.indicacao_id})}</td>
-    </tr>`).join('');
-    const aviso=state.carregandoCargos?'Carregando militares promovidos...':state.erroCargos?`Erro: ${state.erroCargos}`:'Nenhum militar promovido neste ciclo.';
-    return `${sectionHeading('Atualização de Cargos','Confirmação manual dos cargos no servidor oficial do Discord — ACE')}
-      ${state.erroCargos?note(state.erroCargos):''}
-      ${indicators([['Promovidos',lista.length],['Cargos pendentes',pendentes],['Cargos confirmados',lista.length-pendentes]])}
-      <section class="cpo-panel-card"><p>Atualize primeiro o cargo do militar no Discord. Em seguida, confirme a operação no CRME. A confirmação não altera cargos automaticamente no Discord.</p>
-      <div class="cpo-actions">${button('Atualizar lista','real-refresh-roles',{secondary:true,disabled:state.carregandoCargos||!!state.confirmandoCargo})}</div></section>
-      <div class="cpo-table-box"><table class="cpo-table"><thead><tr><th>MILITAR</th><th>PROMOÇÃO</th><th>SITUAÇÃO</th><th>AÇÃO</th></tr></thead>
-      <tbody>${linhas||`<tr><td colspan="4" style="text-align:center;padding:24px">${esc(aviso)}</td></tr>`}</tbody></table></div>`;
-}
-function solicitarConfirmacaoCargoReal(id) {
-    if (!podeAtualizarCargos() || !cicloHomologado() || state.confirmandoCargo) return;
-    const item=state.cargos?.cargos?.find(x=>x.indicacao_id===id && !x.cargo_atualizado);
-    if (!item) return;
-    state.confirmation=async()=>{
-        if (state.confirmandoCargo || !cicloHomologado()) return;
-        state.confirmandoCargo=id;
-        renderMain();
-        try {
-            const {data,error}=await supabase.rpc('cpo_confirmar_cargo',{p_indicacao_id:id,p_confirmar:true});
-            if (error) throw new Error(error.message||'Falha ao confirmar cargo.');
-            if (!data?.sucesso || data.indicacao_id!==id) throw new Error('Confirmação não reconhecida pelo Supabase.');
-            state.cargos=null;
-            if (data.status_ciclo==='encerrado') {
-                state.tab='indicacoes';
-                await consultarCicloAtual();
-                feedback('Último cargo confirmado. O CPO foi encerrado automaticamente.','success');
-            } else {
-                await carregarCargosReais();
-                feedback(`Cargo de ${data.militar_nome||item.nome} confirmado com sucesso.`, 'success');
-            }
-        } catch(e) {
-            feedback(e.message||'Não foi possível confirmar a atualização.','error');
-        } finally {
-            state.confirmandoCargo=null;
-            render();
-        }
-    };
-    $('cpo-confirm-title').textContent='Confirmar cargo no Discord';
-    $('cpo-confirm-description').textContent=`Você confirma que o cargo de ${item.patente_pretendida} já foi atribuído a ${item.nome} no servidor oficial do Discord? Esta confirmação será registrada em seu nome e não poderá ser repetida.`;
-    $('cpo-confirm-submit').textContent='Confirmar cargo atualizado';
-    $('cpo-confirm-dialog').showModal();
 }
 async function carregarDeliberacoesReais() {
     if (!state.ciclo?.tem_ciclo || !canACE()) return;
@@ -759,7 +682,7 @@ function confirmarHomologacaoReal() {
             state.homologacao=null;
             await consultarCicloAtual();
             await carregarIndicacoesReais();
-            feedback(`CPO homologado. ${Number(resultado.promovidos)||0} promoção(ões) registrada(s); ${Number(resultado.aprovados_inaptos)||0} aprovado(s) inapto(s). A atualização dos cargos no Discord permanece pendente.`, 'success');
+            feedback(`CPO homologado e encerrado. ${Number(resultado.promovidos)||0} promoção(ões) registrada(s); ${Number(resultado.aprovados_inaptos)||0} aprovado(s) inapto(s). Os cargos no Discord serão atualizados pela sincronização automática.`, 'success');
         } catch (erro) {
             feedback(erro.message||'Não foi possível homologar.','error');
             await consultarCicloAtual();
@@ -767,7 +690,7 @@ function confirmarHomologacaoReal() {
         } finally {state.homologando=false;render();}
     };
     $('cpo-confirm-title').textContent='Confirmar homologação definitiva';
-    $('cpo-confirm-description').textContent=`Homologar definitivamente o CPO nº ${d.ciclo_numero}/${d.ciclo_ano}? Serão processadas ${Number(d.aprovadas_aptas)||0} promoções aptas, com alterações de patentes e registros no histórico militar. Esta operação não poderá ser desfeita pela interface. Os cargos no Discord não serão atualizados automaticamente.`;
+    $('cpo-confirm-description').textContent=`Homologar definitivamente o CPO nº ${d.ciclo_numero}/${d.ciclo_ano}? Serão processadas ${Number(d.aprovadas_aptas)||0} promoções aptas, com alterações de patentes e registros no histórico militar. Esta operação não poderá ser desfeita pela interface. O ciclo será encerrado imediatamente e os cargos no Discord serão atualizados pela sincronização automática.`;
     $('cpo-confirm-submit').textContent='Homologar definitivamente';
     $('cpo-confirm-dialog').showModal();
 }
@@ -804,15 +727,10 @@ function renderMain() {
             indicacoes:['Indicações','Consulta pública das indicações do ciclo atual.'],
             avaliacoes:['Avaliações','Diretoria de Avaliação de Pessoal — DAP'],
             deliberacoes:['Deliberações','Alto-Comando do Exército — ACE'],
-            cargos:['Atualização de Cargos','Confirmação de cargos no Discord'],
             gerenciamento:['Gerenciamento do Ciclo','Presidência do Alto-Comando do Exército']
         };
         if (state.carregandoCiclo || state.erroCiclo || !state.ciclo?.tem_ciclo) {
             $('cpo-main-panel').replaceChildren();
-            return;
-        }
-        if (state.tab==='cargos' && podeAtualizarCargos() && cicloHomologado()) {
-            $('cpo-main-panel').innerHTML=renderCargosReais();
             return;
         }
         if (state.tab==='gerenciamento' && (isAdmin()||temAuditoria())) {
@@ -847,7 +765,6 @@ function detailHead(title,subtitle='') {
 function selectTab(id) {
     if (!activeTabs().some(([name])=>name===id)) return;
     state.tab=id;state.detail=null;feedback();render();
-    if (id==='cargos') void carregarCargosReais();
     if (id==='indicacoes') void carregarIndicacoesReais();
     if (id==='deliberacoes') void carregarDeliberacoesReais();
     if (id==='avaliacoes' && canDAP()) void interfaceDAP?.load({counts:true});
@@ -860,8 +777,6 @@ function action(name,arg) {
         else if (name === 'real-calendar-confirm') confirmarCalendarioReal();
         else if (name === 'real-cancel-open') abrirCancelamentoReal();
         else if (name === 'real-cancel-confirm') confirmarCancelamentoReal();
-        else if (name === 'real-refresh-roles') void carregarCargosReais();
-        else if (name === 'real-confirm-role') solicitarConfirmacaoCargoReal(arg);
         else if (name === 'real-homologation-open') abrirHomologacaoReal();
         else if (name === 'real-homologation-refresh') void carregarHomologacaoReal();
         else if (name === 'real-homologation-confirm') confirmarHomologacaoReal();
@@ -908,7 +823,6 @@ async function verificarAcesso() {
         {
             await consultarCicloAtual();
             if (state.ciclo?.tem_ciclo) await carregarIndicacoesReais();
-            if (state.tab==='cargos' && podeAtualizarCargos() && cicloHomologado()) void carregarCargosReais();
             if (state.ciclo?.tem_ciclo && state.tab==='avaliacoes' && canDAP()) void interfaceDAP?.load({counts:true});
         }
     } catch (erro) {
