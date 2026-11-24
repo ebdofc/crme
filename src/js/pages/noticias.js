@@ -235,7 +235,7 @@ function iniciarEditor() {
         theme: "snow",
         placeholder: "Escreva o conteúdo da notícia...",
         modules: {
-            toolbar: [
+            toolbar: { container: [
                 [{ header: [1, 2, 3, false] }],
                 ["bold", "italic", "underline", "strike"],
                 [
@@ -246,8 +246,7 @@ function iniciarEditor() {
                 ["blockquote", "link"],
                 ["divider"],
                 ["clean"]
-            ],
-            handlers: { divider() { insertDivider(this.quill); } }
+            ], handlers: { divider() { insertDivider(this.quill); } } }
         },
         formats: [
             "header",
