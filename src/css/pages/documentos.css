@@ -555,3 +555,11 @@ body.doc-resizing { cursor: col-resize !important; user-select: none !important;
 .doc-order-buttons button, .doc-order-actions button { padding: 9px 14px; border: 1px solid #59664e; background: #46543d; color: #fff; cursor: pointer; }
 .doc-order-buttons .secondary { background: #fff; color: #46543d; }
 #doc-order-error { margin-top: 12px; padding: 10px; color: #803b32; background: #f8eeeb; }
+
+/* Cabeçalho padronizado com Notícias. */
+#detail-panel #detail-category { display: block; margin-bottom: 10px; }
+#detail-panel #detail-meta { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 0 0 24px; padding: 0 0 20px; border-bottom: 1px solid #d5d8d2; }
+#detail-panel #detail-meta p { margin: 0; color: #73786f; font-size: 13px; line-height: 1.5; }
+#detail-panel #detail-author { color: #495343; font-weight: 600; }
+#detail-panel #detail-updated { font-size: 12px; font-style: italic; }
+#detail-panel #detail-updated[hidden] { display: none; }
