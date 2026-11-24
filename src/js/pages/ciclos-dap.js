@@ -110,7 +110,7 @@ export function criarInterfaceDAP({supabase, painel, getAcesso, getCiclo, isActi
     <details class="cpo-accordion" open><summary>Relatório e recomendação</summary><div class="cpo-accordion-body"><div class="cpo-field"><label for="dap-relatorio">Relatório de avaliação</label><textarea id="dap-relatorio" maxlength="10000" ${canEdit?'':'disabled'} placeholder="Descreva a avaliação...">${e(st.relatorio)}</textarea></div><div class="cpo-field"><span class="cpo-mini-label">Recomendação</span>${[['favoravel','Favorável à promoção'],['desfavoravel','Desfavorável à promoção']].map(([value,label])=>`<label class="cpo-choice"><input type="radio" name="dap-recomendacao" value="${value}" ${st.recomendacao===value?'checked':''} ${canEdit && !(value==='favoravel' && avg!==null && avg<7)?'':'disabled'}> ${label}</label>`).join('')}</div></div></details>
     ${d.auditoria?.historico_revisoes?.length?`<section class="cpo-panel-card"><h4>Histórico de revisões</h4>${d.auditoria.historico_revisoes.map(x=>`<p class="cpo-preserve">${e(fmtTime(x.data))} — ${e(x.evento)}: ${e(x.motivo||'')}</p>`).join('')}</section>`:''}
     ${canValidate?`<section class="cpo-panel-card"><h4>Validação pela Direção</h4><div class="cpo-field"><label for="dap-motivo">Motivo da devolução para revisão</label><textarea id="dap-motivo" maxlength="5000" placeholder="Obrigatório apenas para devolver...">${e(st.motivo)}</textarea></div><div class="cpo-actions">${btn('Devolver para revisão','revisar',{secondary:true})}${btn('Validar avaliação','validar')}</div></section>`:''}
-    ${canEdit?`<div class="cpo-dap-save-area"><p class="cpo-inline-note">Antes de ${diretor()?'finalizar':'encaminhar'} a avaliação, salve o rascunho com as notas, o relatório e a recomendação preenchidos.</p>${st.avisoEnvio?`<p id="dap-aviso-envio" class="cpo-dap-error" role="alert" style="margin:10px 0">${e(st.avisoEnvio)}</p>`:''}<div class="cpo-actions">${btn('Salvar rascunho','save',{secondary:true})}${btn(diretor()?'Finalizar avaliação':'Encaminhar para validação','submit')}</div></div>`:''}
+    ${canEdit?`<div class="cpo-dap-save-area">${st.avisoEnvio?`<p id="dap-aviso-envio" class="cpo-dap-error" role="alert" style="margin:10px 0">${e(st.avisoEnvio)}</p>`:''}<div class="cpo-actions">${btn('Salvar rascunho','save',{secondary:true})}${btn(diretor()?'Finalizar avaliação':'Encaminhar para validação','submit')}</div></div>`:''}
     ${own&&d.status==='em_avaliacao'&&operacional()?`<section class="cpo-panel-card"><h4>Devolver avaliação à fila</h4><div class="cpo-field"><label for="dap-motivo-liberacao">Justificativa obrigatória</label><textarea id="dap-motivo-liberacao" maxlength="5000" placeholder="Motivo da liberação..."></textarea></div>${btn('Liberar avaliação','release',{secondary:true})}</section>`:''}
     <div class="cpo-actions">${available?btn('Assumir avaliação','assumir'):''}${canAvocar?btn('Avocar avaliação','avocar',{secondary:true}):''}</div></div>`;
   }
@@ -163,7 +163,7 @@ export function criarInterfaceDAP({supabase, painel, getAcesso, getCiclo, isActi
   function capture(){
     for(const n of painel.querySelectorAll('.dap-nota'))st.notas[n.dataset.key]=n.value;
     const report=painel.querySelector('#dap-relatorio');if(report)st.relatorio=report.value;
-    const rec=painel.querySelector('input[name="dap-recomendacao"]:checked');if(rec)st.recomendacao=rec.value;
+    const rec=painel.querySelector('input[name="dap-recomendacao"]:checked');if(painel.querySelector('input[name="dap-recomendacao"]'))st.recomendacao=rec?.value||'';
     const m=painel.querySelector('#dap-motivo');if(m)st.motivo=m.value;
   }
   function confirmation(message){return window.confirm(message);}
@@ -179,7 +179,7 @@ export function criarInterfaceDAP({supabase, painel, getAcesso, getCiclo, isActi
       return result;
     }catch(err){
       if(nome==='cpo_enviar_avaliacao'){
-        st.avisoEnvio='Não foi possível enviar a avaliação. Salve o rascunho antes de prosseguir e confira se todos os critérios, o relatório e a recomendação foram preenchidos.';
+        st.avisoEnvio=err.message||'Não foi possível enviar a avaliação.';
         render();
         painel.querySelector('#dap-aviso-envio')?.scrollIntoView({behavior:'smooth',block:'center'});
       }else{informar(err.message,'error');st.erroDetalhe=err.message;render();}
@@ -199,12 +199,21 @@ export function criarInterfaceDAP({supabase, painel, getAcesso, getCiclo, isActi
     if(!ind)return;
     if(tipo==='assumir')await executar('cpo_assumir_avaliacao',{p_indicacao_id:ind},'Confirma que deseja assumir esta avaliação?');
     else if(tipo==='avocar')await executar('cpo_avocar_avaliacao',{p_indicacao_id:ind,p_confirmar:true},'Avocar a avaliação para a Direção da DAP? O rascunho existente será preservado.');
-    else if(tipo==='save'){
+    else if(tipo==='save'||tipo==='submit'){
       const notas={};for(const [key] of CRITERIOS)if(st.notas[key]!==''&&st.notas[key]!=null){if(!notaInteiraValida(st.notas[key])){informar('Preencha somente notas inteiras de 0 a 10.','error');return;}notas[key]=Number(st.notas[key]);}
       if(Object.values(notas).some(v=>!Number.isInteger(v)||v<0||v>10)){informar('Preencha somente notas inteiras de 0 a 10.','error');return;}
-      await executar('cpo_salvar_avaliacao',{p_indicacao_id:ind,p_notas:notas,p_relatorio:st.relatorio,p_recomendacao:st.recomendacao||null});
+      const dados={p_indicacao_id:ind,p_notas:notas,p_relatorio:st.relatorio,p_recomendacao:st.recomendacao||null};
+      if(tipo==='save')await executar('cpo_salvar_avaliacao',dados);
+      else {
+        if(Object.keys(notas).length!==CRITERIOS.length||!st.relatorio.trim()||!['favoravel','desfavoravel'].includes(st.recomendacao)){
+          informar('Preencha os seis critérios, o relatório e a recomendação.','error');return;
+        }
+        if(st.recomendacao==='favoravel'&&Object.values(notas).reduce((a,b)=>a+b,0)<42){
+          informar('A recomendação favorável exige média mínima de 7,0.','error');return;
+        }
+        await executar('cpo_enviar_avaliacao',{...dados,p_confirmar:true},'Confirma o envio definitivo da avaliação?');
+      }
     }
-    else if(tipo==='submit')await executar('cpo_enviar_avaliacao',{p_indicacao_id:ind,p_confirmar:true},'Confirma o envio definitivo da avaliação? Os dados devem estar salvos no rascunho antes do envio.');
     else if(tipo==='validar')await executar('cpo_validar_avaliacao',{p_indicacao_id:ind,p_decisao:'validar',p_motivo:null,p_confirmar:true},'Confirma a validação definitiva deste parecer?');
     else if(tipo==='revisar'){
       if(!st.motivo.trim()){informar('Informe o motivo da revisão.','error');return;}
