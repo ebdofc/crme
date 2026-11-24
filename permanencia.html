@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CRME | Controle de Permanência</title>
+
+    <link rel="stylesheet" href="/src/css/pages/dashboard.css">
+    <link rel="stylesheet" href="/src/css/pages/permanencia.css">
+</head>
+
+<body>
+
+    <!-- Menu lateral -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-header">
+            <span>CRME</span>
+            <button id="menu-toggle" aria-label="Recolher menu">☰</button>
+        </div>
+
+        <nav>
+            <a href="dashboard.html">Início</a>
+            <a href="noticias.html">Notícias</a>
+            <a href="documentos.html">Documentos</a>
+            <a href="consultar.html">Consultar Militares</a>
+            <a href="controle-patentes.html">Controle de Patentes</a>
+            <a href="alistamento.html">Alistamento</a>
+            <a href="acoes.html">Ações</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="orgaos.html">Órgãos</a>
+        </nav>
+
+    </aside>
+
+    <!-- Conteúdo principal -->
+    <main class="main-content">
+
+        <!-- Cabeçalho -->
+        <header class="top-header">
+
+            <div class="user-info">
+                <strong id="user-name">Carregando...</strong>
+                <span id="user-rank">Carregando...</span>
+            </div>
+
+            <button id="logout-button">Sair</button>
+
+        </header>
+
+        <section class="dashboard-section" id="permanencia" hidden>
+<h2>Controle de Permanência</h2>
+<p>Acompanhe a presença no servidor oficial e analise ocorrências.</p>
+<button id="verificar" type="button">Verificar agora</button>
+<button id="atualizar" type="button">Atualizar lista</button>
+<p id="resultado" role="status"></p>
+<div class="permanencia-tabs" aria-label="Seções">
+<button data-aba="pendente" aria-pressed="true">Pendências</button>
+<button data-aba="efetivo" aria-pressed="false">Efetivo</button>
+<button data-aba="resolvida" aria-pressed="false">Histórico</button>
+</div>
+<label for="pesquisa">Pesquisar militar</label>
+<input id="pesquisa" type="search" placeholder="Nome ou Discord ID">
+<div id="lista"></div>
+</section>
+<section id="acesso" class="dashboard-section" role="status">Verificando permissão de acesso...</section>
+<!-- Rodapé -->
+        <footer>
+            EXÉRCITO BRASILEIRO · DGP · DCR
+        </footer>
+
+    </main>
+
+    <!-- Scripts -->
+    <script type="module" src="/src/js/pages/layout.js"></script>
+    <script type="module" src="/src/js/pages/permanencia.js"></script>
+
+</body>
+</html>

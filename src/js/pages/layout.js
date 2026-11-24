@@ -19,7 +19,8 @@ const NOMES_PAGINAS = {
     "acoes.html": "Ações",
     "aulas.html": "Aulas",
     "orgaos.html": "Órgãos",
-    "monitoramento.html": "Monitoramento"
+    "monitoramento.html": "Monitoramento",
+    "permanencia.html": "Controle de Permanência"
 };
 
 let militarPresencaId = null;
@@ -319,6 +320,16 @@ async function verificarLogin() {
     document.getElementById("user-rank").textContent =
         militar?.patente || "Sem patente cadastrada";
 
+    const { data: podePermanencia } = await supabase.rpc("permanencia_pode_gerenciar");
+    if (podePermanencia === true) {
+        const nav = document.querySelector(".sidebar nav");
+        if (nav && !nav.querySelector('a[href="permanencia.html"]')) {
+            const link = document.createElement("a");
+            link.href = "permanencia.html";
+            link.textContent = "Controle de Permanência";
+            nav.append(link);
+        }
+    }
     document.body.style.visibility = "visible";
 
     // ========================================
