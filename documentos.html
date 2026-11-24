@@ -84,30 +84,33 @@
                 <label for="publish-category">Categoria
                     <input id="publish-category" name="categoria" maxlength="100" required placeholder="Ex.: Regulamento">
                 </label>
-                <label for="publish-orgao">Órgão
-                    <select id="publish-orgao" name="orgao" required>
-                        <option value="">Selecione</option>
-                    </select>
-                </label>
-                <label for="publish-unidade">Unidade ou seção
-                    <select id="publish-unidade" name="unidade">
-                        <option value="">Sem unidade</option>
-                    </select>
-                </label>
+                <input type="hidden" id="publish-orgao" name="orgao">
+                <input type="hidden" id="publish-unidade" name="unidade">
                 <label for="publish-visibility">Visibilidade
                     <select id="publish-visibility" name="visibilidade">
-                        <option value="restrito">Restrita — destinatários definidos</option>
+                        <option value="restrito">Documento setorial</option>
                         <option value="geral">Documento oficial — todos os militares</option>
                         <option value="patentes">Documento por patente — destinatários selecionados</option>
                     </select>
                 </label>
-                <fieldset id="rank-targets" class="doc-rank-targets" hidden><legend>Destinatários por patente</legend><label for="rank-mode">Tipo de seleção<select id="rank-mode"><option value="todos">Todos os oficiais</option><option value="grupo">Categoria de oficial</option><option value="patente">Patentes específicas</option></select></label><div id="rank-choices" class="doc-rank-choices"></div></fieldset>
                 <label for="publish-author">Publicado por
                     <select id="publish-author" name="publicado_por" required>
                         <option value="pessoal">Identificação pessoal</option>
                     </select>
                 </label>
                 <p id="publish-author-help" class="doc-author-help">A autoria real permanece registrada no CRME.</p>
+                <fieldset id="sector-targets" class="doc-rank-targets wide" hidden>
+                    <legend>Destinatários por setor</legend>
+                    <p>Selecione os setores que poderão visualizar o documento. Selecionar uma estrutura inclui seus subordinados.</p>
+                    <div id="sector-choices" class="doc-rank-choices"></div>
+                </fieldset>
+                <fieldset id="rank-targets" class="doc-rank-targets wide" hidden>
+                    <legend>Destinatários por patente</legend>
+                    <label for="rank-mode">Tipo de seleção
+                        <select id="rank-mode"><option value="todos">Todos os oficiais</option><option value="grupo">Categoria de oficial</option><option value="patente">Patentes específicas</option></select>
+                    </label>
+                    <div id="rank-choices" class="doc-rank-choices"></div>
+                </fieldset>
                 <label for="publish-description" class="wide">Descrição
                     <textarea id="publish-description" name="descricao" rows="3" placeholder="Resumo do documento"></textarea>
                 </label>
@@ -137,23 +140,6 @@
                     <button id="delete-document" type="button" class="danger">Excluir documento</button>
                 </div>
 
-                <h3>Destinatários autorizados</h3>
-                <p>As permissões específicas são utilizadas para documentos de visibilidade restrita.</p>
-                <div id="permissions-list" aria-live="polite"></div>
-                <form id="permission-form" class="doc-form">
-                    <label for="permission-type">Tipo de destinatário
-                        <select id="permission-type" name="tipo">
-                            <option value="estrutura">Estrutura institucional</option>
-                            <option value="funcao">Função militar</option>
-                        </select>
-                    </label>
-                    <label for="permission-code">Código
-                        <input id="permission-code" name="codigo" required placeholder="Ex.: DEC/DEB/CIM">
-                    </label>
-                    <div class="doc-actions wide">
-                        <button id="permission-submit" type="submit">Adicionar destinatário</button>
-                    </div>
-                </form>
             </div>
             </article>
         </section>
