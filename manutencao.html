@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRME | Manutenção</title>
+    <link rel="stylesheet" href="/src/css/pages/manutencao.css">
+</head>
+<body>
+    <main class="maintenance-container">
+        <section class="maintenance-content" aria-live="polite">
+            <span class="system-name">CRME</span>
+            <p class="system-subtitle">Centro de Registros Militares do Exército</p>
+            <h1 id="maintenance-title">Verificando disponibilidade</h1>
+            <p id="maintenance-description">Aguarde a consulta ao sistema.</p>
+            <p id="maintenance-end" hidden></p>
+            <p id="maintenance-status" role="status"></p>
+            <div class="maintenance-actions">
+                <button id="maintenance-retry" type="button">Verificar disponibilidade</button>
+                <a href="/administracao.html">Administração</a>
+                <a href="/">Login</a>
+            </div>
+        </section>
+        <footer>EXÉRCITO BRASILEIRO · DGP · DCR</footer>
+    </main>
+    <script type="module" src="/src/js/pages/manutencao.js"></script>
+</body>
+</html>
