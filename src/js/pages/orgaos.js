@@ -441,7 +441,17 @@ async function renderizar() {
     if (ativo()) {
         const destinos = funcoes(estrutura).map(f => f.codigo);
         const presidencia = ["Presidente", "Vice-Presidente"].filter(tem);
-        const codigos = [...new Set([...destinos.filter(tem), ...presidencia])];
+        const representacoes = new Set([
+            "Ministro da Defesa", "Comandante do Exército",
+            "ACE/P", "EME/Ch", "JME/J", "CIE/Cmd",
+            "DGP/Dir", "DGP/DCR/Dir", "DGP/DAP/Dir", "DGP/DFP/Dir",
+            "DEC/Dir", "DEC/DEB/Dir", "DEC/DEA/Dir",
+            "DTC/Dir", "DTC/DSA/Dir", "DTC/DRI/Dir", "DTC/DCI/Dir", "PE/Cmd"
+        ]);
+        const locais = (estrutura.funcoes || []).map(f => f.codigo);
+        const codigos = presidencia.length
+            ? (estrutura.codigo === "P" ? presidencia : locais.filter(c => representacoes.has(c)))
+            : destinos.filter(tem);
         const filtro = v => codigos.includes(v.vinculo_autor) &&
             (estrutura.codigo === "P" || destinos.includes(v.vinculo_destino));
         if (codigos.length) {
