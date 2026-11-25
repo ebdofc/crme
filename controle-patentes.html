@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRME | Controle de Patentes</title>
+    <title>CRME | Controle de Efetivo</title>
 
     <link rel="stylesheet" href="/src/css/pages/dashboard.css">
     <link rel="stylesheet" href="/src/css/pages/controle-patentes.css">
@@ -22,7 +22,7 @@
             <a href="noticias.html">Notícias</a>
             <a href="documentos.html">Documentos</a>
             <a href="consultar.html">Consultar Militares</a>
-            <a href="controle-patentes.html" class="active">Controle de Patentes</a>
+            <a href="controle-patentes.html" class="active">Controle de Efetivo</a>
             <a href="alistamento.html">Alistamento</a>
             <a href="acoes.html">Ações</a>
             <a href="aulas.html">Aulas</a>
@@ -43,10 +43,13 @@
         </header>
 
         <section class="dashboard-section">
-            <h2>Controle de Patentes</h2>
+            <h2>Controle de Efetivo</h2>
 
-            <p>Selecione uma patente para consultar os militares correspondentes.</p>
+            <p>Consulte a composição hierárquica e funcional do Exército Brasileiro.</p>
 
+            <div id="efetivo-resumo" class="efetivo-resumo"></div>
+            <div class="efetivo-tabs" role="group" aria-label="Modo de consulta"><button type="button" id="tab-patentes" aria-pressed="true">Por patente</button><button type="button" id="tab-funcoes" aria-pressed="false">Por função</button></div>
+            <div id="funcoes-list" hidden></div>
             <div id="patentes-list">
                 Carregando patentes...
             </div>
