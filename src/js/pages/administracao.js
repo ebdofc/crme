@@ -306,13 +306,24 @@ async function adminCatalogoOrdenado(){
     ]);
     if(!resposta.ok)throw new Error("Não foi possível carregar a ordem institucional.");
     const estrutura=await resposta.json();
-    const ordem=new Map();
-    function visitar(no){
-        for(const f of no.funcoes||[])ordem.set(f.codigo,ordem.size);
-        for(const u of [...(no.unidades||[]),...(no.subunidades||[])])visitar(u);
+    const normalizar=v=>String(v??"").trim().normalize("NFC").toLocaleLowerCase("pt-BR");
+    const ordem=[];
+    function visitar(no,orgao,unidade=null){
+        for(const f of no.funcoes||[])ordem.push({orgao,unidade,f});
+        for(const u of [...(no.unidades||[]),...(no.subunidades||[])])visitar(u,orgao,u);
     }
-    for(const categoria of estrutura.categorias)for(const orgao of categoria.orgaos||[])visitar(orgao);
-    const pos=c=>ordem.get(c.codigo_vinculo)??Number.MAX_SAFE_INTEGER;
+    for(const categoria of estrutura.categorias)for(const orgao of categoria.orgaos||[])visitar(orgao,orgao);
+    const igual=(valor,...alternativas)=>normalizar(valor)!==""&&alternativas.some(a=>normalizar(a)===normalizar(valor));
+    const pos=c=>{
+        const i=ordem.findIndex(({orgao,unidade,f})=>
+            (igual(c.orgao,orgao.codigo,orgao.nome)||igual(c.orgao_nome,orgao.nome))&&
+            (igual(c.codigo_vinculo,f.codigo)||(
+                (unidade?(igual(c.unidade,unidade.codigo,unidade.nome)||igual(c.unidade_nome,unidade.nome)):!c.unidade&&!c.unidade_nome)&&
+                (igual(c.funcao_codigo,f.codigo,f.nome)||igual(c.funcao,f.nome))
+            ))
+        );
+        return i<0?Number.MAX_SAFE_INTEGER:i;
+    };
     return catalogo.slice().sort((a,b)=>pos(a)-pos(b));
 }
 async function funAbrir(m,mensagem=""){
