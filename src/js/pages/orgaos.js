@@ -933,7 +933,6 @@ async function mostrarDocumentos(estrutura, atual) {
         for (let inicio = 0; ; inicio += 100) {
             const lote = await consultar(supabase.from("documentos")
                 .select("id,titulo,orgao,unidade,publicado_por_tipo,publicado_por_codigo")
-                .eq("orgao", orgao)
                 .order("criado_em", { ascending: true })
                 .order("id", { ascending: true })
                 .range(inicio, inicio + 99));
@@ -945,7 +944,7 @@ async function mostrarDocumentos(estrutura, atual) {
             if (doc.publicado_por_tipo === "institucional" && doc.publicado_por_codigo) {
                 return doc.publicado_por_codigo === codigo;
             }
-            return (doc.unidade || null) === unidade;
+            return doc.orgao === orgao && (doc.unidade || null) === unidade;
         });
         if (!lista.length || atual !== versao) return;
         const secao = el("section", "organ-documents-section");
