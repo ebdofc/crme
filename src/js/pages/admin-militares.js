@@ -1,5 +1,5 @@
 import { supabase } from "../supabase.js";
-import { elemento, patentes, histRPC, funRotulo, adminCatalogoOrdenado } from "./admin-comum.js";
+import { elemento, patentes, histRPC, funRotulo, adminCatalogoOrdenado, etapaAdmin } from "./admin-comum.js";
 export function montarMilitares(estaAutorizado, carregar) {
 const painel = document.getElementById("admin-militares");
 const pesquisa = document.getElementById("admin-pesquisa");
@@ -39,6 +39,7 @@ function abrirMilitar(m){
     const menu=elemento("div",""); menu.className="admin-mil-acoes";
     const area=elemento("div","");
     edicao.append(menu,area);
+    etapaAdmin(edicao,()=>edicao.replaceChildren(),"Resultados da pesquisa",()=>salvando||buscando);
     for(const [tipo,titulo] of [["cadastro","Editar cadastro"],["discord","Alterar Discord ID"],["status","Alterar situação"],["cursos","Cursos da patente"],["excluir","Excluir permanentemente"]]){
         const b=elemento("button",titulo);b.type="button";if(tipo==="excluir")b.className="admin-perigo";
         b.onclick=()=>{if(!salvando) formulario(m,tipo,area);};menu.append(b);
@@ -46,6 +47,7 @@ function abrirMilitar(m){
 }
 function formulario(m,tipo,area){
     area.replaceChildren();
+    etapaAdmin(area,()=>area.replaceChildren(),"Ações do militar",()=>salvando);
     const f=elemento("form","");f.className="admin-mil-form";
     const campos={};
     function campo(nome,rotulo,valor,opcoes=null,tipoInput="text"){
