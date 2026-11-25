@@ -1,0 +1,8 @@
+.admin-modulos{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:16px}
+.admin-modulos>div,.admin-registro{border:1px solid #d1d5cd;padding:14px;background:#fff;border-radius:0}
+.admin-modulos small{display:block;margin-top:8px;color:#666}
+.admin-registro{margin:8px 0;overflow-wrap:anywhere}
+.admin-registro summary{cursor:pointer;color:#465536;font-weight:600}
+.admin-registro pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f3ef;padding:12px}
+#admin-atualizar,#admin-mais{background:#465536;color:white;border:0;padding:9px 14px;cursor:pointer;border-radius:0}
+#admin-status{margin:12px 0}
