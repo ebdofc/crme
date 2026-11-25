@@ -625,3 +625,15 @@ footer {
 .dashboard-section > h2:first-child + p {
     margin-bottom: 24px;
 }
+
+/* Iconografia institucional compartilhada */
+.crme-layout-icon { width:18px; height:18px; flex:0 0 18px; vertical-align:middle; }
+.sidebar nav a { display:flex; align-items:center; gap:10px; }
+.sidebar nav a .crme-nav-label { min-width:0; }
+.sidebar.collapsed nav a { justify-content:center; font-size:inherit; }
+.sidebar.collapsed nav a .crme-nav-label { display:none; }
+#logout-button .crme-layout-icon { margin-right:6px; }
+@media(max-width:700px) {
+    .sidebar.collapsed nav a { justify-content:flex-start; }
+    .sidebar.collapsed nav a .crme-nav-label { display:inline; }
+}
