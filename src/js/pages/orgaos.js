@@ -449,13 +449,17 @@ async function renderizar() {
             "DTC/Dir", "DTC/DSA/Dir", "DTC/DRI/Dir", "DTC/DCI/Dir", "PE/Cmd"
         ]);
         const locais = (estrutura.funcoes || []).map(f => f.codigo);
+        const raiz = caminho[0]?.codigo;
+        const painelPresidencia = caminho.length === 1 && raiz === "P";
+        const presidenciaACE = raiz === "ACE" && estrutura.codigo === "P";
         const codigos = presidencia.length
-            ? (estrutura.codigo === "P" ? presidencia : locais.filter(c => representacoes.has(c)))
-            : destinos.filter(tem);
-        const geral = ["P", "M", "CE"].includes(estrutura.codigo);
+            ? (painelPresidencia ? presidencia : presidenciaACE ? ["ACE/P"] : locais.filter(c => representacoes.has(c)))
+            : presidenciaACE ? ["ACE/P", "ACE/VP"].filter(tem) : destinos.filter(tem);
+        const geral = caminho.length === 1 && ["P", "M", "CE"].includes(raiz);
+        const destinosDisciplinares = presidenciaACE ? funcoes(caminho[0]).map(f => f.codigo) : destinos;
         if (codigos.length) {
             botaoPainel("Advertência institucional",
-                painel => carregarAdvertencias(painel, codigos, () => atual === versao, geral ? null : destinos),
+                painel => carregarAdvertencias(painel, codigos, () => atual === versao, geral ? null : destinosDisciplinares),
                 "", "document");
         }
     }
