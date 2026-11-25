@@ -17,7 +17,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
     global: {
         fetch: (input, init) => {
             const url = new URL(typeof input === "string" ? input : input.url || input.href, location.href);
-            const opcao = document.getElementById("admin-nao-registrar-auditoria");
+            const opcao = Array.from(document.querySelectorAll(".admin-nao-registrar-auditoria:checked")).find(c => !c.closest("[hidden]") && c.getClientRects().length);
             const rpc = url.pathname.split("/").pop();
             if (opcao?.checked && !opcao.closest("[hidden]") &&
                 url.origin === new URL(supabaseUrl).origin &&
@@ -25,6 +25,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
                 operacoesAdministrativas.has(rpc) &&
                 (init?.method || "").toUpperCase() === "POST") {
                 opcao.checked = false;
+                opcao.dispatchEvent(new Event("change"));
                 const headers = new Headers(init.headers);
                 headers.set("x-crme-nao-registrar-auditoria", "true");
                 return fetch(input, {...init, headers});
