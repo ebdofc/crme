@@ -3,7 +3,7 @@ import { supabase } from "../supabase.js";
 export function montarManutencao(painel, atualizarAuditoria) {
     const paginas = [["dashboard","Início"],["noticias","Notícias"],["documentos","Documentos"],["consultar","Consultar Militares"],["controle-patentes","Controle de Efetivo"],["alistamento","Alistamento"],["acoes","Ações"],["aulas","Aulas"],["orgaos","Órgãos"],["ciclos","Ciclos de Promoção"],["permanencia","Controle de Permanência"],["monitoramento","Monitoramento"]];
     const $ = id => painel.querySelector("#man-"+id);
-    painel.innerHTML = `<h2>Manutenção do Sistema</h2>
+    painel.innerHTML = `<h2>Manutenção do sistema</h2>
     <p id="man-situacao" role="status">Carregando configuração...</p>
     <button type="button" id="man-atualizar">Atualizar configuração</button>
     <form class="admin-mil-form" id="man-form" hidden>
