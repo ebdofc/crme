@@ -1,5 +1,5 @@
 import { supabase } from "../supabase.js";
-import { elemento, patentes, histRPC, funRotulo, adminCatalogoOrdenado } from "./admin-comum.js";
+import { elemento, patentes, histRPC, funRotulo, adminCatalogoOrdenado, etapaAdmin } from "./admin-comum.js";
 export function montarHistorico(estaAutorizado, carregar) {
 const histPainel=document.getElementById("admin-historico");
 const histBusca=document.getElementById("admin-hist-pesquisa");
@@ -57,7 +57,7 @@ function histAbrir(m){
     }
     filtro.onchange=()=>listar();
     barra.append(filtro,histBotao("Adicionar registro",()=>histFormulario(m,null,false,formArea,()=>listar(0),msg)));
-    histDetalhe.append(barra,msg,registros,prev,next,formArea);listar();
+    histDetalhe.append(barra,msg,registros,prev,next,formArea);etapaAdmin(histDetalhe,()=>histDetalhe.replaceChildren(),"Resultados da pesquisa",()=>histOcupado);listar();
 }
 function histFormulario(m,r,excluir,area,recarregar,msg){
     area.replaceChildren(elemento("h3",excluir?"Excluir ocorrência":r?"Editar ocorrência":"Adicionar ocorrência"));
@@ -90,6 +90,7 @@ function histFormulario(m,r,excluir,area,recarregar,msg){
     const erro=elemento("p","");erro.setAttribute("role","status");
     const b=elemento("button",excluir?"Excluir registro":"Salvar registro");b.type="submit";if(excluir)b.className="admin-perigo";
     f.append(b,histBotao("Cancelar",()=>area.replaceChildren()),erro);area.append(f);
+    etapaAdmin(area,()=>area.replaceChildren(),"Histórico do militar",()=>histOcupado);
     f.onsubmit=async e=>{
         e.preventDefault();if(histOcupado)return;
         const just=campos.justificativa.value.trim();if(!just){erro.textContent="Informe a justificativa.";return;}
