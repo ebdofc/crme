@@ -439,14 +439,18 @@ async function renderizar() {
     mostrarAcoesAdministrativas(estrutura, atual);
     mostrarAcaoMonitoramento(estrutura);
     if (ativo()) {
-        const codigos = funcoes(estrutura).map(f => f.codigo).filter(tem);
+        const destinos = funcoes(estrutura).map(f => f.codigo);
+        const presidencia = ["Presidente", "Vice-Presidente"].filter(tem);
+        const codigos = [...new Set([...destinos.filter(tem), ...presidencia])];
+        const filtro = v => codigos.includes(v.vinculo_autor) &&
+            (estrutura.codigo === "P" || destinos.includes(v.vinculo_destino));
         if (codigos.length) {
             try {
                 const lista = await rpc("advertencias_institucionais_listar") || [];
                 if (atual !== versao) return;
-                if (lista.some(v => codigos.includes(v.vinculo_autor))) {
+                if (lista.some(filtro)) {
                     botaoPainel("Advertência institucional",
-                        painel => carregarAdvertencias(painel, codigos, () => atual === versao),
+                        painel => carregarAdvertencias(painel, codigos, () => atual === versao, estrutura.codigo === "P" ? null : destinos),
                         "", "document");
                 }
             } catch (erro) {
