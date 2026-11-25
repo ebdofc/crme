@@ -80,7 +80,7 @@ const elementos = {
     voltar: $("back-to-organs")
 };
 
-let militar = null, vinculos = [], catalogo = [];
+let militar = null, vinculos = [], catalogo = [], categorias = [];
 let catalogoFuncoes = [], caminho = [], versao = 0;
 
 const mapaFuncoes = new Map();
@@ -125,11 +125,39 @@ function detalhes(...linhas) {
     return e;
 }
 
+function icone(tipo) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.7");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.classList.add("organ-icon");
+    const formas = {
+        next: "M9 6l6 6-6 6",
+        users: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M22 21v-2a4 4 0 0 0-3-4 M16 3a4 4 0 0 1 0 8",
+        network: "M12 3v6 M5 15v-3h14v3 M12 9v3 M2 15h6v6H2z M16 15h6v6h-6z M9 2h6v6H9z",
+        settings: "M4 6h16 M4 12h16 M4 18h16 M8 3v6 M16 9v6 M10 15v6"
+    };
+    const p = document.createElementNS(ns, "path");
+    p.setAttribute("d", formas[tipo] || formas.next);
+    svg.append(p);
+    return svg;
+}
+function tituloIcone(texto, tipo) {
+    const e = titulo(texto);
+    e.prepend(icone(tipo));
+    return e;
+}
 function cartao(estrutura, nome, acao) {
     const e = btn("", acao, "organ-card");
     e.append(
+        el("span", "organ-card-code", estrutura.codigo),
         el("span", "organ-card-name", nome),
-        el("span", "organ-card-code", estrutura.codigo)
+        icone("next")
     );
     return e;
 }
@@ -265,6 +293,7 @@ async function iniciar() {
         const dados = await resposta.json();
         if (!Array.isArray(dados.categorias)) throw Error("Catálogo institucional inválido.");
 
+        categorias = dados.categorias;
         catalogo = dados.categorias.flatMap(c => c.orgaos || []);
         catalogoFuncoes = catalogo.flatMap(funcoes);
         mapaFuncoes.clear();
@@ -275,9 +304,6 @@ async function iniciar() {
 
         await carregarVinculos();
 
-        elementos.nome.textContent = militar.nome;
-        elementos.discord.textContent = militar.discord_id;
-        elementos.patente.textContent = militar.patente;
 
         mostrarVinculos();
         mostrarOrgaos();
@@ -325,10 +351,19 @@ function mostrarOrgaos() {
 
     elementos.vazio.hidden = lista.length > 0;
 
-    lista.forEach(o => elementos.orgaos.append(cartao(
-        o, o.codigo === "DEC" ? "Departamento de Educação e Ciência" : o.nome,
-        () => { caminho = [o]; renderizar(); }
-    )));
+    categorias.forEach(c => {
+        const permitidos = lista.filter(o => (c.orgaos || []).includes(o));
+        if (!permitidos.length) return;
+        const grupo = el("section", "organ-category");
+        grupo.append(tituloIcone(c.nome, "network"));
+        const linhas = el("div", "organ-rows");
+        permitidos.forEach(o => linhas.append(cartao(
+            o, o.codigo === "DEC" ? "Departamento de Educação e Ciência" : o.nome,
+            () => { caminho = [o]; renderizar(); }
+        )));
+        grupo.append(linhas);
+        elementos.orgaos.append(grupo);
+    });
 }
 
 function voltar() {
@@ -358,7 +393,21 @@ async function renderizar() {
     elementos.voltar.textContent = caminho.length === 1
         ? "Voltar aos órgãos" : "Voltar à divisão anterior";
 
-    elementos.conteudo.append(el("p", "section-description", caminho.map(e => e.codigo).join(" / ")));
+    const breadcrumb = $("organ-breadcrumb");
+    breadcrumb.replaceChildren(btn("Órgãos", voltar, "organ-crumb"));
+    caminho.forEach((item, i) => {
+        breadcrumb.append(icone("next"));
+        if (i === caminho.length - 1) {
+            const atual = el("span", "", item.codigo);
+            atual.setAttribute("aria-current", "page");
+            breadcrumb.append(atual);
+        } else {
+            breadcrumb.append(btn(item.codigo, () => {
+                caminho = caminho.slice(0, i + 1);
+                renderizar();
+            }, "organ-crumb"));
+        }
+    });
 
     mostrarMinhasFuncoes(estrutura);
     mostrarDivisoes(estrutura);
@@ -373,15 +422,12 @@ async function renderizar() {
 }
 
 function mostrarMinhasFuncoes(estrutura) {
-    elementos.conteudo.append(titulo("Minhas funções"));
 
     const codigos = (estrutura.funcoes || []).map(f => f.codigo);
     const lista = vinculos.filter(v => codigos.includes(v.codigo_vinculo));
 
-    if (!lista.length) {
-        elementos.conteudo.append(mensagem("Você não possui funções diretamente vinculadas a esta divisão."));
-        return;
-    }
+    if (!lista.length) return;
+    elementos.conteudo.append(tituloIcone("Minhas funções", "users"));
 
     lista.forEach(v => elementos.conteudo.append(detalhes(v.funcao, v.codigo_vinculo)));
 }
@@ -390,7 +436,7 @@ function mostrarDivisoes(estrutura) {
     const lista = filhos(estrutura).filter(d => podeAcessar(d, caminho));
     if (!lista.length) return;
 
-    elementos.conteudo.append(titulo(caminho.length === 1 ? "Unidades" : "Subunidades"));
+    elementos.conteudo.append(tituloIcone(caminho.length === 1 ? "Unidades subordinadas" : "Subunidades", "network"));
 
     const container = el("div", "organs-list");
     lista.forEach(d => container.append(cartao(d, d.nome, () => {
@@ -639,7 +685,7 @@ function mostrarAcaoMonitoramento(estrutura) {
 
     if (!secao) {
         secao = el("section", "organ-integrantes-section organ-admin-section");
-        secao.append(titulo("Ações do Órgão"), el("div", "organ-admin-buttons"));
+        secao.append(tituloIcone("Operações administrativas", "settings"), el("div", "organ-admin-buttons"));
         elementos.conteudo.append(secao);
     }
 
@@ -667,7 +713,7 @@ function mostrarAcoesAdministrativas(estrutura, atual) {
         "organ-submit-button organ-admin-button"
     )));
 
-    secao.append(titulo("Ações do Órgão"), botoes, painel);
+    secao.append(tituloIcone("Operações administrativas", "settings"), botoes, painel);
     elementos.conteudo.append(secao);
 }
 
@@ -821,7 +867,7 @@ async function mostrarIntegrantes(estrutura, atual) {
     const conteudo = el("div", "organ-integrantes-content");
 
     conteudo.append(mensagem("Carregando integrantes..."));
-    secao.append(titulo("Integrantes"), conteudo);
+    secao.append(tituloIcone("Integrantes", "users"), conteudo);
     elementos.conteudo.append(secao);
 
     try {
