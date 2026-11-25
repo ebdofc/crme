@@ -582,3 +582,7 @@
     .organ-card { gap: 8px; }
     .organ-card-code { flex-basis: 38px; }
 }
+
+.organ-documents-section { margin-top: 16px; min-width: 0; }
+.organ-document-link { text-decoration: none; box-sizing: border-box; }
+.organ-document-link:hover { color: #465536; }
