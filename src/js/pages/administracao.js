@@ -1,3 +1,4 @@
+import { montarAcesso } from "./admin-acesso.js";
 import { montarManutencao } from "./admin-manutencao.js";
 import { supabase } from "../supabase.js";
 const lista = document.getElementById("admin-auditoria");
@@ -480,8 +481,10 @@ document.getElementById("admin-not-abrir").onclick=()=>{if(!autorizado||notOcupa
 const adminAudPainel=document.getElementById("admin-aud-painel");
 const manPainel=document.getElementById("admin-manutencao");
 const manModulo=montarManutencao(manPainel,()=>carregar(true));
+const acPainel=document.getElementById("admin-acesso");
+const acModulo=montarAcesso(acPainel,()=>carregar(true));
 const adminNavegacao=[
- ["admin-gestao",painel],["admin-hist-abrir",histPainel],["admin-fun-abrir",funPainel],["admin-not-abrir",notPainel],["admin-aud-abrir",adminAudPainel],["admin-man-abrir",manPainel]
+ ["admin-gestao",painel],["admin-hist-abrir",histPainel],["admin-fun-abrir",funPainel],["admin-not-abrir",notPainel],["admin-aud-abrir",adminAudPainel],["admin-man-abrir",manPainel],["admin-ac-abrir",acPainel]
 ];
 function adminAtualizarSelecao(){
  for(const [id,p] of adminNavegacao)document.getElementById(id).setAttribute("aria-pressed",String(!p.hidden));
@@ -490,8 +493,13 @@ for(const [id,p] of adminNavegacao){
  const b=document.getElementById(id);
  const anteriorClick=b.onclick;
  b.onclick=()=>{
-  if(!autorizado||salvando||histOcupado||funOcupado||notOcupado||manModulo.ocupado())return;
-  if(p===manPainel){
+  if(!autorizado||salvando||histOcupado||funOcupado||notOcupado||manModulo.ocupado()||acModulo.ocupado())return;
+  if(p===acPainel){
+   const abrir=p.hidden;
+   for(const [,outro] of adminNavegacao)outro.hidden=true;
+   p.hidden=!abrir;
+   if(abrir)acModulo.carregar();
+  }else if(p===manPainel){
    const abrir=p.hidden;
    for(const [,outro] of adminNavegacao)outro.hidden=true;
    p.hidden=!abrir;
@@ -504,6 +512,7 @@ for(const [id,p] of adminNavegacao){
   }else{
    adminAudPainel.hidden=true;
    manPainel.hidden=true;
+   acPainel.hidden=true;
    anteriorClick?.();
   }
   adminAtualizarSelecao();
