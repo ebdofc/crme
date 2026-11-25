@@ -299,16 +299,33 @@ function funIgual(f,c){
     return f.codigo_vinculo===c.codigo_vinculo||(f.orgao===c.orgao&&(f.unidade??null)===(c.unidade??null)&&(f.funcao_codigo===c.funcao_codigo||f.funcao===c.funcao));
 }
 function funRotulo(c){return [c.orgao_nome||c.orgao,c.unidade_nome||c.unidade,c.funcao].filter(Boolean).join(" — ");}
+async function adminCatalogoOrdenado(){
+    const [catalogo,resposta]=await Promise.all([
+        histRPC("admin_listar_catalogo_vinculos",{}),
+        fetch("/orgaos.json",{cache:"no-store"})
+    ]);
+    if(!resposta.ok)throw new Error("Não foi possível carregar a ordem institucional.");
+    const estrutura=await resposta.json();
+    const ordem=new Map();
+    const chave=(orgao,unidade,codigo)=>JSON.stringify([orgao,unidade??null,codigo]);
+    function visitar(orgao,no,unidade=null){
+        for(const f of no.funcoes||[])ordem.set(chave(orgao,unidade,f.codigo),ordem.size);
+        for(const u of [...(no.unidades||[]),...(no.subunidades||[])])visitar(orgao,u,u.codigo);
+    }
+    for(const categoria of estrutura.categorias)for(const orgao of categoria.orgaos||[])visitar(orgao.codigo,orgao);
+    const pos=c=>ordem.get(chave(c.orgao,c.unidade,c.funcao_codigo))??Number.MAX_SAFE_INTEGER;
+    return catalogo.slice().sort((a,b)=>pos(a)-pos(b));
+}
 async function funAbrir(m,mensagem=""){
     if(funOcupado)return;
     funOcupado=true;funDetalhe.replaceChildren(elemento("h3","Funções de "+m.nome));
     const msg=elemento("p","Carregando...");msg.setAttribute("role","status");funDetalhe.append(msg);
     try{
-        const [vinculos,catalogo]=await Promise.all([histRPC("admin_listar_funcoes",{p_militar_id:m.id}),histRPC("admin_listar_catalogo_vinculos",{})]);
+        const [vinculos,catalogo]=await Promise.all([histRPC("admin_listar_funcoes",{p_militar_id:m.id}),adminCatalogoOrdenado()]);
         const area=elemento("div",""),barra=elemento("div","");barra.className="admin-mil-acoes";
         const adicionar=funBotao("Atribuir função",()=>funFormulario(m,null,"adicionar",vinculos,catalogo,area));
         adicionar.disabled=m.status==="desligado";barra.append(adicionar);funDetalhe.append(barra);
-        for(const f of vinculos){
+        for(const f of vinculos.slice().sort((a,b)=>{const pos=f=>{const i=catalogo.findIndex(c=>funIgual(f,c));return i<0?Number.MAX_SAFE_INTEGER:i;};return pos(a)-pos(b);})){
             const linha=elemento("div","");linha.className="admin-registro";
             const c=catalogo.find(x=>funIgual(f,x));
             linha.append(elemento("strong",funRotulo(c||f)));
@@ -370,7 +387,7 @@ let notOcupado=false,notInicializado=false;
 async function notMontar(){
     notOcupado=true;notConteudo.replaceChildren(elemento("p","Carregando catálogo..."));
     try{
-        const catalogo=await histRPC("admin_listar_catalogo_vinculos",{});
+        const catalogo=await adminCatalogoOrdenado();
         notConteudo.replaceChildren();
         const form=elemento("form","");form.className="admin-mil-form";
         function campo(rotulo,tag){const l=elemento("label",rotulo),c=document.createElement(tag);l.append(c);form.append(l);return c;}
