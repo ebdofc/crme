@@ -6,3 +6,17 @@
 .admin-registro pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f3ef;padding:12px}
 #admin-atualizar,#admin-mais{background:#465536;color:white;border:0;padding:9px 14px;cursor:pointer;border-radius:0}
 #admin-status{margin:12px 0}
+
+#admin-militares[hidden],#admin-militares [hidden]{display:none!important}
+#admin-militares button,#admin-gestao{background:#465536;color:white;border:0;border-radius:0;padding:9px 14px;cursor:pointer}
+#admin-militares button:disabled{opacity:.5;cursor:default}
+#admin-militares .admin-perigo{background:#8b2929}
+#admin-pesquisa,.admin-mil-acoes{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+#admin-militares input:not([type=checkbox]),#admin-militares select,#admin-militares textarea{border:1px solid #b9bdb5;border-radius:0;padding:9px;max-width:100%;box-sizing:border-box}
+.admin-mil-linha{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #ddd;overflow-wrap:anywhere}
+.admin-mil-linha span{min-width:0}
+#admin-mil-edicao{margin-top:20px}
+.admin-mil-form{display:grid;gap:12px;max-width:640px;margin-top:16px}
+.admin-mil-form label{display:grid;gap:5px}
+.admin-mil-form label:has(input[type=checkbox]){display:flex;align-items:center}
+.admin-mil-form textarea{min-height:90px}
