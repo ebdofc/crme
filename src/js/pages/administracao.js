@@ -307,13 +307,12 @@ async function adminCatalogoOrdenado(){
     if(!resposta.ok)throw new Error("Não foi possível carregar a ordem institucional.");
     const estrutura=await resposta.json();
     const ordem=new Map();
-    const chave=(orgao,unidade,codigo)=>JSON.stringify([orgao,unidade??null,codigo]);
-    function visitar(orgao,no,unidade=null){
-        for(const f of no.funcoes||[])ordem.set(chave(orgao,unidade,f.codigo),ordem.size);
-        for(const u of [...(no.unidades||[]),...(no.subunidades||[])])visitar(orgao,u,u.codigo);
+    function visitar(no){
+        for(const f of no.funcoes||[])ordem.set(f.codigo,ordem.size);
+        for(const u of [...(no.unidades||[]),...(no.subunidades||[])])visitar(u);
     }
-    for(const categoria of estrutura.categorias)for(const orgao of categoria.orgaos||[])visitar(orgao.codigo,orgao);
-    const pos=c=>ordem.get(chave(c.orgao,c.unidade,c.funcao_codigo))??Number.MAX_SAFE_INTEGER;
+    for(const categoria of estrutura.categorias)for(const orgao of categoria.orgaos||[])visitar(orgao);
+    const pos=c=>ordem.get(c.codigo_vinculo)??Number.MAX_SAFE_INTEGER;
     return catalogo.slice().sort((a,b)=>pos(a)-pos(b));
 }
 async function funAbrir(m,mensagem=""){
