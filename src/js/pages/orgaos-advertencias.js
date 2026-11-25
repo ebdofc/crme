@@ -1,12 +1,12 @@
 import { supabase } from "../supabase.js";
 
-export async function carregarAdvertencias(painel, codigos, vigente) {
+export async function carregarAdvertencias(painel, codigos, vigente, destinos = null) {
     painel.textContent = "Carregando subordinados...";
     try {
         const { data, error } = await supabase.rpc("advertencias_institucionais_listar");
         if (error) throw error;
         if (!vigente()) return;
-        const lista = (data || []).filter(v => codigos.includes(v.vinculo_autor));
+        const lista = (data || []).filter(v => codigos.includes(v.vinculo_autor) && (!destinos || destinos.includes(v.vinculo_destino)));
         painel.replaceChildren();
         if (!lista.length) {
             painel.textContent = "Nenhum subordinado disponível para advertência.";
@@ -73,7 +73,7 @@ export async function carregarAdvertencias(painel, codigos, vigente) {
                 if (error) throw error;
                 if (data?.sucesso !== true) throw Error(data?.mensagem || "A operação não foi confirmada.");
                 if (!vigente()) return;
-                await carregarAdvertencias(painel, codigos, vigente);
+                await carregarAdvertencias(painel, codigos, vigente, destinos);
                 painel.prepend(el("p", "Advertência registrada no histórico militar.", "organ-form-message"));
             } catch (erro) {
                 msg.textContent = erro.message;
