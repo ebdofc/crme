@@ -36,3 +36,10 @@
 #admin-fun-pesquisa{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 #admin-funcoes input,#admin-funcoes select,#admin-funcoes textarea{border:1px solid #b9bdb5;border-radius:0;padding:9px;max-width:100%;box-sizing:border-box}
 #admin-fun-detalhe{margin-top:20px}
+
+#admin-notificacoes[hidden],#admin-notificacoes [hidden]{display:none!important}
+#admin-notificacoes button,#admin-not-abrir{background:#465536;color:white;border:0;border-radius:0;padding:9px 14px;cursor:pointer}
+#admin-notificacoes button:disabled{opacity:.5;cursor:default}
+#admin-notificacoes input,#admin-notificacoes select,#admin-notificacoes textarea{border:1px solid #b9bdb5;border-radius:0;padding:9px;max-width:100%;box-sizing:border-box}
+#admin-notificacoes details{margin:12px 0;border:1px solid #d1d5cd;padding:12px;max-height:320px;overflow:auto}
+#admin-notificacoes summary{cursor:pointer;color:#465536}
