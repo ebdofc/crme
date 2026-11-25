@@ -17,6 +17,7 @@ const ICONES_LAYOUT = {
     "ciclos.html": "M20 7a9 9 0 1 0 1 9 M20 2v5h-5 M12 7v5l3 2",
     "monitoramento.html": "M2 12h5l3-8 4 16 3-8h5",
     "permanencia.html": "M12 2l9 4v7c0 5-9 9-9 9s-9-4-9-9V6z M8 12l3 3 5-6",
+    "administracao.html": "M12 2l9 4v7c0 5-9 9-9 9s-9-4-9-9V6z M8 12l3 3 5-6",
     menu: "M3 6h18 M3 12h18 M3 18h18",
     sair: "M10 3H3v18h7 M9 12h12 M17 8l4 4-4 4"
 };
@@ -398,8 +399,25 @@ async function verificarLogin() {
             nav.append(link);
         }
     }
+    const paginaAdmin = /^administracao(?:\.html)?$/i.test(location.pathname.split("/").pop());
+    const { data: admin, error: adminError } = await supabase.rpc("crme_eh_administrador");
+    if (paginaAdmin && (adminError || admin !== true)) {
+        window.location.replace("dashboard.html");
+        return;
+    }
+    if (!adminError && admin === true) {
+        const nav = document.querySelector(".sidebar nav");
+        if (nav && !nav.querySelector('a[href="administracao.html"]')) {
+            const link = document.createElement("a");
+            link.href = "administracao.html";
+            link.textContent = "Administração";
+            if (paginaAdmin) link.classList.add("active");
+            nav.append(link);
+        }
+    }
     atualizarIconesMenu();
     document.body.style.visibility = "visible";
+    if (paginaAdmin) document.dispatchEvent(new Event("crme-admin-autorizado"));
     iniciarNotificacoes(discordId).catch(error => console.error("Notificações:", error));
 
     // ========================================
