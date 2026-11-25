@@ -284,6 +284,48 @@ window.addEventListener("focus", () => {
 });
 
 // ========================================
+// VERIFICAR MANUTENÇÃO
+// ========================================
+
+const paginaManutencao = location.pathname.split("/").pop()
+    .toLowerCase().replace(/\.html$/, "") || "dashboard";
+let verificandoManutencao = false;
+let intervaloManutencao = null;
+
+async function verificarManutencao() {
+    if (paginaManutencao === "administracao") return true;
+    if (verificandoManutencao) return false;
+    verificandoManutencao = true;
+    try {
+        const { data, error } = await supabase.rpc(
+            "sistema_manutencao_verificar",
+            { p_pagina: paginaManutencao }
+        );
+        if (error || typeof data?.bloqueada !== "boolean") {
+            throw error || new Error("Resposta de manutenção inválida.");
+        }
+        if (!data.bloqueada) return true;
+    } catch (error) {
+        console.error("Não foi possível verificar a manutenção:", error);
+    } finally {
+        verificandoManutencao = false;
+    }
+    document.body.style.visibility = "hidden";
+    if (intervaloManutencao !== null) clearInterval(intervaloManutencao);
+    pararMonitoramento();
+    location.replace("/manutencao.html?origem=" + encodeURIComponent(paginaManutencao));
+    return false;
+}
+
+function iniciarVerificacaoManutencao() {
+    if (paginaManutencao === "administracao" || intervaloManutencao !== null) return;
+    intervaloManutencao = window.setInterval(verificarManutencao, 30000);
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) verificarManutencao();
+    });
+}
+
+// ========================================
 // VERIFICAR LOGIN E AUTORIZAÇÃO
 // ========================================
 
@@ -326,6 +368,8 @@ async function verificarLogin() {
     // ========================================
     // CARREGAR DADOS DO USUÁRIO
     // ========================================
+
+    if (!(await verificarManutencao())) return;
 
     const user = session.user;
 
@@ -417,6 +461,7 @@ async function verificarLogin() {
     }
     atualizarIconesMenu();
     document.body.style.visibility = "visible";
+    iniciarVerificacaoManutencao();
     if (paginaAdmin) document.dispatchEvent(new Event("crme-admin-autorizado"));
     iniciarNotificacoes(discordId).catch(error => console.error("Notificações:", error));
 
