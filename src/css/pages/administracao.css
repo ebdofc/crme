@@ -1,45 +1,48 @@
-.admin-modulos{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:16px}
-.admin-modulos>div,.admin-registro{border:1px solid #d1d5cd;padding:14px;background:#fff;border-radius:0}
-.admin-modulos small{display:block;margin-top:8px;color:#666}
-.admin-registro{margin:8px 0;overflow-wrap:anywhere}
-.admin-registro summary{cursor:pointer;color:#465536;font-weight:600}
-.admin-registro pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f3ef;padding:12px}
-#admin-atualizar,#admin-mais{background:#465536;color:white;border:0;padding:9px 14px;cursor:pointer;border-radius:0}
-#admin-status{margin:12px 0}
 
-#admin-militares[hidden],#admin-militares [hidden]{display:none!important}
-#admin-militares button,#admin-gestao{background:#465536;color:white;border:0;border-radius:0;padding:9px 14px;cursor:pointer}
-#admin-militares button:disabled{opacity:.5;cursor:default}
-#admin-militares .admin-perigo{background:#8b2929}
-#admin-pesquisa,.admin-mil-acoes{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-#admin-militares input:not([type=checkbox]),#admin-militares select,#admin-militares textarea{border:1px solid #b9bdb5;border-radius:0;padding:9px;max-width:100%;box-sizing:border-box}
-.admin-mil-linha{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #ddd;overflow-wrap:anywhere}
+/* Administração — padrão institucional CRME */
+.admin-grupo{margin:24px 0}
+.admin-grupo h3{font-size:15px;font-weight:600;color:#465536;margin:0 0 10px}
+.admin-modulos{border:1px solid #ddd}
+.admin-modulos button{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;background:#fff;color:#465536;border:0;border-bottom:1px solid #ddd;border-radius:0;text-align:left;font:inherit;cursor:pointer}
+.admin-modulos button:last-child{border-bottom:0}
+.admin-modulos button:hover:not(:disabled),.admin-modulos button[aria-pressed="true"]{background:#e8ebdf}
+.admin-modulos button[aria-pressed="true"]{box-shadow:inset 3px 0 #465536}
+.admin-modulos button:disabled{color:#777;background:#f8f9f7;cursor:default}
+.admin-modulos svg{width:22px;height:22px;flex:0 0 22px}
+.admin-modulos strong{display:block;font-size:14px}
+.admin-modulos small{display:block;color:#666;font-size:12px;margin-top:5px}
+.admin-seta{margin-left:auto;font-size:23px}
+.dashboard-section[id^="admin-"][hidden],.dashboard-section[id^="admin-"] [hidden]{display:none!important}
+.dashboard-section[id^="admin-"]{font-size:14px}
+.dashboard-section[id^="admin-"] h3{font-size:16px;color:#465536;margin:20px 0 12px}
+.dashboard-section[id^="admin-"] button{font:inherit;padding:10px 14px;border:1px solid #465536;border-radius:0;background:#fff;color:#465536;cursor:pointer}
+.dashboard-section[id^="admin-"] button:hover:not(:disabled){background:#f0f2ed}
+.dashboard-section[id^="admin-"] button:disabled{opacity:.5;cursor:default}
+.dashboard-section[id^="admin-"] button[type="submit"],#admin-pesquisa button,#admin-hist-pesquisa button,#admin-fun-pesquisa button{background:#465536;color:#fff}
+.dashboard-section[id^="admin-"] button[type="submit"]:hover:not(:disabled){background:#354329}
+.dashboard-section[id^="admin-"] button.admin-perigo{background:#8b2929;color:#fff;border-color:#8b2929}
+.dashboard-section[id^="admin-"] button.admin-perigo:hover:not(:disabled){background:#702020}
+.dashboard-section[id^="admin-"] input:not([type="checkbox"]),.dashboard-section[id^="admin-"] select,.dashboard-section[id^="admin-"] textarea{font:inherit;color:#222;background:#fff;border:1px solid #bbb;border-radius:0;padding:11px;max-width:100%;min-width:0}
+.dashboard-section[id^="admin-"] :focus-visible,.admin-modulos button:focus-visible{outline:2px solid #465536;outline-offset:2px}
+#admin-pesquisa,#admin-hist-pesquisa,#admin-fun-pesquisa,.admin-mil-acoes{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+#admin-pesquisa input,#admin-hist-pesquisa input,#admin-fun-pesquisa input{flex:1;min-width:140px}
+.admin-mil-linha{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #ddd;border-bottom:0;overflow-wrap:anywhere}
+.admin-mil-linha:last-child{border-bottom:1px solid #ddd;margin-bottom:14px}
+.admin-mil-linha:nth-child(even){background:#f8f9f7}
 .admin-mil-linha span{min-width:0}
-#admin-mil-edicao{margin-top:20px}
-.admin-mil-form{display:grid;gap:12px;max-width:640px;margin-top:16px}
-.admin-mil-form label{display:grid;gap:5px}
+.admin-mil-linha button{flex-shrink:0}
+#admin-mil-edicao,#admin-hist-detalhe,#admin-fun-detalhe{margin-top:20px}
+.admin-mil-form{display:grid;gap:16px;max-width:640px;margin:16px 0;padding:18px;border:1px solid #ddd;background:#fff}
+.admin-mil-form label{display:grid;gap:7px;font-weight:600;color:#333}
 .admin-mil-form label:has(input[type=checkbox]){display:flex;align-items:center}
-.admin-mil-form textarea{min-height:90px}
-
-#admin-historico[hidden],#admin-historico [hidden]{display:none!important}
-#admin-historico button,#admin-hist-abrir{background:#465536;color:white;border:0;border-radius:0;padding:9px 14px;cursor:pointer}
-#admin-historico button:disabled{opacity:.5;cursor:default}
-#admin-historico .admin-perigo{background:#8b2929}
-#admin-hist-pesquisa{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-#admin-historico input,#admin-historico select,#admin-historico textarea{border:1px solid #b9bdb5;border-radius:0;padding:9px;max-width:100%;box-sizing:border-box}
-#admin-hist-detalhe{margin-top:20px}
-
-#admin-funcoes[hidden],#admin-funcoes [hidden]{display:none!important}
-#admin-funcoes button,#admin-fun-abrir{background:#465536;color:white;border:0;border-radius:0;padding:9px 14px;cursor:pointer}
-#admin-funcoes button:disabled{opacity:.5;cursor:default}
-#admin-funcoes .admin-perigo{background:#8b2929}
-#admin-fun-pesquisa{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-#admin-funcoes input,#admin-funcoes select,#admin-funcoes textarea{border:1px solid #b9bdb5;border-radius:0;padding:9px;max-width:100%;box-sizing:border-box}
-#admin-fun-detalhe{margin-top:20px}
-
-#admin-notificacoes[hidden],#admin-notificacoes [hidden]{display:none!important}
-#admin-notificacoes button,#admin-not-abrir{background:#465536;color:white;border:0;border-radius:0;padding:9px 14px;cursor:pointer}
-#admin-notificacoes button:disabled{opacity:.5;cursor:default}
-#admin-notificacoes input,#admin-notificacoes select,#admin-notificacoes textarea{border:1px solid #b9bdb5;border-radius:0;padding:9px;max-width:100%;box-sizing:border-box}
-#admin-notificacoes details{margin:12px 0;border:1px solid #d1d5cd;padding:12px;max-height:320px;overflow:auto}
+.admin-mil-form textarea{min-height:100px;resize:vertical}
+.admin-mil-form button{justify-self:start}
+.admin-mil-form p{margin:0;line-height:1.5}
+.admin-registro{border:1px solid #ddd;margin:8px 0;padding:0 14px;overflow-wrap:anywhere}
+.admin-registro summary{cursor:pointer;color:#465536;font-weight:600;padding:14px 0;line-height:1.5}
+.admin-registro[open] summary{border-bottom:1px solid #ddd}
+.admin-registro pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f3ef;padding:12px;font-size:12px}
+#admin-notificacoes details{border:1px solid #ddd;padding:12px;max-height:320px;overflow:auto;margin:12px 0}
 #admin-notificacoes summary{cursor:pointer;color:#465536}
+.dashboard-section[id^="admin-"] [role="status"]{color:#626b5d;line-height:1.5;margin:12px 0}
+@media(max-width:700px){.admin-mil-linha{align-items:flex-start;flex-direction:column}.admin-mil-form{padding:12px}.admin-modulos button{padding:12px}.admin-mil-form button{max-width:100%}}
