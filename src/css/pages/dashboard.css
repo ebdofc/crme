@@ -609,3 +609,19 @@ footer {
         transition: none;
     }
 }
+
+/* Introduções de página — padrão do Controle de Permanência.
+   Seletores restritos aos cabeçalhos principais, não aos painéis internos. */
+.dashboard-section > h2:first-child + p,
+.dashboard-section > .news-header > div:first-child > h2 + p,
+.dashboard-section > .monitoring-header > div:first-child > h2 + p,
+.dashboard-section > .cpo-page-intro > h2 + p,
+.dashboard-section > .permanencia-header > div:first-child > h2 + p {
+    color: #626b5d;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+.dashboard-section > h2:first-child + p {
+    margin-bottom: 24px;
+}
