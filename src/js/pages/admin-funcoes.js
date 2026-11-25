@@ -1,5 +1,5 @@
 import { supabase } from "../supabase.js";
-import { elemento, patentes, histRPC, funRotulo, adminCatalogoOrdenado } from "./admin-comum.js";
+import { elemento, patentes, histRPC, funRotulo, adminCatalogoOrdenado, etapaAdmin } from "./admin-comum.js";
 export function montarFuncoes(estaAutorizado, carregar) {
 const funPainel=document.getElementById("admin-funcoes");
 const funBusca=document.getElementById("admin-fun-pesquisa");
@@ -49,7 +49,7 @@ async function funAbrir(m,mensagem=""){
         }
         if(!vinculos.length)funDetalhe.append(elemento("p","Nenhuma função atribuída."));
         if(m.status==="desligado")funDetalhe.append(elemento("p","Militares desligados não podem receber novas funções."));
-        funDetalhe.append(area);msg.textContent=mensagem||vinculos.length+" vínculo(s).";
+        funDetalhe.append(area);etapaAdmin(funDetalhe,()=>funDetalhe.replaceChildren(),"Resultados da pesquisa",()=>funOcupado);msg.textContent=mensagem||vinculos.length+" vínculo(s).";
     }catch(e){msg.textContent=e.message||"Falha na consulta.";}finally{funOcupado=false;}
 }
 function funFormulario(m,f,tipo,vinculos,catalogo,area){
@@ -74,6 +74,7 @@ function funFormulario(m,f,tipo,vinculos,catalogo,area){
     const msg=elemento("p","");msg.setAttribute("role","status");
     const b=elemento("button",tipo==="remover"?"Remover função":"Salvar");b.type="submit";if(tipo==="remover")b.className="admin-perigo";
     form.append(b,funBotao("Cancelar",()=>area.replaceChildren()),msg);area.append(form);
+    etapaAdmin(area,()=>area.replaceChildren(),"Funções do militar",()=>funOcupado);
     form.onsubmit=async e=>{
         e.preventDefault();if(funOcupado)return;
         if(!just.value.trim()){msg.textContent="Informe a justificativa.";return;}
