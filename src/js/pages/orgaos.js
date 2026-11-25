@@ -926,13 +926,19 @@ async function mostrarDocumentos(estrutura, atual) {
     const unidade = caminho.length > 1 ? estrutura.codigo : null;
     const codigo = caminho.map(e => e.codigo).join("/");
     try {
-        // A RLS de documentos continua sendo a autoridade de leitura.
-        // A identidade institucional, quando definida, identifica o autor
-        // exato; para publicação pessoal, usar o escopo cadastrado.
+        // Destinatários explícitos, retornados apenas para documentos legíveis.
+        const filtros = await rpc("documentos_filtros_disponiveis") || [];
+        if (atual !== versao) return;
+        const setores = new Map();
+        for (const f of filtros) {
+            if (f.tipo !== "setor") continue;
+            if (!setores.has(f.documento_id)) setores.set(f.documento_id, []);
+            setores.get(f.documento_id).push(f.codigo);
+        }
         const documentos = [];
         for (let inicio = 0; ; inicio += 100) {
             const lote = await consultar(supabase.from("documentos")
-                .select("id,titulo,orgao,unidade,publicado_por_tipo,publicado_por_codigo")
+                .select("id,titulo,orgao,unidade,visibilidade")
                 .order("criado_em", { ascending: true })
                 .order("id", { ascending: true })
                 .range(inicio, inicio + 99));
@@ -941,10 +947,13 @@ async function mostrarDocumentos(estrutura, atual) {
             if (!lote || lote.length < 100) break;
         }
         const lista = documentos.filter(doc => {
-            if (doc.publicado_por_tipo === "institucional" && doc.publicado_por_codigo) {
-                return doc.publicado_por_codigo === codigo;
+            if (doc.visibilidade !== "restrito") {
+                return doc.orgao === orgao && (doc.unidade || null) === unidade;
             }
-            return doc.orgao === orgao && (doc.unidade || null) === unidade;
+            const destinos = setores.get(doc.id) || [];
+            const principais = destinos.filter(c => !destinos.some(p =>
+                p !== c && c.startsWith(p + "/")));
+            return principais.includes(codigo);
         });
         if (!lista.length || atual !== versao) return;
         const secao = el("section", "organ-documents-section");
