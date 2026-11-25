@@ -46,3 +46,20 @@
 .user-info {
     margin-right: auto;
 }
+#patentes-list[hidden], #militares-list[hidden], #funcoes-list[hidden] { display:none; }
+.efetivo-resumo { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:20px 0; }
+.efetivo-resumo > div { border:1px solid #d5d5d5; padding:14px; display:grid; gap:6px; }
+.efetivo-resumo strong { font-size:24px; color:#465536; }
+.efetivo-tabs { display:flex; gap:8px; margin:20px 0; }
+.efetivo-tabs button { flex:1; padding:12px; border:1px solid #465536; border-radius:0; background:white; color:#465536; cursor:pointer; }
+.efetivo-tabs button[aria-pressed="true"] { background:#465536; color:white; }
+#funcoes-list h3 { margin:24px 0 10px; font-size:16px; color:#465536; }
+.efetivo-orgao { border:1px solid #d5d5d5; margin-bottom:8px; }
+.efetivo-orgao summary { cursor:pointer; padding:14px; font-weight:600; }
+.efetivo-orgao[open] summary { background:#e8ebdf; }
+.efetivo-unidade { margin:12px; border-left:2px solid #a6ae99; padding-left:12px; }
+.efetivo-unidade h4 { margin:12px 0; color:#465536; }
+.efetivo-funcao { margin:12px; }
+.efetivo-funcao h5 { font-size:14px; margin:0 0 6px; }
+.efetivo-membro { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; border-bottom:1px solid #ddd; padding:8px 0; }
+.efetivo-membro span,.efetivo-vago { font-size:13px; color:#666; }
