@@ -43,7 +43,7 @@
             <h2>Administração do CRME</h2>
             <p>Intervenções administrativas e auditoria do sistema.</p>
             <div class="admin-modulos">
-                <div><strong>Gestão de militares</strong><small>Em desenvolvimento</small></div>
+                <div><button id="admin-gestao" type="button">Gestão de militares</button><small>Administrar cadastros</small></div>
                 <div><strong>Histórico militar</strong><small>Em desenvolvimento</small></div>
                 <div><strong>Funções</strong><small>Em desenvolvimento</small></div>
                 <div><strong>Notificações</strong><small>Em desenvolvimento</small></div>
@@ -51,6 +51,12 @@
                 <div><strong>Ciclos de promoções</strong><small>Em desenvolvimento</small></div>
                 <div><strong>Sistema</strong><small>Em desenvolvimento</small></div>
             </div>
+        </section>
+        <section class="dashboard-section" id="admin-militares" hidden>
+            <h2>Gestão de militares</h2>
+            <form id="admin-pesquisa"><input name="pesquisa" placeholder="Nome ou Discord ID" aria-label="Pesquisar militar"><select name="status" aria-label="Situação"><option value="">Todas as situações</option><option value="ativo">Ativo</option><option value="afastado">Afastado</option><option value="desligamento_pendente">Desligamento pendente</option><option value="desligado">Desligado</option></select><button>Pesquisar</button></form>
+            <p id="admin-mil-status" role="status"></p><div id="admin-mil-lista"></div><button id="admin-mil-anterior" type="button">Anterior</button> <button id="admin-mil-proximo" type="button">Próximo</button>
+            <div id="admin-mil-edicao"></div>
         </section>
         <section class="dashboard-section">
             <h2>Auditoria administrativa</h2>
