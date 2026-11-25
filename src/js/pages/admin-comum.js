@@ -36,3 +36,19 @@ export async function adminCatalogoOrdenado(){
     };
     return catalogo.slice().sort((a,b)=>pos(a)-pos(b));
 }
+
+export function topoAdmin(){window.scrollTo({top:0,behavior:"instant"});}
+export function etapaAdmin(area, voltar, rotulo, ocupado=()=>false){
+    const pai=area.parentElement;
+    if(!pai)return;
+    const anteriores=[...pai.children].filter(e=>e!==area&&!e.hidden&&!e.classList.contains("admin-navegacao")&&e.tagName!=="H2");
+    anteriores.forEach(e=>e.hidden=true);
+    const barra=elemento("div","");barra.className="admin-navegacao admin-mil-acoes";
+    const b=elemento("button","← "+rotulo);b.type="button";
+    const restaurar=()=>{anteriores.forEach(e=>e.hidden=false);barra.remove();};
+    b.onclick=()=>{if(ocupado())return;restaurar();voltar();topoAdmin();};
+    area.prepend(barra);
+    const obs=new MutationObserver(()=>{if(!area.contains(barra)){restaurar();obs.disconnect();}});
+    obs.observe(area,{childList:true});
+    topoAdmin();
+}
