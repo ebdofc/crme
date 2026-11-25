@@ -320,6 +320,37 @@ async function verificarLogin() {
     document.getElementById("user-rank").textContent =
         militar?.patente || "Sem patente cadastrada";
 
+    // Exibir Aulas somente para militares ativos com vínculo autorizado.
+    const linksAulas = document.querySelectorAll('.sidebar nav a[href="aulas.html"]');
+    let podeAulas = false;
+    try {
+        const { data: militarId, error: erroId } = await supabase.rpc("crme_militar_id");
+        if (erroId) throw erroId;
+        if (militarId) {
+            const { data: vinculos, error: erroVinculos } = await supabase
+                .from("funcoes")
+                .select("codigo_vinculo")
+                .eq("militar_id", militarId);
+            if (erroVinculos) throw erroVinculos;
+            const administrativos = new Set([
+                "Presidente", "Vice-Presidente", "Ministro da Defesa", "Ministro"
+            ]);
+            podeAulas = (vinculos || []).some(v =>
+                v.codigo_vinculo?.startsWith("DEC/") ||
+                administrativos.has(v.codigo_vinculo)
+            );
+        }
+    } catch (erro) {
+        console.error("Erro ao verificar permissão do menu Aulas:", erro);
+    }
+    if (!podeAulas) {
+        linksAulas.forEach(link => link.remove());
+        if (window.location.pathname.split("/").pop().toLowerCase().replace(/\.html$/, "") === "aulas") {
+            window.location.replace("dashboard.html");
+            return;
+        }
+    }
+
     const { data: podePermanencia } = await supabase.rpc("permanencia_pode_gerenciar");
     if (podePermanencia === true) {
         const nav = document.querySelector(".sidebar nav");
