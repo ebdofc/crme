@@ -1,24 +1,11 @@
 /* Controle de Permanência — padrão visual do CRME */
 #permanencia[hidden], #acesso[hidden] { display: none !important; }
 
-.permanencia-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-    margin-bottom: 24px;
-}
-.permanencia-header p {
-    color: #626b5d;
-    font-size: 14px;
-    line-height: 1.5;
-    margin: 0;
-}
 .permanencia-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding-top: 16px;
+    margin-bottom: 24px;
 }
 #permanencia button {
     min-height: 36px;
@@ -162,8 +149,7 @@
 }
 #acesso { color: #626b5d; font-size: 14px; }
 @media (max-width: 700px) {
-    .permanencia-header { flex-direction: column; gap: 12px; }
-    .permanencia-actions { padding-top: 0; width: 100%; }
+    .permanencia-actions { width: 100%; }
     .permanencia-actions button { flex: 1; }
     .permanencia-panel { padding: 12px; }
     .permanencia-card { padding: 12px; }
