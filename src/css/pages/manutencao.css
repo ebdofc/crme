@@ -1,0 +1,15 @@
+body { margin: 0; font-family: Arial, sans-serif; background: #fff; color: #222; }
+.maintenance-container { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-sizing: border-box; padding: 32px 20px; }
+.maintenance-content { width: 100%; max-width: 620px; overflow-wrap: anywhere; }
+.system-name { color: #465536; font-size: 24px; font-weight: bold; }
+.system-subtitle { color: #666; font-size: 14px; margin: 8px 0 32px; }
+h1 { font-size: 26px; border-top: 2px solid #465536; padding-top: 24px; }
+#maintenance-description { white-space: pre-wrap; line-height: 1.6; }
+#maintenance-end { font-weight: bold; color: #465536; }
+#maintenance-status { font-size: 13px; color: #666; }
+.maintenance-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 16px; margin-top: 24px; }
+button { background: #465536; color: #fff; border: 1px solid #354329; padding: 12px 20px; cursor: pointer; }
+button:hover { background: #354329; }
+button:disabled { opacity: .65; cursor: wait; }
+a { color: #465536; font-size: 14px; }
+footer { margin-top: 48px; font-size: 11px; color: #666; }
