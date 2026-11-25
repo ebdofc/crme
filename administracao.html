@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRME | Administração</title>
+    <link rel="stylesheet" href="/src/css/pages/dashboard.css">
+    <link rel="stylesheet" href="/src/css/pages/administracao.css">
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>CRME</span>
+            <button id="menu-toggle" aria-label="Recolher menu">☰</button>
+        </div>
+
+        <nav>
+            <a href="dashboard.html" >Início</a>
+            <a href="noticias.html">Notícias</a>
+            <a href="documentos.html">Documentos</a>
+            <a href="consultar.html">Consultar Militares</a>
+            <a href="controle-patentes.html">Controle de Efetivo</a>
+            <a href="alistamento.html">Alistamento</a>
+            <a href="acoes.html">Ações</a>
+            <a href="aulas.html">Aulas</a>
+            <a href="orgaos.html">Órgãos</a>
+            <a href="ciclos.html">Ciclos de Promoção</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="top-header">
+            <div class="user-info">
+                <strong id="user-name">Carregando...</strong>
+                <span id="user-rank">Patente</span>
+            </div>
+            <button id="logout-button">Sair</button>
+        </header>
+
+        <section class="dashboard-section">
+            <h2>Administração do CRME</h2>
+            <p>Intervenções administrativas e auditoria do sistema.</p>
+            <div class="admin-modulos">
+                <div><strong>Gestão de militares</strong><small>Em desenvolvimento</small></div>
+                <div><strong>Histórico militar</strong><small>Em desenvolvimento</small></div>
+                <div><strong>Funções</strong><small>Em desenvolvimento</small></div>
+                <div><strong>Notificações</strong><small>Em desenvolvimento</small></div>
+                <div><strong>Aulas e cursos</strong><small>Em desenvolvimento</small></div>
+                <div><strong>Ciclos de promoções</strong><small>Em desenvolvimento</small></div>
+                <div><strong>Sistema</strong><small>Em desenvolvimento</small></div>
+            </div>
+        </section>
+        <section class="dashboard-section">
+            <h2>Auditoria administrativa</h2>
+            <button type="button" id="admin-atualizar">Atualizar</button>
+            <p id="admin-status" role="status">Aguardando autorização...</p>
+            <div id="admin-auditoria"></div>
+            <button type="button" id="admin-mais" hidden>Carregar mais</button>
+        </section>
+        <footer>
+            EXÉRCITO BRASILEIRO · DGP · DCR
+        </footer>
+
+    </main>
+
+    <script type="module" src="/src/js/pages/layout.js"></script>
+    <script type="module" src="/src/js/pages/administracao.js"></script>
+</body>
+</html>

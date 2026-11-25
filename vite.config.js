@@ -30,6 +30,7 @@ export default defineConfig({
         orgaos: resolve(import.meta.dirname, 'orgaos.html'),
         ciclos: resolve(import.meta.dirname, 'ciclos.html'),
         monitoramento: resolve(import.meta.dirname, 'monitoramento.html'),
+        administracao: resolve(import.meta.dirname, 'administracao.html'),
         permanencia: resolve(import.meta.dirname, 'permanencia.html'),
       },
     },
