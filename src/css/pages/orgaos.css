@@ -559,3 +559,26 @@
         align-self: stretch;
     }
 }
+
+/* Navegação institucional compacta */
+.military-functions { margin-top: 0; }
+.organs-list { display: flex; flex-direction: column; gap: 12px; }
+.organ-category { min-width: 0; }
+.organ-rows { border: 1px solid #d5d8d2; }
+.organ-card { width: 100%; min-height: 44px; padding: 10px 12px; background: #fff; border-radius: 0; justify-content: flex-start; }
+.organ-rows .organ-card { border: 0; }
+.organ-rows .organ-card + .organ-card { border-top: 1px solid #d5d8d2; }
+.organ-card-code { flex: 0 0 48px; color: #465536; overflow-wrap: anywhere; }
+.organ-card-name { flex: 1; min-width: 0; font-size: 14px; font-weight: 500; overflow-wrap: anywhere; }
+.organ-icon { width: 18px; height: 18px; flex: 0 0 18px; color: #465536; }
+.organ-management-title { display: flex; align-items: center; gap: 8px; }
+#organ-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-bottom: 16px; font-size: 13px; color: #465536; }
+.organ-crumb { background: none; border: 0; padding: 4px; font: inherit; color: #465536; cursor: pointer; text-decoration: underline; }
+#back-to-organs[hidden], #organ-actions-section[hidden], .available-organs[hidden] { display: none; }
+.organ-integrante { border-radius: 0; }
+.organ-card:focus-visible, .organ-crumb:focus-visible { outline: 2px solid #465536; outline-offset: -2px; }
+@media (max-width: 600px) {
+    .military-identification, .available-organs, #organ-actions-section { padding: 12px; }
+    .organ-card { gap: 8px; }
+    .organ-card-code { flex-basis: 38px; }
+}
