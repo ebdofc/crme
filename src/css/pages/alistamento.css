@@ -1,0 +1,52 @@
+/* Alistamento — padrão institucional do CRME */
+.enlistment-panel {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #d5d8d2;
+    min-width: 0;
+}
+.enlistment-page #enlistment-form { max-width: 600px; margin: 0; }
+.enlistment-page .form-group { gap: 7px; margin-bottom: 18px; }
+.enlistment-page .form-group label {
+    margin: 0; color: #343b31; font-size: 13px; font-weight: 600;
+}
+.enlistment-page .form-group input {
+    width: 100%; min-height: 40px; padding: 9px 10px;
+    border: 1px solid #c9cec4; border-radius: 0;
+    background: #fff; color: #343b31; font: inherit; font-size: 14px;
+}
+.enlistment-page .form-group input:focus {
+    outline: 1px solid #68765d; border-color: #68765d;
+}
+.enlistment-page input::placeholder { color: #92998e; }
+.enlistment-page #enlistment-form button {
+    min-height: 36px; padding: 8px 13px;
+    background: #465536; color: #fff;
+    border: 1px solid #59664e; border-radius: 0;
+    font: inherit; font-size: 13px; cursor: pointer;
+}
+.enlistment-page #enlistment-form button:hover:not(:disabled) { background: #354329; }
+.enlistment-page #enlistment-form button:disabled { opacity: .55; cursor: not-allowed; }
+.enlistment-page #enlistment-form button:focus-visible { outline: 2px solid #68765d; outline-offset: 2px; }
+.enlistment-recruits { padding-top: 0; }
+.enlistment-recruits .enlistment-panel > h2 {
+    margin: 0 0 16px; padding-bottom: 12px;
+    color: #343b31; font-size: 18px; font-weight: 600;
+    border-bottom: 1px solid #d5d8d2;
+}
+.enlistment-recruits .table-container { margin-top: 0; }
+.enlistment-recruits .table-container table { min-width: 0; font-size: 13px; line-height: 1.5; }
+.enlistment-recruits .table-container th,
+.enlistment-recruits .table-container td {
+    padding: 12px; border: 1px solid #d5d8d2; overflow-wrap: anywhere;
+}
+.enlistment-recruits .table-container th { background: #eef0eb; color: #465536; font-weight: 600; }
+.enlistment-recruits .table-container tbody tr:nth-child(even) { background: #f7f8f5; }
+.enlistment-recruits .table-container tbody tr:hover { background: #eef0eb; }
+.enlistment-recruits td[colspan] { text-align: center; color: #626b5d; }
+@media (max-width: 700px) {
+    .enlistment-panel { padding: 12px; }
+    .enlistment-page #enlistment-form button { width: 100%; }
+    .enlistment-recruits .table-container th,
+    .enlistment-recruits .table-container td { padding: 8px; }
+}
