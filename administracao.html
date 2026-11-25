@@ -45,7 +45,7 @@
             <div class="admin-modulos">
                 <div><button id="admin-gestao" type="button">Gestão de militares</button><small>Administrar cadastros</small></div>
                 <div><button id="admin-hist-abrir" type="button">Histórico militar</button><small>Administrar ocorrências</small></div>
-                <div><strong>Funções</strong><small>Em desenvolvimento</small></div>
+                <div><button id="admin-fun-abrir" type="button">Funções</button><small>Administrar vínculos</small></div>
                 <div><strong>Notificações</strong><small>Em desenvolvimento</small></div>
                 <div><strong>Aulas e cursos</strong><small>Em desenvolvimento</small></div>
                 <div><strong>Ciclos de promoções</strong><small>Em desenvolvimento</small></div>
@@ -64,6 +64,13 @@
             <p id="admin-hist-status" role="status"></p><div id="admin-hist-militares"></div>
             <button id="admin-hist-mil-prev" type="button">Anterior</button> <button id="admin-hist-mil-next" type="button">Próximo</button>
             <div id="admin-hist-detalhe"></div>
+        </section>
+        <section class="dashboard-section" id="admin-funcoes" hidden>
+            <h2>Gestão de funções</h2>
+            <form id="admin-fun-pesquisa"><input name="busca" placeholder="Nome ou Discord ID" aria-label="Nome ou Discord ID"><button>Pesquisar</button></form>
+            <p id="admin-fun-status" role="status"></p><div id="admin-fun-militares"></div>
+            <button id="admin-fun-prev" type="button">Anterior</button> <button id="admin-fun-next" type="button">Próximo</button>
+            <div id="admin-fun-detalhe"></div>
         </section>
         <section class="dashboard-section">
             <h2>Auditoria administrativa</h2>

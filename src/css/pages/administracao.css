@@ -28,3 +28,11 @@
 #admin-hist-pesquisa{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 #admin-historico input,#admin-historico select,#admin-historico textarea{border:1px solid #b9bdb5;border-radius:0;padding:9px;max-width:100%;box-sizing:border-box}
 #admin-hist-detalhe{margin-top:20px}
+
+#admin-funcoes[hidden],#admin-funcoes [hidden]{display:none!important}
+#admin-funcoes button,#admin-fun-abrir{background:#465536;color:white;border:0;border-radius:0;padding:9px 14px;cursor:pointer}
+#admin-funcoes button:disabled{opacity:.5;cursor:default}
+#admin-funcoes .admin-perigo{background:#8b2929}
+#admin-fun-pesquisa{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+#admin-funcoes input,#admin-funcoes select,#admin-funcoes textarea{border:1px solid #b9bdb5;border-radius:0;padding:9px;max-width:100%;box-sizing:border-box}
+#admin-fun-detalhe{margin-top:20px}
