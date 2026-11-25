@@ -1,5 +1,6 @@
 
 import { supabase } from "../supabase.js";
+import { iniciarNotificacoes } from "./notificacoes.js";
 
 document.body.style.visibility = "hidden";
 
@@ -399,6 +400,7 @@ async function verificarLogin() {
     }
     atualizarIconesMenu();
     document.body.style.visibility = "visible";
+    iniciarNotificacoes(discordId).catch(error => console.error("Notificações:", error));
 
     // ========================================
     // INICIAR REGISTRO DE PRESENÇA
