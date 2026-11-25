@@ -1,3 +1,4 @@
+import { carregarAdvertencias } from "./orgaos-advertencias.js";
 
 import { supabase } from "../supabase.js";
 
@@ -437,6 +438,23 @@ async function renderizar() {
     mostrarAutogerenciamento(estrutura, atual);
     mostrarAcoesAdministrativas(estrutura, atual);
     mostrarAcaoMonitoramento(estrutura);
+    if (ativo()) {
+        const codigos = funcoes(estrutura).map(f => f.codigo).filter(tem);
+        if (codigos.length) {
+            try {
+                const lista = await rpc("advertencias_institucionais_listar") || [];
+                if (atual !== versao) return;
+                if (lista.some(v => codigos.includes(v.vinculo_autor))) {
+                    botaoPainel("Advertência institucional",
+                        painel => carregarAdvertencias(painel, codigos, () => atual === versao),
+                        "", "document");
+                }
+            } catch (erro) {
+                console.error("Erro ao consultar competências disciplinares:", erro);
+            }
+        }
+    }
+    if (atual !== versao) return;
     await mostrarDocumentos(estrutura, atual);
     if (atual !== versao) return;
     await mostrarIntegrantes(estrutura, atual);
