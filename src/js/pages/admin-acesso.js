@@ -1,16 +1,19 @@
 import { supabase } from "../supabase.js";
+import { topoAdmin } from "./admin-comum.js";
 
 export function montarAcesso(painel, atualizarAuditoria) {
  const $=id=>painel.querySelector("#ac-"+id);
  painel.innerHTML=`<h2>Gerenciamento de acesso</h2>
  <div class="admin-mil-acoes"><button type="button" id="ac-tab-cargos">Patentes e cargos autorizados</button><button type="button" id="ac-tab-bloqueios">Bloqueios individuais</button><button type="button" id="ac-atualizar">Atualizar</button></div>
  <form class="admin-mil-form" id="ac-cargos" hidden><p>Administradores mantêm acesso. Cargos do Poder Administrativo prevalecem sobre a patente.</p><div class="admin-mil-acoes"><button type="button" id="ac-todos">Selecionar todos</button><button type="button" id="ac-nenhum">Desmarcar todos</button></div><div id="ac-opcoes"></div><label>Justificativa<textarea id="ac-just" required></textarea></label><button type="submit">Salvar autorizações</button></form>
- <div id="ac-bloqueios" hidden><form class="admin-mil-form" id="ac-buscar"><label>Pesquisar militar<input id="ac-busca" placeholder="Nome ou Discord ID" required></label><button>Pesquisar</button></form><div id="ac-resultados"></div><form class="admin-mil-form" id="ac-bloquear" hidden><h3 id="ac-alvo"></h3><label>Justificativa<textarea id="ac-motivo" required></textarea></label><label>Término (horário de Brasília)<input type="datetime-local" id="ac-termino"></label><p>Deixe vazio para bloqueio indeterminado.</p><button class="admin-perigo">Bloquear acesso</button></form><h3>Bloqueios registrados</h3><div id="ac-lista"></div></div><p id="ac-status" role="status"></p>`;
+ <div id="ac-bloqueios" hidden><form class="admin-mil-form" id="ac-buscar"><label>Pesquisar militar<input id="ac-busca" placeholder="Nome ou Discord ID" required></label><button>Pesquisar</button></form><div id="ac-resultados"></div><form class="admin-mil-form" id="ac-bloquear" hidden><button type="button" id="ac-voltar-busca">← Resultados da pesquisa</button><h3 id="ac-alvo"></h3><label>Justificativa<textarea id="ac-motivo" required></textarea></label><label>Término (horário de Brasília)<input type="datetime-local" id="ac-termino"></label><p>Deixe vazio para bloqueio indeterminado.</p><button class="admin-perigo">Bloquear acesso</button></form><h3 id="ac-lista-titulo">Bloqueios registrados</h3><div id="ac-lista"></div></div><p id="ac-status" role="status"></p>`;
  let ocupado=false, config=null, alvo=null, aba="cargos";
  const el=(tag,t)=>{const e=document.createElement(tag);e.textContent=t;return e;};
  const rpc=async(n,args={})=>{const {data,error}=await supabase.rpc(n,args);if(error)throw error;return data;};
  const botao=(t,fn)=>{const b=el("button",t);b.type="button";b.onclick=fn;return b;};
  const data=v=>v?new Date(v).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}):"Indeterminado";
+ function etapaBloqueio(abrir){$("bloquear").hidden=!abrir;for(const id of ["buscar","resultados","lista-titulo","lista"])$(id).hidden=abrir;topoAdmin();}
+ $("voltar-busca").onclick=()=>{if(!ocupado){alvo=null;etapaBloqueio(false);}};
  function mostrar(){ $("cargos").hidden=!config||aba!=="cargos";$("bloqueios").hidden=!config||aba!=="bloqueios"; }
  function preencher(d){
   if(!Array.isArray(d?.opcoes)||!Array.isArray(d?.bloqueios))throw Error("Resposta inválida.");
@@ -33,17 +36,17 @@ export function montarAcesso(painel, atualizarAuditoria) {
  const recarregar=async()=>preencher(await rpc("sistema_acesso_consultar"));
  const carregar=()=>executar(recarregar);
  $("atualizar").onclick=carregar;
- $("tab-cargos").onclick=()=>{aba="cargos";mostrar();};
- $("tab-bloqueios").onclick=()=>{aba="bloqueios";mostrar();};
+ $("tab-cargos").onclick=()=>{aba="cargos";mostrar();topoAdmin();};
+ $("tab-bloqueios").onclick=()=>{aba="bloqueios";mostrar();topoAdmin();};
  for(const [id,valor] of [["todos",true],["nenhum",false]])$(id).onclick=()=>{for(const c of $("opcoes").querySelectorAll("input"))c.checked=valor;};
  $("cargos").onsubmit=e=>{e.preventDefault();if(!confirm("Salvar as autorizações de acesso?"))return;executar(async()=>{await rpc("sistema_acesso_configurar",{p_autorizados:[...$("opcoes").querySelectorAll("input:checked")].map(c=>c.value),p_justificativa:$("just").value.trim()});await recarregar();atualizarAuditoria();});};
  $("buscar").onsubmit=e=>{e.preventDefault();executar(async()=>{
-  alvo=null;$("bloquear").hidden=true;$("resultados").replaceChildren();
+  alvo=null;etapaBloqueio(false);$("resultados").replaceChildren();
   const busca=$("busca").value.trim();if(!busca)throw Error("Informe nome ou Discord ID.");
   const grupos=await Promise.all(["ativo","afastado"].map(s=>rpc("admin_listar_militares",{p_pesquisa:busca,p_status:s,p_limite:100,p_offset:0})));
-  for(const m of grupos.flat()){const linha=el("div","");linha.className="admin-mil-linha";linha.append(el("span",m.nome+" — "+m.patente+" — "+m.discord_id),botao("Selecionar",()=>{if(ocupado)return;alvo=m;$("alvo").textContent=m.nome;$("bloquear").reset();$("bloquear").hidden=false;}));$("resultados").append(linha);}
+  for(const m of grupos.flat()){const linha=el("div","");linha.className="admin-mil-linha";linha.append(el("span",m.nome+" — "+m.patente+" — "+m.discord_id),botao("Selecionar",()=>{if(ocupado)return;alvo=m;$("alvo").textContent=m.nome;$("bloquear").reset();etapaBloqueio(true);}));$("resultados").append(linha);}
   if(!$("resultados").children.length)$("resultados").append(el("p","Nenhum militar encontrado."));
  });};
- $("bloquear").onsubmit=e=>{e.preventDefault();if(!alvo||!confirm("Bloquear o acesso de "+alvo.nome+"?"))return;executar(async()=>{const t=$("termino").value;await rpc("sistema_acesso_bloquear",{p_militar_id:alvo.id,p_justificativa:$("motivo").value.trim(),p_termino_em:t?new Date(t+":00-03:00").toISOString():null});alvo=null;$("bloquear").hidden=true;await recarregar();atualizarAuditoria();});};
+ $("bloquear").onsubmit=e=>{e.preventDefault();if(!alvo||!confirm("Bloquear o acesso de "+alvo.nome+"?"))return;executar(async()=>{const t=$("termino").value;await rpc("sistema_acesso_bloquear",{p_militar_id:alvo.id,p_justificativa:$("motivo").value.trim(),p_termino_em:t?new Date(t+":00-03:00").toISOString():null});alvo=null;etapaBloqueio(false);await recarregar();atualizarAuditoria();});};
  return {carregar,ocupado:()=>ocupado};
 }
