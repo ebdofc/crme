@@ -45,7 +45,7 @@ async function carregar(reiniciar = false) {
         status.textContent = "Não foi possível consultar a auditoria.";
     } finally { ocupado = false; atualizar.disabled = mais.disabled = false; }
 }
-document.addEventListener("crme-admin-autorizado",()=>{ autorizado=true; carregar(true); });
+document.addEventListener("crme-admin-autorizado",()=>{ autorizado=true; });
 atualizar.addEventListener("click",()=>carregar(true));
 mais.addEventListener("click",()=>carregar());
 
@@ -448,3 +448,28 @@ async function notMontar(){
     }catch(e){notConteudo.replaceChildren(elemento("p",e.message||"Falha ao carregar catálogo."));}finally{notOcupado=false;}
 }
 document.getElementById("admin-not-abrir").onclick=()=>{if(!autorizado||notOcupado||salvando||histOcupado||funOcupado)return;notPainel.hidden=!notPainel.hidden;if(!notPainel.hidden){painel.hidden=histPainel.hidden=funPainel.hidden=true;if(!notInicializado)notMontar();}};
+
+const adminAudPainel=document.getElementById("admin-aud-painel");
+const adminNavegacao=[
+ ["admin-gestao",painel],["admin-hist-abrir",histPainel],["admin-fun-abrir",funPainel],["admin-not-abrir",notPainel],["admin-aud-abrir",adminAudPainel]
+];
+function adminAtualizarSelecao(){
+ for(const [id,p] of adminNavegacao)document.getElementById(id).setAttribute("aria-pressed",String(!p.hidden));
+}
+for(const [id,p] of adminNavegacao){
+ const b=document.getElementById(id);
+ const anteriorClick=b.onclick;
+ b.onclick=()=>{
+  if(!autorizado||salvando||histOcupado||funOcupado||notOcupado)return;
+  if(p===adminAudPainel){
+   const abrir=p.hidden;
+   for(const [,outro] of adminNavegacao)outro.hidden=true;
+   p.hidden=!abrir;
+   if(abrir)carregar(true);
+  }else{
+   adminAudPainel.hidden=true;
+   anteriorClick?.();
+  }
+  adminAtualizarSelecao();
+ };
+}
