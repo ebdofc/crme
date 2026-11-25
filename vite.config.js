@@ -18,6 +18,7 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
+        manutencao: resolve(import.meta.dirname, 'manutencao.html'),
         index: resolve(import.meta.dirname, 'index.html'),
         dashboard: resolve(import.meta.dirname, 'dashboard.html'),
         noticias: resolve(import.meta.dirname, 'noticias.html'),
