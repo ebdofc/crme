@@ -10,19 +10,36 @@ let autorizado = false;
 document.addEventListener("crme-admin-autorizado",event=>{
  autorizado=true;
  if(String(event.detail?.discordId)!=="760638817073496075")return;
- const secao=document.getElementById("admin-gestao")?.closest(".dashboard-section");
- if(!secao||document.getElementById("admin-nao-registrar-auditoria"))return;
- const bloco=document.createElement("p");
- const label=document.createElement("label");
- const check=document.createElement("input");
- check.type="checkbox";
- check.id="admin-nao-registrar-auditoria";
- check.checked=false;
- label.append(check,document.createTextNode(" Não registrar auditoria"));
- const nota=document.createElement("small");
- nota.textContent=" — Somente para a próxima operação administrativa de teste.";
- bloco.append(label,nota);
- secao.querySelector("p")?.after(bloco);
+ const instalar=()=>{
+  for(const campo of document.querySelectorAll("main textarea")){
+   const label=campo.closest("label");
+   if(!label||!/^Justificativa/i.test(label.textContent.trim())||campo.dataset.auditoriaTeste)continue;
+   campo.dataset.auditoriaTeste="true";
+   const opcao=document.createElement("label");
+   opcao.style.cssText="display:flex;align-items:center;gap:8px;font-weight:normal";
+   const check=document.createElement("input");
+   check.type="checkbox";
+   check.className="admin-nao-registrar-auditoria";
+   check.style.cssText="width:auto;margin:0";
+   opcao.append(check,document.createTextNode("Não registrar auditoria"));
+   label.after(opcao);
+   let anterior="",obrigatorio=campo.required;
+   check.addEventListener("change",()=>{
+    if(check.checked){
+     for(const outro of document.querySelectorAll(".admin-nao-registrar-auditoria:checked")){
+      if(outro!==check){outro.checked=false;outro.dispatchEvent(new Event("change"));}
+     }
+     anterior=campo.value;obrigatorio=campo.required;
+     campo.value="Teste de desenvolvimento";
+     campo.required=false;campo.disabled=true;
+    }else{
+     campo.disabled=false;campo.required=obrigatorio;campo.value=anterior;
+    }
+   });
+  }
+ };
+ instalar();
+ new MutationObserver(instalar).observe(document.querySelector("main"),{childList:true,subtree:true});
 });
 const estaAutorizado=()=>autorizado;
 const auditoria=montarAuditoria(estaAutorizado);
