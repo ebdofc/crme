@@ -46,3 +46,8 @@
 #admin-notificacoes summary{cursor:pointer;color:#465536}
 .dashboard-section[id^="admin-"] [role="status"]{color:#626b5d;line-height:1.5;margin:12px 0}
 @media(max-width:700px){.admin-mil-linha{align-items:flex-start;flex-direction:column}.admin-mil-form{padding:12px}.admin-modulos button{padding:12px}.admin-mil-form button{max-width:100%}}
+
+#admin-manutencao fieldset{border:1px solid #ddd;padding:14px;min-width:0;display:grid;gap:10px}
+#admin-manutencao legend{color:#465536;font-weight:600}
+#admin-manutencao input,#admin-manutencao textarea,#admin-manutencao select{box-sizing:border-box}
+#admin-manutencao .admin-mil-acoes{margin:0}
