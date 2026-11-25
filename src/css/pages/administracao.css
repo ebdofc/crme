@@ -20,3 +20,11 @@
 .admin-mil-form label{display:grid;gap:5px}
 .admin-mil-form label:has(input[type=checkbox]){display:flex;align-items:center}
 .admin-mil-form textarea{min-height:90px}
+
+#admin-historico[hidden],#admin-historico [hidden]{display:none!important}
+#admin-historico button,#admin-hist-abrir{background:#465536;color:white;border:0;border-radius:0;padding:9px 14px;cursor:pointer}
+#admin-historico button:disabled{opacity:.5;cursor:default}
+#admin-historico .admin-perigo{background:#8b2929}
+#admin-hist-pesquisa{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+#admin-historico input,#admin-historico select,#admin-historico textarea{border:1px solid #b9bdb5;border-radius:0;padding:9px;max-width:100%;box-sizing:border-box}
+#admin-hist-detalhe{margin-top:20px}
