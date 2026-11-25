@@ -138,6 +138,7 @@ function icone(tipo) {
     svg.classList.add("organ-icon");
     const formas = {
         next: "M9 6l6 6-6 6",
+        document: "M6 2h8l4 4v16H6z M14 2v5h4 M9 11h6 M9 15h6 M9 18h4",
         users: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M22 21v-2a4 4 0 0 0-3-4 M16 3a4 4 0 0 1 0 8",
         network: "M12 3v6 M5 15v-3h14v3 M12 9v3 M2 15h6v6H2z M16 15h6v6h-6z M9 2h6v6H9z",
         settings: "M4 6h16 M4 12h16 M4 18h16 M8 3v6 M16 9v6 M10 15v6"
@@ -418,6 +419,8 @@ async function renderizar() {
     mostrarAutogerenciamento(estrutura, atual);
     mostrarAcoesAdministrativas(estrutura, atual);
     mostrarAcaoMonitoramento(estrutura);
+    await mostrarDocumentos(estrutura, atual);
+    if (atual !== versao) return;
     await mostrarIntegrantes(estrutura, atual);
 }
 
@@ -915,5 +918,53 @@ async function mostrarIntegrantes(estrutura, atual) {
         if (atual !== versao) return;
         console.error(erro);
         conteudo.replaceChildren(el("p", "organ-form-message", `Não foi possível carregar os integrantes: ${erro.message}`));
+    }
+}
+
+async function mostrarDocumentos(estrutura, atual) {
+    const orgao = caminho[0].codigo;
+    const unidade = caminho.length > 1 ? estrutura.codigo : null;
+    const codigo = caminho.map(e => e.codigo).join("/");
+    try {
+        // A RLS de documentos continua sendo a autoridade de leitura.
+        // A identidade institucional, quando definida, identifica o autor
+        // exato; para publicação pessoal, usar o escopo cadastrado.
+        const documentos = [];
+        for (let inicio = 0; ; inicio += 100) {
+            const lote = await consultar(supabase.from("documentos")
+                .select("id,titulo,orgao,unidade,publicado_por_tipo,publicado_por_codigo")
+                .eq("orgao", orgao)
+                .order("criado_em", { ascending: true })
+                .order("id", { ascending: true })
+                .range(inicio, inicio + 99));
+            if (atual !== versao) return;
+            documentos.push(...(lote || []));
+            if (!lote || lote.length < 100) break;
+        }
+        const lista = documentos.filter(doc => {
+            if (doc.publicado_por_tipo === "institucional" && doc.publicado_por_codigo) {
+                return doc.publicado_por_codigo === codigo;
+            }
+            return (doc.unidade || null) === unidade;
+        });
+        if (!lista.length || atual !== versao) return;
+        const secao = el("section", "organ-documents-section");
+        secao.append(tituloIcone("Documentação institucional", "document"));
+        const linhas = el("div", "organ-rows");
+        lista.forEach(doc => {
+            const link = el("a", "organ-card organ-document-link");
+            link.href = "documentos.html?id=" + encodeURIComponent(doc.id);
+            link.append(icone("document"), el("span", "organ-card-name", doc.titulo), icone("next"));
+            linhas.append(link);
+        });
+        secao.append(linhas);
+        elementos.conteudo.append(secao);
+    } catch (erro) {
+        if (atual !== versao) return;
+        console.error("Erro ao carregar documentos institucionais:", erro);
+        const secao = el("section", "organ-documents-section");
+        secao.append(tituloIcone("Documentação institucional", "document"),
+            mensagem("Não foi possível carregar os documentos."));
+        elementos.conteudo.append(secao);
     }
 }

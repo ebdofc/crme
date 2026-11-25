@@ -839,5 +839,13 @@ $("delete-document").addEventListener("click", removeDocument);
     // deve validar novamente cada operação de publicação e edição.
     await load();
     show("library-panel");
+    const documentoId = new URLSearchParams(window.location.search).get("id");
+    if (documentoId) {
+      if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(documentoId)) {
+        await openDocument(documentoId);
+      } else {
+        feedback("Identificador de documento inválido.", true);
+      }
+    }
   } catch (error) { fail(error); $("doc-list").textContent = "Não foi possível carregar a biblioteca."; }
 })();
