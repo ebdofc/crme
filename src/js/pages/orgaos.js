@@ -138,6 +138,9 @@ function icone(tipo) {
     svg.classList.add("organ-icon");
     const formas = {
         next: "M9 6l6 6-6 6",
+        up: "M12 20V4 M5 11l7-7 7 7",
+        down: "M12 4v16 M5 13l7 7 7-7",
+        activity: "M2 12h5l3-8 4 16 3-8h5",
         document: "M6 2h8l4 4v16H6z M14 2v5h4 M9 11h6 M9 15h6 M9 18h4",
         users: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M22 21v-2a4 4 0 0 0-3-4 M16 3a4 4 0 0 1 0 8",
         network: "M12 3v6 M5 15v-3h14v3 M12 9v3 M2 15h6v6H2z M16 15h6v6h-6z M9 2h6v6H9z",
@@ -182,18 +185,33 @@ function seletorFuncoes(lista) {
     return select;
 }
 
-function botaoPainel(texto, carregar, classe = "") {
-    const secao = el("section", classe);
-    const painel = el("div");
+function secaoOperacoes() {
+    let secao = elementos.conteudo.querySelector(".organ-operations");
+    if (!secao) {
+        secao = el("section", "organ-operations");
+        secao.append(tituloIcone("Operações administrativas", "settings"));
+        elementos.conteudo.append(secao);
+    }
+    return secao;
+}
+function botaoPainel(texto, carregar, classe = "", tipo = "users") {
+    const secao = el("div", "organ-operation " + classe);
+    const painel = el("div", "organ-operation-panel");
     painel.hidden = true;
-    const abrir = btn(texto, async () => {
-        painel.hidden = !painel.hidden;
-        abrir.setAttribute("aria-expanded", String(!painel.hidden));
-        if (!painel.hidden) await carregar(painel);
-    });
+    const abrir = btn("", async () => {
+        const expandir = painel.hidden;
+        for (const outro of secaoOperacoes().querySelectorAll(".organ-operation-panel")) outro.hidden = true;
+        for (const botao of secaoOperacoes().querySelectorAll("[aria-expanded]")) botao.setAttribute("aria-expanded", "false");
+        if (expandir) {
+            painel.hidden = false;
+            abrir.setAttribute("aria-expanded", "true");
+            await carregar(painel);
+        }
+    }, "organ-card organ-operation-button");
+    abrir.append(icone(tipo), el("span", "organ-card-name", texto), icone("next"));
     abrir.setAttribute("aria-expanded", "false");
     secao.append(abrir, painel);
-    elementos.conteudo.append(secao);
+    secaoOperacoes().append(secao);
 }
 
 // ==================================================
@@ -554,7 +572,7 @@ function mostrarAutogerenciamento(estrutura, atual) {
             item.append(botaoRemover(v.id, atual, "Remover de mim", `Remover sua função ${v.funcao}?`));
             painel.append(item);
         });
-    }, "organ-autogerenciamento-section");
+    }, "organ-autogerenciamento-section", "settings");
 }
 
 // ==================================================
@@ -682,42 +700,18 @@ function podeMonitorar() {
 
 function mostrarAcaoMonitoramento(estrutura) {
     if (caminho.length !== 1 || !ORGAOS_MONITORAMENTO.has(estrutura.codigo) || !podeMonitorar()) return;
-
-    let secao = [...elementos.conteudo.querySelectorAll(".organ-admin-section")]
-        .find(e => e.querySelector(".organ-admin-buttons"));
-
-    if (!secao) {
-        secao = el("section", "organ-integrantes-section organ-admin-section");
-        secao.append(tituloIcone("Operações administrativas", "settings"), el("div", "organ-admin-buttons"));
-        elementos.conteudo.append(secao);
-    }
-
-    secao.querySelector(".organ-admin-buttons").append(btn(
-        "Monitoramento", () => { window.location.href = "/monitoramento.html"; },
-        "organ-submit-button organ-admin-button"
-    ));
+    const botao = btn("", () => { window.location.href = "/monitoramento.html"; }, "organ-card organ-operation-button");
+    botao.append(icone("activity"), el("span", "organ-card-name", "Monitoramento"), icone("next"));
+    secaoOperacoes().append(botao);
 }
-
 function mostrarAcoesAdministrativas(estrutura, atual) {
     if (caminho.length !== 1 || !["P", "M"].includes(estrutura.codigo)) return;
-
     const nivel = nivelAdministrativo();
     if (nivel < 1 || (estrutura.codigo === "P" && nivel < 2)) return;
-
-    const secao = el("section", "organ-integrantes-section organ-admin-section");
-    const botoes = el("div", "organ-admin-buttons");
-    const painel = el("div", "organ-admin-panel");
-
-    painel.hidden = true;
-
-    ["promocao", "rebaixamento"].forEach(tipo => botoes.append(btn(
-        tipo === "promocao" ? "Promoção Administrativa" : "Rebaixamento Administrativo",
-        () => abrirAcao(tipo, painel, atual, nivel),
-        "organ-submit-button organ-admin-button"
-    )));
-
-    secao.append(tituloIcone("Operações administrativas", "settings"), botoes, painel);
-    elementos.conteudo.append(secao);
+    for (const tipo of ["promocao", "rebaixamento"]) {
+        botaoPainel(tipo === "promocao" ? "Promoção administrativa" : "Rebaixamento administrativo",
+            painel => abrirAcao(tipo, painel, atual, nivel), "", tipo === "promocao" ? "up" : "down");
+    }
 }
 
 function abrirAcao(tipo, painel, atual, nivel) {
