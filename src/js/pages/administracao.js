@@ -54,7 +54,19 @@ const modulos=[
  ["admin-man-abrir","admin-manutencao",montarManutencao($("admin-manutencao"),atualizarAuditoria)],
  ["admin-ac-abrir","admin-acesso",montarAcesso($("admin-acesso"),atualizarAuditoria)]
 ];
+const menu=$("admin-gestao").closest(".dashboard-section");
+const ocupado=()=>modulos.some(([, ,m])=>m.ocupado());
+function voltarMenu(){
+ if(ocupado())return;
+ for(const [b,p] of modulos){$(p).hidden=true;$(b).setAttribute("aria-pressed","false");}
+ menu.hidden=false;
+ window.scrollTo({top:0,behavior:"instant"});
+}
 for(const [botao,painel,modulo] of modulos){
+ const barra=document.createElement("div");
+ barra.className="admin-navegacao admin-mil-acoes";
+ const voltar=document.createElement("button");voltar.type="button";voltar.textContent="← Administração";voltar.onclick=voltarMenu;
+ barra.append(voltar);$(painel).prepend(barra);
  $(botao).onclick=()=>{
   if(!autorizado||modulos.some(([, ,m])=>m.ocupado()))return;
   const abrir=$(painel).hidden;
@@ -63,7 +75,9 @@ for(const [botao,painel,modulo] of modulos){
    $(b).setAttribute("aria-pressed","false");
   }
   if(abrir){
+   menu.hidden=true;
    $(painel).hidden=false;
+   window.scrollTo({top:0,behavior:"instant"});
    $(botao).setAttribute("aria-pressed","true");
    modulo.carregar();
   }
