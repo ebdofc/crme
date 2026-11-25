@@ -1,3 +1,4 @@
+import { montarManutencao } from "./admin-manutencao.js";
 import { supabase } from "../supabase.js";
 const lista = document.getElementById("admin-auditoria");
 const status = document.getElementById("admin-status");
@@ -477,8 +478,10 @@ async function notMontar(){
 document.getElementById("admin-not-abrir").onclick=()=>{if(!autorizado||notOcupado||salvando||histOcupado||funOcupado)return;notPainel.hidden=!notPainel.hidden;if(!notPainel.hidden){painel.hidden=histPainel.hidden=funPainel.hidden=true;if(!notInicializado)notMontar();}};
 
 const adminAudPainel=document.getElementById("admin-aud-painel");
+const manPainel=document.getElementById("admin-manutencao");
+const manModulo=montarManutencao(manPainel,()=>carregar(true));
 const adminNavegacao=[
- ["admin-gestao",painel],["admin-hist-abrir",histPainel],["admin-fun-abrir",funPainel],["admin-not-abrir",notPainel],["admin-aud-abrir",adminAudPainel]
+ ["admin-gestao",painel],["admin-hist-abrir",histPainel],["admin-fun-abrir",funPainel],["admin-not-abrir",notPainel],["admin-aud-abrir",adminAudPainel],["admin-man-abrir",manPainel]
 ];
 function adminAtualizarSelecao(){
  for(const [id,p] of adminNavegacao)document.getElementById(id).setAttribute("aria-pressed",String(!p.hidden));
@@ -487,14 +490,20 @@ for(const [id,p] of adminNavegacao){
  const b=document.getElementById(id);
  const anteriorClick=b.onclick;
  b.onclick=()=>{
-  if(!autorizado||salvando||histOcupado||funOcupado||notOcupado)return;
-  if(p===adminAudPainel){
+  if(!autorizado||salvando||histOcupado||funOcupado||notOcupado||manModulo.ocupado())return;
+  if(p===manPainel){
+   const abrir=p.hidden;
+   for(const [,outro] of adminNavegacao)outro.hidden=true;
+   p.hidden=!abrir;
+   if(abrir)manModulo.carregar();
+  }else if(p===adminAudPainel){
    const abrir=p.hidden;
    for(const [,outro] of adminNavegacao)outro.hidden=true;
    p.hidden=!abrir;
    if(abrir)carregar(true);
   }else{
    adminAudPainel.hidden=true;
+   manPainel.hidden=true;
    anteriorClick?.();
   }
   adminAtualizarSelecao();
