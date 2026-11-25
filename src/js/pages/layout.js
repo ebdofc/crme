@@ -14,7 +14,7 @@ const NOMES_PAGINAS = {
     "noticias.html": "Notícias",
     "documentos.html": "Documentos",
     "consultar.html": "Consultar Militares",
-    "controle-patentes.html": "Controle de Patentes",
+    "controle-patentes.html": "Controle de Efetivo",
     "alistamento.html": "Alistamento",
     "acoes.html": "Ações",
     "aulas.html": "Aulas",
