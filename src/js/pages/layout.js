@@ -462,7 +462,7 @@ async function verificarLogin() {
     atualizarIconesMenu();
     document.body.style.visibility = "visible";
     iniciarVerificacaoManutencao();
-    if (paginaAdmin) document.dispatchEvent(new Event("crme-admin-autorizado"));
+    if (paginaAdmin) document.dispatchEvent(new CustomEvent("crme-admin-autorizado", { detail: { discordId } }));
     iniciarNotificacoes(discordId).catch(error => console.error("Notificações:", error));
 
     // ========================================
