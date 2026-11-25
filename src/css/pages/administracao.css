@@ -22,7 +22,45 @@
 .dashboard-section[id^="admin-"] button[type="submit"]:hover:not(:disabled){background:#354329}
 .dashboard-section[id^="admin-"] button.admin-perigo{background:#8b2929;color:#fff;border-color:#8b2929}
 .dashboard-section[id^="admin-"] button.admin-perigo:hover:not(:disabled){background:#702020}
-.dashboard-section[id^="admin-"] input:not([type="checkbox"]),.dashboard-section[id^="admin-"] select,.dashboard-section[id^="admin-"] textarea{font:inherit;color:#222;background:#fff;border:1px solid #bbb;border-radius:0;padding:11px;max-width:100%;min-width:0}
+/* Campos — mesmo padrão dos formulários de Órgãos e Ações. */
+.dashboard-section[id^="admin-"] input:not([type="checkbox"]):not([type="radio"]),
+.dashboard-section[id^="admin-"] select,
+.dashboard-section[id^="admin-"] textarea {
+    display:block;
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    min-height:40px;
+    padding:9px 10px;
+    background:#fff;
+    border:1px solid #c9cec4;
+    border-radius:0;
+    color:#292d27;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:400;
+    line-height:1.5;
+    box-sizing:border-box;
+    box-shadow:none;
+    transition:none;
+}
+.dashboard-section[id^="admin-"] input:not([type="checkbox"]):not([type="radio"]):focus,
+.dashboard-section[id^="admin-"] select:focus,
+.dashboard-section[id^="admin-"] textarea:focus {
+    outline:1px solid #68765d;
+    outline-offset:0;
+    border-color:#68765d;
+    box-shadow:none;
+}
+.dashboard-section[id^="admin-"] input::placeholder,
+.dashboard-section[id^="admin-"] textarea::placeholder {color:#73786f;opacity:1}
+.dashboard-section[id^="admin-"] input:disabled,
+.dashboard-section[id^="admin-"] select:disabled,
+.dashboard-section[id^="admin-"] textarea:disabled {background:#f0f2ed;color:#73786f;cursor:not-allowed}
+.dashboard-section[id^="admin-"] input[type="checkbox"],
+.dashboard-section[id^="admin-"] input[type="radio"] {accent-color:#465536;width:16px;height:16px;flex:0 0 16px;margin:0}
+.dashboard-section[id^="admin-"] textarea {min-height:110px;resize:vertical;overflow-wrap:anywhere}
+
 .dashboard-section[id^="admin-"] :focus-visible,.admin-modulos button:focus-visible{outline:2px solid #465536;outline-offset:2px}
 #admin-pesquisa,#admin-hist-pesquisa,#admin-fun-pesquisa,.admin-mil-acoes{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
 #admin-pesquisa input,#admin-hist-pesquisa input,#admin-fun-pesquisa input{flex:1;min-width:140px}
@@ -32,11 +70,11 @@
 .admin-mil-linha span{min-width:0}
 .admin-mil-linha button{flex-shrink:0}
 #admin-mil-edicao,#admin-hist-detalhe,#admin-fun-detalhe{margin-top:20px}
-.admin-mil-form{display:grid;gap:16px;max-width:640px;margin:16px 0;padding:18px;border:1px solid #ddd;background:#fff}
-.admin-mil-form label{display:grid;gap:7px;font-weight:600;color:#333}
-.admin-mil-form label:has(input[type=checkbox]){display:flex;align-items:center}
-.admin-mil-form textarea{min-height:100px;resize:vertical}
-.admin-mil-form button{justify-self:start}
+.admin-mil-form{display:flex;flex-direction:column;gap:12px;width:100%;max-width:850px;min-width:0;margin:16px 0;padding:18px;border:1px solid #d5d8d2;background:#fff;box-sizing:border-box}
+.admin-mil-form label{display:flex;flex-direction:column;gap:7px;min-width:0;font-size:13px;font-weight:600;color:#555d50}
+.admin-mil-form label:has(> input[type=checkbox]),.admin-mil-form label:has(> input[type=radio]){flex-direction:row;align-items:center;gap:8px}
+
+.admin-mil-form button{align-self:flex-start;max-width:100%}
 .admin-mil-form p{margin:0;line-height:1.5}
 .admin-registro{border:1px solid #ddd;margin:8px 0;padding:0 14px;overflow-wrap:anywhere}
 .admin-registro summary{cursor:pointer;color:#465536;font-weight:600;padding:14px 0;line-height:1.5}
@@ -47,7 +85,29 @@
 .dashboard-section[id^="admin-"] [role="status"]{color:#626b5d;line-height:1.5;margin:12px 0}
 @media(max-width:700px){.admin-mil-linha{align-items:flex-start;flex-direction:column}.admin-mil-form{padding:12px}.admin-modulos button{padding:12px}.admin-mil-form button{max-width:100%}}
 
-#admin-manutencao fieldset{border:1px solid #ddd;padding:14px;min-width:0;display:grid;gap:10px}
-#admin-manutencao legend{color:#465536;font-weight:600}
+#admin-manutencao fieldset,#admin-acesso fieldset{border:1px solid #ddd;padding:14px;min-width:0;display:grid;gap:10px}
+#admin-manutencao legend,#admin-acesso legend{color:#465536;font-weight:600}
 #admin-manutencao input,#admin-manutencao textarea,#admin-manutencao select{box-sizing:border-box}
 #admin-manutencao .admin-mil-acoes{margin:0}
+
+/* Navegação e superfícies administrativas */
+.main-content > .dashboard-section[hidden] {display:none!important}
+.dashboard-section[id^="admin-"] .admin-navegacao {margin:0 0 16px; padding:0 0 12px;border-bottom:1px solid #d5d8d2}
+.dashboard-section[id^="admin-"] .admin-navegacao button {min-height:36px;padding:8px 12px;border-color:#c9cec4;color:#495343;font-size:13px}
+.dashboard-section[id^="admin-"] button {min-height:36px;font-size:13px;padding:8px 13px}
+.dashboard-section[id^="admin-"] h3 {color:#343b31;font-size:15px;font-weight:600}
+.admin-mil-linha,.admin-registro {border-color:#d5d8d2}
+.admin-registro:not(details) {padding:12px 14px;background:#f7f8f5}
+#admin-pesquisa input,#admin-hist-pesquisa input,#admin-fun-pesquisa input {width:auto;flex:1 1 240px}
+#admin-pesquisa select {width:auto;flex:0 1 230px}
+#admin-hist-detalhe > select {width:auto;max-width:100%}
+.admin-mil-acoes > select {width:auto;flex:1 1 200px}
+.admin-mil-form fieldset {min-width:0;margin:0;border:1px solid #d5d8d2;padding:14px}
+.admin-mil-form legend {font-size:13px;color:#555d50;font-weight:600}
+.admin-mil-form label:has(> .admin-nao-registrar-auditoria) {padding:9px 10px;background:#f7f8f5;border:1px solid #d5d8d2;color:#495343}
+@media(max-width:600px){
+    .admin-mil-form{padding:14px}
+    #admin-pesquisa input,#admin-hist-pesquisa input,#admin-fun-pesquisa input,#admin-pesquisa select {flex:1 1 100%;width:100%}
+    #admin-pesquisa button,#admin-hist-pesquisa button,#admin-fun-pesquisa button {width:100%}
+    .admin-mil-form > button[type="submit"]{width:100%;align-self:stretch}
+}
