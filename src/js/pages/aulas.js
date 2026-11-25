@@ -27,7 +27,7 @@ const ORDEM_CURSOS = {
     CIM: ["IIB", "CFSd", "CFCb"],
     CAM: ["CFSg", "CASg", "CFSb", "CASb"],
     EPCE: ["CIC", "CPC"],
-    AMFO: ["CFO", "CPO", "CFCp", "ADOM"],
+    AMFO: ["CFO", "CAO", "CFCp", "ADOM"],
     AMFS: ["CFMj", "CQOS", "AOC", "AFOS"]
 };
 
