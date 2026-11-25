@@ -205,30 +205,22 @@ function renderSectorChoices() {
     host.append(label);
     selected.set(node.code, { input, label });
     input.addEventListener("change", () => {
-      if (input.checked) {
-        // Um setor superior já inclui seus subordinados, mas não uma direção
-        // exclusiva: a direção é uma permissão independente.
-        for (const [otherCode, other] of selected) {
-          if (otherCode !== node.code && otherCode.startsWith(node.code + "/") &&
-              !otherCode.endsWith("/D") && otherCode !== "DGP/DG") {
-            other.input.checked = false;
-          }
+      if (!input.checked) {
+        for (const [code, item] of selected) {
+          if (code.startsWith(node.code + "/")) item.input.checked = false;
         }
       }
       refresh();
     });
   };
-  const isExclusive = code => [
-    "DGP/DG", "DEC/D", "DEC/DEA/D", "DEC/DEB/D", "DTC/D"
-  ].includes(code);
   function refresh() {
     for (const [code, item] of selected) {
       const covered = [...selected].some(([ancestor, other]) =>
         ancestor !== code && other.input.checked &&
-        code.startsWith(ancestor + "/") && !isExclusive(code));
+        code.startsWith(ancestor + "/"));
       item.label.classList.toggle("doc-sector-covered", covered);
       item.input.disabled = covered;
-      if (covered) item.input.checked = false;
+      if (covered) item.input.checked = true;
     }
   }
   function renderNode(node, host, depth = 0) {
@@ -276,7 +268,8 @@ function renderSectorChoices() {
   refresh();
 }
 function selectedSectors() {
-  return [...document.querySelectorAll("#sector-choices input:checked")].map(input => input.value);
+  const codes = [...document.querySelectorAll("#sector-choices input:checked")].map(input => input.value);
+  return codes.filter(code => !codes.some(parent => parent !== code && code.startsWith(parent + "/")));
 }
 function authorLabel(doc) {
   if (doc.publicado_por_tipo === "institucional" && doc.publicado_por_codigo) {
