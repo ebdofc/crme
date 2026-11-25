@@ -3,6 +3,42 @@ import { supabase } from "../supabase.js";
 
 document.body.style.visibility = "hidden";
 
+const ICONES_LAYOUT = {
+    "dashboard.html": "M3 10l9-7 9 7v11h-6v-7H9v7H3z",
+    "noticias.html": "M4 3h16v18H4z M7 7h10 M7 11h10 M7 15h10",
+    "documentos.html": "M6 2h8l4 4v16H6z M14 2v5h4 M9 11h6 M9 15h6",
+    "consultar.html": "M10 3a7 7 0 1 0 0 14 7 7 0 0 0 0-14 M15 15l6 6",
+    "controle-patentes.html": "M3 21v-7h5v7 M10 21V9h5v12 M17 21V3h5v18",
+    "alistamento.html": "M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M2 21v-3a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v3 M19 5v8 M15 9h8",
+    "acoes.html": "M4 6h16 M4 12h16 M4 18h16 M8 3v6 M16 9v6 M10 15v6",
+    "aulas.html": "M2 5h8l2 2 2-2h8v15h-8l-2 2-2-2H2z M12 7v15",
+    "orgaos.html": "M9 2h6v6H9z M12 8v5 M5 16v-3h14v3 M2 16h6v6H2z M16 16h6v6h-6z",
+    "ciclos.html": "M20 7a9 9 0 1 0 1 9 M20 2v5h-5 M12 7v5l3 2",
+    "monitoramento.html": "M2 12h5l3-8 4 16 3-8h5",
+    "permanencia.html": "M12 2l9 4v7c0 5-9 9-9 9s-9-4-9-9V6z M8 12l3 3 5-6",
+    menu: "M3 6h18 M3 12h18 M3 18h18",
+    sair: "M10 3H3v18h7 M9 12h12 M17 8l4 4-4 4"
+};
+function iconeLayout(tipo) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns,"svg");
+    for (const [k,v] of Object.entries({viewBox:"0 0 24 24",fill:"none",stroke:"currentColor","stroke-width":"1.7","stroke-linecap":"round","stroke-linejoin":"round","aria-hidden":"true"})) svg.setAttribute(k,v);
+    svg.classList.add("crme-layout-icon");
+    const p = document.createElementNS(ns,"path");
+    p.setAttribute("d",ICONES_LAYOUT[tipo]); svg.append(p); return svg;
+}
+function atualizarIconesMenu() {
+    for (const link of document.querySelectorAll(".sidebar nav a")) {
+        const arquivo = new URL(link.href,location.href).pathname.split("/").pop();
+        if (!ICONES_LAYOUT[arquivo] || link.querySelector(".crme-layout-icon")) continue;
+        const nome = arquivo === "controle-patentes.html" ? "Controle de Efetivo" : link.textContent.trim();
+        const span = document.createElement("span"); span.className = "crme-nav-label"; span.textContent = nome;
+        link.setAttribute("aria-label",nome); link.title = nome;
+        link.replaceChildren(iconeLayout(arquivo),span);
+    }
+}
+
+
 // ========================================
 // CONFIGURAÇÕES DO MONITORAMENTO
 // ========================================
@@ -361,6 +397,7 @@ async function verificarLogin() {
             nav.append(link);
         }
     }
+    atualizarIconesMenu();
     document.body.style.visibility = "visible";
 
     // ========================================
@@ -395,6 +432,11 @@ mobileMenuButton.setAttribute("aria-controls", "sidebar");
 mobileMenuButton.setAttribute("aria-expanded", "false");
 
 topHeader.prepend(mobileMenuButton);
+menuToggle.replaceChildren(iconeLayout("menu"));
+mobileMenuButton.replaceChildren(iconeLayout("menu"));
+const sair = document.getElementById("logout-button");
+sair.prepend(iconeLayout("sair"));
+atualizarIconesMenu();
 
 // ========================================
 // CRIAR SOBREPOSIÇÃO
