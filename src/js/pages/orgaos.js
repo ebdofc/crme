@@ -452,20 +452,11 @@ async function renderizar() {
         const codigos = presidencia.length
             ? (estrutura.codigo === "P" ? presidencia : locais.filter(c => representacoes.has(c)))
             : destinos.filter(tem);
-        const filtro = v => codigos.includes(v.vinculo_autor) &&
-            (estrutura.codigo === "P" || destinos.includes(v.vinculo_destino));
+        const geral = ["P", "M", "CE"].includes(estrutura.codigo);
         if (codigos.length) {
-            try {
-                const lista = await rpc("advertencias_institucionais_listar") || [];
-                if (atual !== versao) return;
-                if (lista.some(filtro)) {
-                    botaoPainel("Advertência institucional",
-                        painel => carregarAdvertencias(painel, codigos, () => atual === versao, estrutura.codigo === "P" ? null : destinos),
-                        "", "document");
-                }
-            } catch (erro) {
-                console.error("Erro ao consultar competências disciplinares:", erro);
-            }
+            botaoPainel("Advertência institucional",
+                painel => carregarAdvertencias(painel, codigos, () => atual === versao, geral ? null : destinos),
+                "", "document");
         }
     }
     if (atual !== versao) return;
