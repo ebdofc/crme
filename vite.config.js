@@ -7,7 +7,7 @@ export default defineConfig({
     {
       name: 'crme-favicon',
       transformIndexHtml() {
-        return [{ tag: 'link', attrs: { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }, injectTo: 'head' }];
+        return [{ tag: 'link', attrs: { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg?v=2' }, injectTo: 'head' }];
       },
     },
     {
