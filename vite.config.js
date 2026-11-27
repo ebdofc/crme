@@ -5,6 +5,12 @@ import { resolve } from 'node:path';
 export default defineConfig({
   plugins: [
     {
+      name: 'crme-favicon',
+      transformIndexHtml() {
+        return [{ tag: 'link', attrs: { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }, injectTo: 'head' }];
+      },
+    },
+    {
       name: 'emit-orgaos-catalog',
       generateBundle() {
         this.emitFile({
